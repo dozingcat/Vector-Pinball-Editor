@@ -22,6 +22,7 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 
 // Need to edit project as described in
 // http://stackoverflow.com/questions/24467931/using-javafx-jdk-1-8-0-05-in-eclipse-luna-does-not-work
@@ -31,8 +32,9 @@ public class Main extends Application {
         launch(args);
     }
 
-    @Override
-    public void start(Stage primaryStage) {
+    Canvas fieldCanvas;
+
+    @Override public void start(Stage primaryStage) {
         /*
          * primaryStage.setTitle("Hello World!"); Button btn = new Button();
          * btn.setText("Say 'Hello World'"); btn.setOnAction((event) ->
@@ -47,8 +49,8 @@ public class Main extends Application {
          * StackPane root = new StackPane(); root.getChildren().add(canvas);
          * //root.getChildren().add(btn);
          */
-        int width = 1000;
-        int height = 1000;
+        int width = 1100;
+        int height = 1100;
 
         GridPane root = new GridPane();
 
@@ -80,9 +82,7 @@ public class Main extends Application {
         fieldScroller.setStyle("-fx-background: black;");
         VBox.setVgrow(fieldScroller, Priority.ALWAYS);
 
-//        fieldScroller.setPrefSize(120, 120);
-
-        Canvas fieldCanvas = new Canvas(500, 700);
+        fieldCanvas = new Canvas(700, 1000);
         fieldScroller.setContent(fieldCanvas);
 
         fieldBox.getChildren().addAll(fieldControls, fieldScroller);
@@ -94,13 +94,14 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, width, height));
         primaryStage.show();
 
+        startGame();
+    }
 
+    void startGame() {
         System.out.println("Reading table");
         JarFileFieldReader fieldReader = new JarFileFieldReader();
-        System.out.println(fieldReader.layoutMapForLevel(1));
-        System.out.println(fieldReader.numberOfLevels());
 
-        Map<String, Object> fieldMap = fieldReader.layoutMapForLevel(1);
+        Map<String, Object> fieldMap = fieldReader.layoutMapForLevel(2);
         Field field = new Field();
         field.resetForLevel(fieldMap);
 
@@ -109,6 +110,12 @@ public class Main extends Application {
         renderer.setField(field);
         renderer.doDraw();
 
+        FieldDriver driver = new FieldDriver();
+        driver.setFieldRenderer(renderer);
+        driver.setField(field);
+        driver.start();
+
+        field.launchBall();
     }
 
     void drawMandelbrot(GraphicsContext gc, int width, int height) {

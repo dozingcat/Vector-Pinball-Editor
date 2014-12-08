@@ -17,4 +17,8 @@ public interface IFieldRenderer {
 	public int getWidth();
 
 	public int getHeight();
+
+    public void setDebugMessage(String fpsDebugInfo);
+
+    public boolean canDraw();
 }

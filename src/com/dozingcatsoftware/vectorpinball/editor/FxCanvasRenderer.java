@@ -1,5 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.editor;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
@@ -16,7 +17,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private GraphicsContext context;
     private Field field;
 
-    private double scale = 20;
+    private double scale = 30;
     private double xOffset = -2;
     private double yOffset = -2;
 
@@ -66,8 +67,22 @@ public class FxCanvasRenderer implements IFieldRenderer {
     }
 
     @Override public void doDraw() {
-        for (FieldElement elem : field.getFieldElements()) {
-            elem.draw(this);
+        if (Platform.isFxApplicationThread()) {
+            draw();
+        }
+        else {
+            Platform.runLater(this::draw);
+        }
+    }
+
+    void draw() {
+        synchronized(field) {
+            context.setFill(javafx.scene.paint.Color.BLACK);
+            context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            for (FieldElement elem : field.getFieldElements()) {
+                elem.draw(this);
+            }
+            field.drawBalls(this);
         }
     }
 
@@ -79,4 +94,11 @@ public class FxCanvasRenderer implements IFieldRenderer {
         return (int)canvas.getHeight();
     }
 
+    @Override public boolean canDraw() {
+        return true;
+    }
+
+    @Override public void setDebugMessage(String debugInfo) {
+
+    }
 }
