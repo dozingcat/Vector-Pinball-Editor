@@ -55,13 +55,13 @@ public class FxCanvasRenderer implements IFieldRenderer {
 
     @Override public void fillCircle(float cx, float cy, float radius, Color color) {
         context.setFill(toFxPaint(color));
-        context.fillArc(worldToPixelX(cx - radius), worldToPixelY(cy - radius),
+        context.fillArc(worldToPixelX(cx - radius), worldToPixelY(cy + radius),
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
     }
 
     @Override public void frameCircle(float cx, float cy, float radius, Color color) {
         context.setStroke(toFxPaint(color));
-        context.strokeArc(worldToPixelX(cx - radius), worldToPixelY(cy - radius),
+        context.strokeArc(worldToPixelX(cx - radius), worldToPixelY(cy + radius),
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
     }
 
