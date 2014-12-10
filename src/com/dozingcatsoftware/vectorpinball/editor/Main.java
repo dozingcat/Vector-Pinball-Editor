@@ -42,6 +42,7 @@ public class Main extends Application {
     FxCanvasRenderer renderer;
     FieldDriver fieldDriver;
     EditorState editorState = EditorState.EDITING;
+    Map<String, Object> fieldMap = null;
 
     @Override public void start(Stage primaryStage) {
         /*
@@ -86,9 +87,14 @@ public class Main extends Application {
         HBox fieldControls = new HBox(10);
         fieldControls.setPrefHeight(60);
         fieldControls.setBackground(new Background(new BackgroundFill(Color.GREEN, null, null)));
+
         Button launchBallButton = new Button("Launch Ball");
         launchBallButton.setOnAction((event) -> launchSingleBall());
         fieldControls.getChildren().add(launchBallButton);
+
+        Button endGameButton = new Button("Stop Game");
+        endGameButton.setOnAction((event) -> stopGame());
+        fieldControls.getChildren().add(endGameButton);
 
 
         fieldScroller = new ScrollPane();
@@ -107,6 +113,7 @@ public class Main extends Application {
         primaryStage.show();
 
         loadBuiltInLevel(3);
+
     }
 
     void createCanvas(int width, int height) {
@@ -119,8 +126,11 @@ public class Main extends Application {
     void loadBuiltInLevel(int level) {
         System.out.println("Reading table");
         JarFileFieldReader fieldReader = new JarFileFieldReader();
+        fieldMap = fieldReader.layoutMapForLevel(level);
+        displayForEditing();
+    }
 
-        Map<String, Object> fieldMap = fieldReader.layoutMapForLevel(level);
+    void displayForEditing() {
         field = new Field();
         field.resetForLevel(fieldMap);
 
@@ -128,9 +138,11 @@ public class Main extends Application {
         renderer.setCanvas(fieldCanvas);
         renderer.setField(field);
         renderer.doDraw();
+        editorState = EditorState.EDITING;
     }
 
     void launchSingleBall() {
+        System.out.println("aaa");
         if (fieldDriver==null) {
             fieldDriver = new FieldDriver();
             fieldDriver.setFieldRenderer(renderer);
@@ -140,6 +152,16 @@ public class Main extends Application {
         field.getDelegate().gameStarted(field);
         field.launchBall();
         editorState = EditorState.SAMPLE_BALL;
+
+        // Start polling every second to detect lost ball?
+    }
+
+    void stopGame() {
+        if (fieldDriver != null) {
+            fieldDriver.stop();
+        }
+        fieldDriver = null;
+        displayForEditing();
     }
 
     void handleCanvasMousePressed(MouseEvent event) {
