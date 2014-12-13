@@ -3,12 +3,14 @@ package com.dozingcatsoftware.vectorpinball.elements;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * FieldElement subclass which represents a series of wall segments. The segments are defined in the "positions"
@@ -56,4 +58,21 @@ public class WallPathElement extends FieldElement {
 			renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(DEFAULT_WALL_COLOR));
 		}
 	}
+
+    @Override List<Point> getSamplePoints() {
+        float[] first = this.lineSegments[0];
+        float[] last = this.lineSegments[this.lineSegments.length-1];
+        return Arrays.asList(Point.fromXY(first[0], first[1]), Point.fromXY(last[2], last[3]));
+    }
+
+    @Override boolean isPointWithinDistance(Point point, double distance) {
+        for (float[] segment : this.lineSegments) {
+            Point start = Point.fromXY(segment[0], segment[1]);
+            Point end = Point.fromXY(segment[2], segment[3]);
+            if (point.distanceToLineSegment(start, end) <= distance) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

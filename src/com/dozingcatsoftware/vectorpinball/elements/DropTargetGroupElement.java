@@ -4,6 +4,7 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.TAU;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * This FieldElement subclass represents a set of drop targets, which are segments that disappear when hit. When all
@@ -153,4 +155,23 @@ public class DropTargetGroupElement extends FieldElement {
 			}
 		}
 	}
+
+    @Override List<Point> getSamplePoints() {
+        float[] firstSegment = positions[0];
+        float[] lastSegment = positions[positions.length-1];
+        return Arrays.asList(
+                Point.fromXY(firstSegment[0], firstSegment[1]),
+                Point.fromXY(lastSegment[2], lastSegment[3])
+        );
+    }
+
+    @Override boolean isPointWithinDistance(Point point, double distance) {
+        float[] firstSegment = positions[0];
+        float[] lastSegment = positions[positions.length-1];
+        double actualDist = point.distanceToLineSegment(
+                Point.fromXY(firstSegment[0], firstSegment[1]),
+                Point.fromXY(lastSegment[2], lastSegment[3])
+        );
+        return actualDist <= distance;
+    }
 }

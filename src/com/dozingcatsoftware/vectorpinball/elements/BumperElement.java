@@ -2,6 +2,7 @@ package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /** This FieldElement subclass represents a bumper that applies an impulse to a ball when it hits. The impulse magnitude is controlled
  * by the "kick" parameter in the configuration map.
@@ -76,4 +78,12 @@ public class BumperElement extends FieldElement {
 		float py = pegBody.getPosition().y;
 		renderer.fillCircle(px, py, radius, currentColor(DEFAULT_COLOR));
 	}
+
+    @Override List<Point> getSamplePoints() {
+        return Arrays.asList(Point.fromXY(cx, cy));
+    }
+
+    @Override boolean isPointWithinDistance(Point point, double distance) {
+        return point.distanceTo(Point.fromXY(cx, cy)) <= this.radius + distance;
+    }
 }

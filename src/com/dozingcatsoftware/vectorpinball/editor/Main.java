@@ -142,7 +142,6 @@ public class Main extends Application {
     }
 
     void launchSingleBall() {
-        System.out.println("aaa");
         if (fieldDriver==null) {
             fieldDriver = new FieldDriver();
             fieldDriver.setFieldRenderer(renderer);

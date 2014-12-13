@@ -2,6 +2,7 @@ package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +10,10 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * This FieldElement subclass is used to identify areas on the table that should cause custom behavior
@@ -23,6 +26,7 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  */
 
 public class SensorElement extends FieldElement {
+    static final Color EDITOR_OUTLINE_COLOR = Color.fromRGB(128, 128, 128);
 
 	float xmin, ymin, xmax, ymax;
 	boolean circular = false;
@@ -92,4 +96,29 @@ public class SensorElement extends FieldElement {
 	@Override public void draw(IFieldRenderer renderer) {
 		// no UI
 	}
+
+	@Override public void drawForEditor(IFieldRenderer renderer) {
+	    // Show active area for editor.
+	    if (circular) {
+	        renderer.frameCircle(cx, cy, (float)Math.sqrt(radiusSquared), EDITOR_OUTLINE_COLOR);
+	    }
+	    else {
+            renderer.drawLine(xmin, ymin, xmax, ymin, EDITOR_OUTLINE_COLOR);
+            renderer.drawLine(xmax, ymin, xmax, ymax, EDITOR_OUTLINE_COLOR);
+            renderer.drawLine(xmax, ymax, xmin, ymax, EDITOR_OUTLINE_COLOR);
+            renderer.drawLine(xmin, ymax, xmin, ymax, EDITOR_OUTLINE_COLOR);
+	    }
+	}
+
+	@Override public List<Point> getSamplePoints() {
+	    return Arrays.asList(Point.fromXY((xmin+xmax)/2, (ymin+ymax)/2));
+	}
+
+    @Override boolean isPointWithinDistance(Point point, double distance) {
+        // Always treat as rectangle.
+        double centerX = (xmin + xmax) / 2;
+        double centerY = (ymin + ymax) / 2;
+        double actualDist = Math.max(Math.abs(point.x-centerX), Math.abs(point.y-centerY));
+        return actualDist <= distance;
+    }
 }

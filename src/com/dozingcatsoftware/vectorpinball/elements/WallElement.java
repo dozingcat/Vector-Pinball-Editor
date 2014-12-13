@@ -2,6 +2,7 @@ package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * FieldElement subclass that represents a straight wall. Its position is specified by the "position" parameter
@@ -71,13 +73,11 @@ public class WallElement extends FieldElement {
 		}
 	}
 
-	@Override
-	public List<Body> getBodies() {
+	@Override public List<Body> getBodies() {
 		return bodySet;
 	}
 
-	@Override
-	public boolean shouldCallTick() {
+	@Override public boolean shouldCallTick() {
 		// tick() only needs to be called if this wall provides a kick which makes it flash
 		return (this.kick > 0.01f);
 	}
@@ -104,8 +104,7 @@ public class WallElement extends FieldElement {
 	}
 
 
-	@Override
-	public void handleCollision(Body ball, Body bodyHit, Field field) {
+	@Override public void handleCollision(Body ball, Body bodyHit, Field field) {
 		if (retractWhenHit) {
 			this.setRetracted(true);
 		}
@@ -122,9 +121,16 @@ public class WallElement extends FieldElement {
 		}
 	}
 
-	@Override
-	public void draw(IFieldRenderer renderer) {
+	@Override public void draw(IFieldRenderer renderer) {
 		if (isRetracted()) return;
 		renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
 	}
+
+    @Override List<Point> getSamplePoints() {
+        return Arrays.asList(Point.fromXY(x1, y1), Point.fromXY(x2, y2));
+    }
+
+    @Override boolean isPointWithinDistance(Point point, double distance) {
+        return point.distanceToLineSegment(Point.fromXY(x1, y1), Point.fromXY(x2, y2)) <= distance;
+    }
 }

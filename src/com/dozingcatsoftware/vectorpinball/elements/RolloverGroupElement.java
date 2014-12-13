@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * This class represents a collection of rollover elements, such as the rollovers in the top lanes. They are activated
@@ -249,4 +250,23 @@ public class RolloverGroupElement extends FieldElement {
 		}
 
 	}
+
+    @Override List<Point> getSamplePoints() {
+        List<Point> points = new ArrayList<Point>();
+        for (int i=0; i<rollovers.size(); i++) {
+            Rollover r = rollovers.get(i);
+            points.add(Point.fromXY(r.cx, r.cy));
+        }
+        return points;
+    }
+
+    @Override boolean isPointWithinDistance(Point point, double distance) {
+        for (int i=0; i<rollovers.size(); i++) {
+            Rollover r = rollovers.get(i);
+            if (point.distanceTo(Point.fromXY(r.cx, r.cy)) <= r.radius + distance) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

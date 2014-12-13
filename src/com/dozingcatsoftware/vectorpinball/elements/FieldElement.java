@@ -150,6 +150,14 @@ public abstract class FieldElement {
 	 */
 	public abstract void draw(IFieldRenderer renderer);
 
+	/**
+	 * Draws the element in the context of a field editor. By default this just calls draw(), but some
+	 * elements may want to do something else, for example if they're normally invisible.
+	 */
+	public void drawForEditor(IFieldRenderer renderer) {
+	    draw(renderer);
+	}
+
 	/** Called when a ball collides with a Body in this element. The default implementation does nothing (allowing objects to
 	 * bounce off each other normally), subclasses can override (e.g. to apply extra force)
 	 */
@@ -233,18 +241,12 @@ public abstract class FieldElement {
 	}
 
 	/**
-	 * Returns the point at which this element starts, for example the first endpoint of a wall.
-	 * Default implementation throws UnsupportedOperationException, subclasses should override.
+	 * Returns representative points for this element, for example to highlight when selected in an editor.
 	 */
-	public Point getStartPoint() {
-	    throw new UnsupportedOperationException();
-	}
+	abstract List<Point> getSamplePoints();
 
-    /**
-     * Returns the point at which this element ends, for example the second endpoint of a wall.
-     * Default implementation throws UnsupportedOperationException, subclasses should override.
-     */
-	public Point getEndPoint() {
-	    throw new UnsupportedOperationException();
-	}
+	/**
+	 * Determines whether a point is sufficiently close to any part of this element.
+	 */
+	abstract boolean isPointWithinDistance(Point point, double distance);
 }
