@@ -2,6 +2,8 @@ package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -133,7 +135,7 @@ public abstract class FieldElement {
 	 * Throws DependencyNotAvailableException if the element can't be initialized because it's
 	 * dependent on other uninitialized elements.
 	 */
-	public abstract void finishCreateElement(Map params, FieldElementCollection collection)
+	public abstract void finishCreateElement(Map<String, Object> params, FieldElementCollection collection)
 	        throws DependencyNotAvailableException;
 
 	/**
@@ -149,14 +151,6 @@ public abstract class FieldElement {
 	/** Must be overridden by subclasses to draw the element, using IFieldRenderer methods.
 	 */
 	public abstract void draw(IFieldRenderer renderer);
-
-	/**
-	 * Draws the element in the context of a field editor. By default this just calls draw(), but some
-	 * elements may want to do something else, for example if they're normally invisible.
-	 */
-	public void drawForEditor(IFieldRenderer renderer) {
-	    draw(renderer);
-	}
 
 	/** Called when a ball collides with a Body in this element. The default implementation does nothing (allowing objects to
 	 * bounce off each other normally), subclasses can override (e.g. to apply extra force)
@@ -240,13 +234,39 @@ public abstract class FieldElement {
 	    return (flashCounter > 0) ? baseColor.inverted() : baseColor;
 	}
 
-	/**
-	 * Returns representative points for this element, for example to highlight when selected in an editor.
-	 */
-	abstract List<Point> getSamplePoints();
+	// Support for editors.
+    /**
+     * Draws the element in the context of a field editor. By default this just calls draw(), but some
+     * elements may want to do something else, for example if they're normally invisible.
+     */
+    public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+        draw(renderer);
+    }
 
 	/**
 	 * Determines whether a point is sufficiently close to any part of this element.
 	 */
 	abstract boolean isPointWithinDistance(Point point, double distance);
+
+	abstract void startDrag(Point point);
+
+	abstract void handleDrag(Point point);
+
+	abstract Map<String, Object> getPropertyMap();
+
+	// Returns an editable map with common properties. Subclasses can add their own properties
+	// when implementing getPropertyMap().
+	protected Map<String, Object> mapWithDefaultProperties() {
+	    Map<String, Object> props = new HashMap<String, Object>();
+	    if (this.elementID != null) {
+	        props.put("id", this.elementID);
+	    }
+	    if (this.score != 0) {
+	        props.put("score", this.score);
+	    }
+	    if (this.initialColor != null) {
+	        props.put("color", Arrays.asList(initialColor.red, initialColor.green, initialColor.blue));
+	    }
+	    return props;
+	}
 }

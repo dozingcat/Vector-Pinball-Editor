@@ -4,7 +4,6 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.TAU;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +50,8 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class DropTargetGroupElement extends FieldElement {
 
+    public static final String WALL_START_PROPERTY = "wallStart";
+
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
 	// store all bodies and positions, use Body's active flag to determine which targets have been hit
@@ -69,7 +70,7 @@ public class DropTargetGroupElement extends FieldElement {
 	        }
 	    }
 	    else {
-	        float[] wallStart = getFloatArrayParameterValueForKey("wallStart");
+	        float[] wallStart = getFloatArrayParameterValueForKey(WALL_START_PROPERTY);
 	        float[] wallEnd = getFloatArrayParameterValueForKey("wallEnd");
 	        float gapFromWall = getFloatParameterValueForKey("gapFromWall");
 	        float startDistanceAlongWall = getFloatParameterValueForKey("startDistanceAlongWall");
@@ -156,13 +157,11 @@ public class DropTargetGroupElement extends FieldElement {
 		}
 	}
 
-    @Override List<Point> getSamplePoints() {
-        float[] firstSegment = positions[0];
-        float[] lastSegment = positions[positions.length-1];
-        return Arrays.asList(
-                Point.fromXY(firstSegment[0], firstSegment[1]),
-                Point.fromXY(lastSegment[2], lastSegment[3])
-        );
+	   // Editor methods.
+    Point dragOffset;
+
+    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+        draw(renderer);
     }
 
     @Override boolean isPointWithinDistance(Point point, double distance) {
@@ -173,5 +172,20 @@ public class DropTargetGroupElement extends FieldElement {
                 Point.fromXY(lastSegment[2], lastSegment[3])
         );
         return actualDist <= distance;
+    }
+
+    @Override void startDrag(Point point) {
+        dragOffset = Point.fromXY(point.x - positions[0][0], point.y - positions[0][1]);
+    }
+
+    @Override void handleDrag(Point point) {
+        // TODO: move every target.
+        float dx = (float)(point.x - dragOffset.x);
+        float dy = (float)(point.y - dragOffset.y);
+    }
+
+    @Override public Map<String, Object> getPropertyMap() {
+        Map<String, Object> properties = mapWithDefaultProperties();
+        return properties;
     }
 }

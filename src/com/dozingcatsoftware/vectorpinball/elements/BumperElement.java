@@ -21,6 +21,10 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class BumperElement extends FieldElement {
 
+    public static final String POSITION_PROPERTY = "position";
+    public static final String RADIUS_PROPERTY = "radius";
+    public static final String KICK_PROPERTY = "kick";
+
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
 
 	Body pegBody;
@@ -30,12 +34,12 @@ public class BumperElement extends FieldElement {
 	float cx, cy;
 	float kick;
 
-	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		List pos = (List)params.get("position");
-		this.radius = asFloat(params.get("radius"));
+	@Override public void finishCreateElement(Map<String, Object> params, FieldElementCollection collection) {
+		List pos = (List)params.get(POSITION_PROPERTY);
+		this.radius = asFloat(params.get(RADIUS_PROPERTY));
 		this.cx = asFloat(pos.get(0));
 		this.cy = asFloat(pos.get(1));
-		this.kick = asFloat(params.get("kick"));
+		this.kick = asFloat(params.get(KICK_PROPERTY));
 	}
 
 	@Override public void createBodies(World world) {
@@ -79,11 +83,41 @@ public class BumperElement extends FieldElement {
 		renderer.fillCircle(px, py, radius, currentColor(DEFAULT_COLOR));
 	}
 
-    @Override List<Point> getSamplePoints() {
-        return Arrays.asList(Point.fromXY(cx, cy));
+	// Editor methods.
+	Point dragOffset;
+
+    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+        Color color = currentColor(DEFAULT_COLOR);
+        renderer.fillCircle(cx, cy, radius, currentColor(DEFAULT_COLOR));
+        if (isSelected) {
+            renderer.drawLine(cx - radius, cy - radius, cx + radius, cy - radius, color);
+            renderer.drawLine(cx + radius, cy - radius, cx + radius, cy + radius, color);
+            renderer.drawLine(cx + radius, cy + radius, cx - radius, cy + radius, color);
+            renderer.drawLine(cx - radius, cy + radius, cx - radius, cy - radius, color);
+        }
     }
 
     @Override boolean isPointWithinDistance(Point point, double distance) {
         return point.distanceTo(Point.fromXY(cx, cy)) <= this.radius + distance;
+    }
+
+    @Override void startDrag(Point point) {
+        dragOffset = Point.fromXY(point.x - cx, point.y - cy);
+    }
+
+    @Override void handleDrag(Point point) {
+        // TODO: handle resizing as well as moving.
+        cx = (float)(point.x - dragOffset.x);
+        cy = (float)(point.y - dragOffset.y);
+    }
+
+    @Override public Map<String, Object> getPropertyMap() {
+        Map<String, Object> properties = mapWithDefaultProperties();
+        properties.put(RADIUS_PROPERTY, this.radius);
+        properties.put(POSITION_PROPERTY, Arrays.asList(this.cx, this.cy));
+        if (this.kick != 0) {
+            properties.put(KICK_PROPERTY, this.kick);
+        }
+        return properties;
     }
 }
