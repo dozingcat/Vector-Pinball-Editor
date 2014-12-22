@@ -21,16 +21,24 @@ public class Point {
       return fromXY(xyList.get(0).doubleValue(), xyList.get(1).doubleValue());
   }
 
-  public double distanceTo(Point other) {
-      double xdiff = this.x - other.x;
-      double ydiff = this.y - other.y;
+  public double distanceTo(double x, double y) {
+      double xdiff = this.x - x;
+      double ydiff = this.y - y;
       return Math.sqrt(xdiff*xdiff + ydiff*ydiff);
   }
 
-  public double squaredDistanceTo(Point other) {
-      double xdiff = this.x - other.x;
-      double ydiff = this.y - other.y;
+  public double distanceTo(Point other) {
+      return distanceTo(other.x, other.y);
+  }
+
+  public double squaredDistanceTo(double x, double y) {
+      double xdiff = this.x - x;
+      double ydiff = this.y - y;
       return xdiff*xdiff + ydiff*ydiff;
+  }
+
+  public double squaredDistanceTo(Point other) {
+      return distanceTo(other.x, other.y);
   }
 
   public double distanceToLine(Point p1, Point p2) {

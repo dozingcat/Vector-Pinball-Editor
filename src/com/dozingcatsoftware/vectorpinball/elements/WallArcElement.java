@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Point;
 
@@ -34,40 +35,56 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class WallArcElement extends FieldElement {
 
+    public static final String CENTER_PROPERTY = "center";
+    public static final String RADIUS_PROPERTY = "radius";
+    public static final String X_RADIUS_PROPERTY = "xradius";
+    public static final String Y_RADIUS_PROPERTY = "yradius";
+    public static final String NUM_SEGMENTS_PROPERTY = "segments";
+    public static final String MIN_ANGLE_PROPERTY = "minangle";
+    public static final String MAX_ANGLE_PROPERTY = "maxangle";
+
 	public List wallBodies = new ArrayList();
 	float[][] lineSegments;
 
+	float centerX, centerY;
+	float xRadius, yRadius;
+	int numSegments;
+	float minAngle, maxAngle;
+
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		List centerPos = (List)params.get("center");
-		float cx = asFloat(centerPos.get(0));
-		float cy = asFloat(centerPos.get(1));
+		List centerPos = (List)params.get(CENTER_PROPERTY);
+		centerX = asFloat(centerPos.get(0));
+		centerY = asFloat(centerPos.get(1));
 
 		// can specify "radius" for circle, or "xradius" and "yradius" for ellipse
-		float xradius, yradius;
-		if (params.containsKey("radius")) {
-			xradius = yradius = asFloat(params.get("radius"));
+		if (params.containsKey(RADIUS_PROPERTY)) {
+			xRadius = yRadius = asFloat(params.get(RADIUS_PROPERTY));
 		}
 		else {
-			xradius = asFloat(params.get("xradius"));
-			yradius = asFloat(params.get("yradius"));
+			xRadius = asFloat(params.get(X_RADIUS_PROPERTY));
+			yRadius = asFloat(params.get(Y_RADIUS_PROPERTY));
 		}
 
-		Number segments = (Number)params.get("segments");
-		int numsegments = (segments!=null) ? segments.intValue() : 5;
-		float minangle = toRadians(asFloat(params.get("minangle")));
-		float maxangle = toRadians(asFloat(params.get("maxangle")));
-		float diff = maxangle - minangle;
-		// create numsegments line segments to approximate circular arc
-		lineSegments = new float[numsegments][];
-		for(int i=0; i<numsegments; i++) {
-			float angle1 = minangle + i * diff / numsegments;
-			float angle2 = minangle + (i+1) * diff / numsegments;
-			float x1 = cx + xradius * (float)Math.cos(angle1);
-			float y1 = cy + yradius * (float)Math.sin(angle1);
-			float x2 = cx + xradius * (float)Math.cos(angle2);
-			float y2 = cy + yradius * (float)Math.sin(angle2);
-			lineSegments[i] = (new float[] {x1, y1, x2, y2});
-		}
+		Number segments = (Number)params.get(NUM_SEGMENTS_PROPERTY);
+		numSegments = (segments!=null) ? segments.intValue() : 5;
+		minAngle = toRadians(asFloat(params.get(MIN_ANGLE_PROPERTY)));
+		maxAngle = toRadians(asFloat(params.get(MAX_ANGLE_PROPERTY)));
+		buildSegments();
+	}
+
+	void buildSegments() {
+        float diff = maxAngle - minAngle;
+        // Create line segments to approximate circular arc.
+        lineSegments = new float[numSegments][];
+        for(int i=0; i<numSegments; i++) {
+            float angle1 = minAngle + i * diff / numSegments;
+            float angle2 = minAngle + (i+1) * diff / numSegments;
+            float x1 = centerX + xRadius * (float)Math.cos(angle1);
+            float y1 = centerY + yRadius * (float)Math.sin(angle1);
+            float x2 = centerX + xRadius * (float)Math.cos(angle2);
+            float y2 = centerY + yRadius * (float)Math.sin(angle2);
+            lineSegments[i] = (new float[] {x1, y1, x2, y2});
+        }
 	}
 
 	@Override public void createBodies(World world) {
@@ -82,18 +99,24 @@ public class WallArcElement extends FieldElement {
 	}
 
 	@Override public void draw(IFieldRenderer renderer) {
+	    Color color = currentColor(DEFAULT_WALL_COLOR);
 		for (float[] segment : this.lineSegments) {
-			renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(DEFAULT_WALL_COLOR));
+			renderer.drawLine(segment[0], segment[1], segment[2], segment[3], color);
 		}
 	}
 
-    @Override List<Point> getSamplePoints() {
-        float[] first = this.lineSegments[0];
-        float[] last = this.lineSegments[this.lineSegments.length-1];
-        return Arrays.asList(Point.fromXY(first[0], first[1]), Point.fromXY(last[2], last[3]));
-    }
+	// Editor support.
+	@Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+	    draw(renderer);
+	    if (isSelected) {
+	        Color color = currentColor(DEFAULT_WALL_COLOR);
+	        renderer.fillCircle(lineSegments[0][0], lineSegments[0][1], 0.25f, color);
+	        float[] lastSegment = lineSegments[lineSegments.length-1];
+	        renderer.fillCircle(lastSegment[2], lastSegment[3], 0.25f, color);
+	    }
+	}
 
-    @Override boolean isPointWithinDistance(Point point, double distance) {
+    @Override public boolean isPointWithinDistance(Point point, double distance) {
         for (float[] segment : this.lineSegments) {
             Point start = Point.fromXY(segment[0], segment[1]);
             Point end = Point.fromXY(segment[2], segment[3]);
@@ -102,5 +125,22 @@ public class WallArcElement extends FieldElement {
             }
         }
         return false;
+    }
+    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+        centerX += deltaFromPrevious.x;
+        centerY += deltaFromPrevious.y;
+        buildSegments();
+    }
+
+    @Override public Map<String, Object> getPropertyMap() {
+        Map<String, Object> properties = mapWithDefaultProperties();
+        properties.put(CENTER_PROPERTY, Arrays.asList(centerX, centerY));
+        // Always use separate x/y radius values.
+        properties.put(X_RADIUS_PROPERTY, xRadius);
+        properties.put(Y_RADIUS_PROPERTY, yRadius);
+        properties.put(NUM_SEGMENTS_PROPERTY, numSegments);
+        properties.put(MIN_ANGLE_PROPERTY, minAngle);
+        properties.put(MAX_ANGLE_PROPERTY, maxAngle);
+        return properties;
     }
 }

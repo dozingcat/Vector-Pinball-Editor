@@ -4,6 +4,7 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.TAU;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -50,18 +51,36 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class DropTargetGroupElement extends FieldElement {
 
+    public static final String POSITIONS_PROPERTY = "positions";
     public static final String WALL_START_PROPERTY = "wallStart";
+    public static final String WALL_END_PROPERTY = "wallEnd";
+    public static final String GAP_FROM_WALL_PROPERTY = "gapFromWall";
+    public static final String START_DISTANCE_ALONG_WALL_PROPERTY = "startDistanceAlongWall";
+    public static final String TARGET_WIDTH_PROPERTY = "targetWidth";
+    public static final String GAP_BETWEEN_TARGETS_PROPERTY = "gapBetweenTargets";
+    public static final String NUM_TARGETS_PROPERTY = "numTargets";
 
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
 	// store all bodies and positions, use Body's active flag to determine which targets have been hit
 	List<Body> allBodies = new ArrayList<Body>();
+
+	boolean usesDirectPositions;
 	float[][] positions;
+	// The following are used if positions are not given directly.
+    float[] wallStart;
+    float[] wallEnd;
+    float gapFromWall;
+    float startDistanceAlongWall;
+    float targetWidth;
+    float gapBetweenTargets;
+    int numTargets;
 
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
 		// Individual targets can be specified in "positions" list.
-	    if (hasParameterKey("positions")) {
-	        List<List<Number>> positionList = (List) getRawParameterValueForKey("positions");
+	    usesDirectPositions = hasParameterKey(POSITIONS_PROPERTY);
+	    if (usesDirectPositions) {
+	        List<List<Number>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
 	        positions = new float[positionList.size()][];
 	        for (int i = 0; i < positionList.size(); i++) {
 	            List<Number> coords = positionList.get(i);
@@ -70,13 +89,13 @@ public class DropTargetGroupElement extends FieldElement {
 	        }
 	    }
 	    else {
-	        float[] wallStart = getFloatArrayParameterValueForKey(WALL_START_PROPERTY);
-	        float[] wallEnd = getFloatArrayParameterValueForKey("wallEnd");
-	        float gapFromWall = getFloatParameterValueForKey("gapFromWall");
-	        float startDistanceAlongWall = getFloatParameterValueForKey("startDistanceAlongWall");
-	        float targetWidth = getFloatParameterValueForKey("targetWidth");
-	        float gapBetweenTargets = getFloatParameterValueForKey("gapBetweenTargets");
-	        int numTargets = getIntParameterValueForKey("numTargets");
+	        wallStart = getFloatArrayParameterValueForKey(WALL_START_PROPERTY);
+	        wallEnd = getFloatArrayParameterValueForKey(WALL_END_PROPERTY);
+	        gapFromWall = getFloatParameterValueForKey(GAP_FROM_WALL_PROPERTY);
+	        startDistanceAlongWall = getFloatParameterValueForKey(START_DISTANCE_ALONG_WALL_PROPERTY);
+	        targetWidth = getFloatParameterValueForKey(TARGET_WIDTH_PROPERTY);
+	        gapBetweenTargets = getFloatParameterValueForKey(GAP_BETWEEN_TARGETS_PROPERTY);
+	        numTargets = getIntParameterValueForKey(NUM_TARGETS_PROPERTY);
 
 	        positions = new float[numTargets][];
 	        double wallAngle = Math.atan2(wallEnd[1] - wallStart[1], wallEnd[0] - wallStart[0]);
@@ -158,13 +177,12 @@ public class DropTargetGroupElement extends FieldElement {
 	}
 
 	   // Editor methods.
-    Point dragOffset;
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         draw(renderer);
     }
 
-    @Override boolean isPointWithinDistance(Point point, double distance) {
+    @Override public boolean isPointWithinDistance(Point point, double distance) {
         float[] firstSegment = positions[0];
         float[] lastSegment = positions[positions.length-1];
         double actualDist = point.distanceToLineSegment(
@@ -174,18 +192,37 @@ public class DropTargetGroupElement extends FieldElement {
         return actualDist <= distance;
     }
 
-    @Override void startDrag(Point point) {
-        dragOffset = Point.fromXY(point.x - positions[0][0], point.y - positions[0][1]);
-    }
-
-    @Override void handleDrag(Point point) {
-        // TODO: move every target.
-        float dx = (float)(point.x - dragOffset.x);
-        float dy = (float)(point.y - dragOffset.y);
+    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+        for (float[] pos : positions) {
+            pos[0] += deltaFromPrevious.x;
+            pos[1] += deltaFromPrevious.y;
+        }
+        if (wallStart!=null && wallEnd!=null) {
+            wallStart[0] += deltaFromPrevious.x;
+            wallStart[1] += deltaFromPrevious.y;
+            wallEnd[0] += deltaFromPrevious.x;
+            wallEnd[1] += deltaFromPrevious.y;
+        }
     }
 
     @Override public Map<String, Object> getPropertyMap() {
         Map<String, Object> properties = mapWithDefaultProperties();
+        if (usesDirectPositions) {
+            List<List<Number>> posList = new ArrayList<List<Number>>();
+            for (float[] pos : positions) {
+                posList.add(Arrays.asList(pos[0], pos[1]));
+            }
+            properties.put(POSITIONS_PROPERTY, posList);
+        }
+        else {
+            properties.put(WALL_START_PROPERTY, Arrays.asList(wallStart[0], wallStart[1]));
+            properties.put(WALL_END_PROPERTY, Arrays.asList(wallEnd[0], wallEnd[1]));
+            properties.put(GAP_FROM_WALL_PROPERTY, gapFromWall);
+            properties.put(START_DISTANCE_ALONG_WALL_PROPERTY, startDistanceAlongWall);
+            properties.put(TARGET_WIDTH_PROPERTY, targetWidth);
+            properties.put(GAP_BETWEEN_TARGETS_PROPERTY, gapBetweenTargets);
+            properties.put(NUM_TARGETS_PROPERTY, numTargets);
+        }
         return properties;
     }
 }

@@ -2,7 +2,6 @@ package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -246,13 +245,25 @@ public abstract class FieldElement {
 	/**
 	 * Determines whether a point is sufficiently close to any part of this element.
 	 */
-	abstract boolean isPointWithinDistance(Point point, double distance);
+	abstract public boolean isPointWithinDistance(Point point, double distance);
 
-	abstract void startDrag(Point point);
+	/**
+	 * Called when a drag operation begins. Will be followed by any number of handleDrag calls.
+	 * This method can be used to store data needed to update correctly for drags, for example
+	 * which part of the element the drag started at.
+	 */
+	public void startDrag(Point point) {}
 
-	abstract void handleDrag(Point point);
+	/**
+	 * Called when a drag is in progress. Should update the state of the element so that
+	 * drawForEditor will correctly show the new state, and getPropertyMap will return
+	 * updated properties. May or may not modify the Box2D Body objects used by the element;
+	 * no simulation will be run while a drag is in progress, so Body objects only need
+	 * to be updated if that's where the state is stored.
+	 */
+	abstract public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious);
 
-	abstract Map<String, Object> getPropertyMap();
+	abstract public Map<String, Object> getPropertyMap();
 
 	// Returns an editable map with common properties. Subclasses can add their own properties
 	// when implementing getPropertyMap().
@@ -265,7 +276,7 @@ public abstract class FieldElement {
 	        props.put("score", this.score);
 	    }
 	    if (this.initialColor != null) {
-	        props.put("color", Arrays.asList(initialColor.red, initialColor.green, initialColor.blue));
+	        props.put("color", initialColor.toList());
 	    }
 	    return props;
 	}

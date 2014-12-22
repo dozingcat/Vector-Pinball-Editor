@@ -1,5 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,5 +40,9 @@ public class Color {
                 (int) (this.red + (other.red - this.red) * fraction),
                 (int) (this.green + (other.green - this.green) * fraction),
                 (int) (this.blue + (other.blue - this.blue) * fraction));
+    }
+
+    public List<Number> toList() {
+        return Arrays.asList(red, green, blue);
     }
 }

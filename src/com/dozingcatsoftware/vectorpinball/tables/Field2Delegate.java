@@ -22,7 +22,6 @@ public class Field2Delegate extends BaseFieldDelegate {
 		double startAngle;
 		double currentAngle;
 		double angleIncrement;
-		Vector2 tempVector = new Vector2();
 
 		public RotatingGroup(String[] ids, double cx, double cy, double radius, double startAngle, double speed) {
 			this.elementIDs = ids;
@@ -56,8 +55,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 				Body body = element.getBodies().get(0);
 				double x = centerX + radius*Math.cos(angle);
 				double y = centerY + radius*Math.sin(angle);
-				tempVector.set((float)x, (float)y);
-				body.setTransform(tempVector, 0);
+				body.setTransform((float)x, (float)y, body.getAngle());
 			}
 		}
 

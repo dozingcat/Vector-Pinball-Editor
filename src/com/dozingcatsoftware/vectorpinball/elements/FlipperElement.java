@@ -37,6 +37,13 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class FlipperElement extends FieldElement {
 
+    public static final String POSITION_PROPERTY = "position";
+    public static final String LENGTH_PROPERTY = "length";
+    public static final String MIN_ANGLE_PROPERTY = "minangle";
+    public static final String MAX_ANGLE_PROPERTY = "maxangle";
+    public static final String UP_SPEED_PROPERTY = "upspeed";
+    public static final String DOWN_SPEED_PROPERTY = "downspeed";
+
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
 	Body flipperBody;
@@ -51,15 +58,15 @@ public class FlipperElement extends FieldElement {
 	float cx, cy;
 
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		List pos = (List)params.get("position");
+		List pos = (List)params.get(POSITION_PROPERTY);
 
 		this.cx = asFloat(pos.get(0));
 		this.cy = asFloat(pos.get(1));
-		this.flipperLength = asFloat(params.get("length"));
-		this.minangle = toRadians(asFloat(params.get("minangle")));
-		this.maxangle = toRadians(asFloat(params.get("maxangle")));
-		this.upspeed = asFloat(params.get("upspeed"));
-		this.downspeed = asFloat(params.get("downspeed"));
+		this.flipperLength = asFloat(params.get(LENGTH_PROPERTY));
+		this.minangle = toRadians(asFloat(params.get(MIN_ANGLE_PROPERTY)));
+		this.maxangle = toRadians(asFloat(params.get(MAX_ANGLE_PROPERTY)));
+		this.upspeed = asFloat(params.get(UP_SPEED_PROPERTY));
+		this.downspeed = asFloat(params.get(DOWN_SPEED_PROPERTY));
 	}
 
 	@Override public void createBodies(World world) {
@@ -178,12 +185,9 @@ public class FlipperElement extends FieldElement {
 		renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_COLOR));
 	}
 
-    @Override List<Point> getSamplePoints() {
-        Vector2 position = anchorBody.getPosition();
-        return Arrays.asList(Point.fromXY(position.x, position.y), getEndPoint());
-    }
+	// Editor methods.
 
-    @Override boolean isPointWithinDistance(Point point, double distance) {
+    @Override public boolean isPointWithinDistance(Point point, double distance) {
         Vector2 position = anchorBody.getPosition();
         return point.distanceToLineSegment(Point.fromXY(position.x, position.y), getEndPoint()) <= distance;
     }
@@ -197,5 +201,35 @@ public class FlipperElement extends FieldElement {
         float x2 = position.x + flipperLength * (float)Math.cos(angle);
         float y2 = position.y + flipperLength * (float)Math.sin(angle);
         return Point.fromXY(x2, y2);
+    }
+
+    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+        draw(renderer);
+        if (isSelected) {
+            Color color = currentColor(DEFAULT_COLOR);
+            Vector2 start = anchorBody.getPosition();
+            renderer.fillCircle(start.x, start.y, 0.25f, color);
+            Point end = getEndPoint();
+            renderer.fillCircle((float)end.x, (float)end.y, 0.25f, color);
+        }
+    }
+
+
+    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+        Vector2 start = anchorBody.getPosition();
+        anchorBody.setTransform(
+                (float)(start.x+deltaFromPrevious.x), (float)(start.y+deltaFromPrevious.y), anchorBody.getAngle());
+    }
+
+    @Override public Map<String, Object> getPropertyMap() {
+        Map<String, Object> properties = mapWithDefaultProperties();
+        Vector2 start = anchorBody.getPosition();
+        properties.put(POSITION_PROPERTY, Arrays.asList(start.x, start.y));
+        properties.put(LENGTH_PROPERTY, flipperLength);
+        properties.put(MIN_ANGLE_PROPERTY, minangle);
+        properties.put(MAX_ANGLE_PROPERTY, maxangle);
+        properties.put(UP_SPEED_PROPERTY, upspeed);
+        properties.put(DOWN_SPEED_PROPERTY, downspeed);
+        return properties;
     }
 }

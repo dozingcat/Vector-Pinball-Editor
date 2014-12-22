@@ -26,20 +26,22 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
  */
 
 public class SensorElement extends FieldElement {
-    static final Color EDITOR_OUTLINE_COLOR = Color.fromRGB(128, 128, 128);
+    public static final String CENTER_PROPERTY = "center";
+    public static final String RADIUS_PROPERTY = "radius";
+    public static final String RECT_PROPERTY = "rect";
 
 	float xmin, ymin, xmax, ymax;
 	boolean circular = false;
 	float cx, cy; // center for circular areas
-	float radiusSquared;
+	float radius, radiusSquared;
 
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		if (params.containsKey("center") && params.containsKey("radius")) {
+		if (params.containsKey(CENTER_PROPERTY) && params.containsKey(RADIUS_PROPERTY)) {
 			this.circular = true;
-			List centerPos = (List)params.get("center");
+			List centerPos = (List)params.get(CENTER_PROPERTY);
 			this.cx = asFloat(centerPos.get(0));
 			this.cy = asFloat(centerPos.get(1));
-			float radius = asFloat(params.get("radius"));
+			this.radius = asFloat(params.get(RADIUS_PROPERTY));
 			this.radiusSquared = radius*radius;
 			// create bounding box to allow rejecting balls without making distance calculations
 			this.xmin = this.cx - radius/2;
@@ -48,7 +50,7 @@ public class SensorElement extends FieldElement {
 			this.ymax = this.cy + radius/2;
 		}
 		else {
-			List rectPos = (List)params.get("rect");
+			List rectPos = (List)params.get(RECT_PROPERTY);
 			this.xmin = asFloat(rectPos.get(0));
 			this.ymin = asFloat(rectPos.get(1));
 			this.xmax = asFloat(rectPos.get(2));
@@ -97,7 +99,10 @@ public class SensorElement extends FieldElement {
 		// no UI
 	}
 
-	@Override public void drawForEditor(IFieldRenderer renderer) {
+	// Editor support.
+	static final Color EDITOR_OUTLINE_COLOR = Color.fromRGB(128, 128, 128);
+
+	@Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
 	    // Show active area for editor.
 	    if (circular) {
 	        renderer.frameCircle(cx, cy, (float)Math.sqrt(radiusSquared), EDITOR_OUTLINE_COLOR);
@@ -108,17 +113,41 @@ public class SensorElement extends FieldElement {
             renderer.drawLine(xmax, ymax, xmin, ymax, EDITOR_OUTLINE_COLOR);
             renderer.drawLine(xmin, ymax, xmin, ymax, EDITOR_OUTLINE_COLOR);
 	    }
+	    if (isSelected) {
+	        // TODO: indicate selection
+	    }
 	}
 
-	@Override public List<Point> getSamplePoints() {
-	    return Arrays.asList(Point.fromXY((xmin+xmax)/2, (ymin+ymax)/2));
-	}
-
-    @Override boolean isPointWithinDistance(Point point, double distance) {
+    @Override public boolean isPointWithinDistance(Point point, double distance) {
         // Always treat as rectangle.
         double centerX = (xmin + xmax) / 2;
         double centerY = (ymin + ymax) / 2;
         double actualDist = Math.max(Math.abs(point.x-centerX), Math.abs(point.y-centerY));
         return actualDist <= distance;
+    }
+
+    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+        if (circular) {
+            cx += deltaFromPrevious.x;
+            cy += deltaFromPrevious.y;
+        }
+        else {
+            xmin += deltaFromPrevious.x;
+            ymin += deltaFromPrevious.y;
+            xmax += deltaFromPrevious.x;
+            ymax += deltaFromPrevious.y;
+        }
+    }
+
+    @Override public Map<String, Object> getPropertyMap() {
+        Map<String, Object> properties = mapWithDefaultProperties();
+        if (circular) {
+            properties.put(CENTER_PROPERTY, Arrays.asList(cx, cy));
+            properties.put(RADIUS_PROPERTY, radius);
+        }
+        else {
+            properties.put(RECT_PROPERTY, Arrays.asList(xmin, ymin, xmax, ymax));
+        }
+        return properties;
     }
 }

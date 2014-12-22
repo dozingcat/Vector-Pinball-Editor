@@ -84,7 +84,6 @@ public class BumperElement extends FieldElement {
 	}
 
 	// Editor methods.
-	Point dragOffset;
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         Color color = currentColor(DEFAULT_COLOR);
@@ -97,18 +96,14 @@ public class BumperElement extends FieldElement {
         }
     }
 
-    @Override boolean isPointWithinDistance(Point point, double distance) {
+    @Override public boolean isPointWithinDistance(Point point, double distance) {
         return point.distanceTo(Point.fromXY(cx, cy)) <= this.radius + distance;
     }
 
-    @Override void startDrag(Point point) {
-        dragOffset = Point.fromXY(point.x - cx, point.y - cy);
-    }
-
-    @Override void handleDrag(Point point) {
+    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
         // TODO: handle resizing as well as moving.
-        cx = (float)(point.x - dragOffset.x);
-        cy = (float)(point.y - dragOffset.y);
+        cx += deltaFromPrevious.x;
+        cy += deltaFromPrevious.y;
     }
 
     @Override public Map<String, Object> getPropertyMap() {

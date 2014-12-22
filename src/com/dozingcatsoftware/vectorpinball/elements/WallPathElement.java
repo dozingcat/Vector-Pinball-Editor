@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Point;
 
@@ -25,11 +26,13 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class WallPathElement extends FieldElement {
 
-	List wallBodies = new ArrayList();
+    public static final String POSITIONS_PROPERTY = "positions";
+
+	List<Body> wallBodies = new ArrayList<Body>();
 	float[][] lineSegments;
 
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		List positions = (List)params.get("positions");
+		List positions = (List)params.get(POSITIONS_PROPERTY);
 		// N positions produce N-1 line segments
 		lineSegments = new float[positions.size()-1][];
 		for(int i=0; i<lineSegments.length; i++) {
@@ -59,13 +62,18 @@ public class WallPathElement extends FieldElement {
 		}
 	}
 
-    @Override List<Point> getSamplePoints() {
-        float[] first = this.lineSegments[0];
-        float[] last = this.lineSegments[this.lineSegments.length-1];
-        return Arrays.asList(Point.fromXY(first[0], first[1]), Point.fromXY(last[2], last[3]));
+	// Editor support.
+    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+        draw(renderer);
+        if (isSelected) {
+            Color color = currentColor(DEFAULT_WALL_COLOR);
+            float[] lastSegment = this.lineSegments[this.lineSegments.length-1];
+            renderer.fillCircle(lineSegments[0][0], lineSegments[0][1], 0.25f, color);
+            renderer.fillCircle(lastSegment[2], lastSegment[3], 0.25f, color);
+        }
     }
 
-    @Override boolean isPointWithinDistance(Point point, double distance) {
+    @Override public boolean isPointWithinDistance(Point point, double distance) {
         for (float[] segment : this.lineSegments) {
             Point start = Point.fromXY(segment[0], segment[1]);
             Point end = Point.fromXY(segment[2], segment[3]);
@@ -74,5 +82,26 @@ public class WallPathElement extends FieldElement {
             }
         }
         return false;
+    }
+
+    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+        for (float[] segment : lineSegments) {
+            segment[0] += deltaFromPrevious.x;
+            segment[1] += deltaFromPrevious.y;
+            segment[2] += deltaFromPrevious.x;
+            segment[3] += deltaFromPrevious.y;
+        }
+    }
+
+    @Override public Map<String, Object> getPropertyMap() {
+        Map<String, Object> properties = mapWithDefaultProperties();
+        List<List<Number>> positions = new ArrayList<List<Number>>();
+        // Take the start point of the first segment, and then every end point.
+        positions.add(Arrays.asList(lineSegments[0][0], lineSegments[0][1]));
+        for (float[] segment : lineSegments) {
+            positions.add(Arrays.asList(segment[2], segment[3]));
+        }
+        properties.put(POSITIONS_PROPERTY, positions);
+        return properties;
     }
 }

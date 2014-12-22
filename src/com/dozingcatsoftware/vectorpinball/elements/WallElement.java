@@ -10,6 +10,7 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Point;
@@ -31,6 +32,13 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class WallElement extends FieldElement {
 
+    public static final String POSITION_PROPERTY = "position";
+    public static final String RESTITUTION_PROPERTY = "restitution";
+    public static final String KICK_PROPERTY = "kick";
+    public static final String KILL_PROPERTY = "kill";
+    public static final String RETRACT_WHEN_HIT_PROPERTY = "retractWhenHit";
+    public static final String DISABLED_PROPERTY = "disabled";
+
 	Body wallBody;
 	List<Body> bodySet;
 	float x1, y1, x2, y2;
@@ -42,17 +50,17 @@ public class WallElement extends FieldElement {
 	boolean disabled;
 
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		List pos = (List)params.get("position");
+		List pos = (List)params.get(POSITION_PROPERTY);
 		this.x1 = asFloat(pos.get(0));
 		this.y1 = asFloat(pos.get(1));
 		this.x2 = asFloat(pos.get(2));
 		this.y2 = asFloat(pos.get(3));
-		this.restitution = asFloat(params.get("restitution"));
+		this.restitution = asFloat(params.get(RESTITUTION_PROPERTY));
 
-		this.kick = asFloat(params.get("kick"));
-		this.killBall = (Boolean.TRUE.equals(params.get("kill")));
-		this.retractWhenHit = (Boolean.TRUE.equals(params.get("retractWhenHit")));
-		this.disabled = Boolean.TRUE.equals(params.get("disabled"));
+		this.kick = asFloat(params.get(KICK_PROPERTY));
+		this.killBall = (Boolean.TRUE.equals(params.get(KILL_PROPERTY)));
+		this.retractWhenHit = (Boolean.TRUE.equals(params.get(RETRACT_WHEN_HIT_PROPERTY)));
+		this.disabled = Boolean.TRUE.equals(params.get(DISABLED_PROPERTY));
 	}
 
 	@Override public void createBodies(World world) {
@@ -126,11 +134,66 @@ public class WallElement extends FieldElement {
 		renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
 	}
 
-    @Override List<Point> getSamplePoints() {
-        return Arrays.asList(Point.fromXY(x1, y1), Point.fromXY(x2, y2));
+	// Editor support.
+	enum DragType {
+	    START, END, ALL,
+	}
+	DragType dragType;
+
+    @Override public boolean isPointWithinDistance(Point point, double distance) {
+        return point.distanceToLineSegment(Point.fromXY(x1, y1), Point.fromXY(x2, y2)) <= distance;
     }
 
-    @Override boolean isPointWithinDistance(Point point, double distance) {
-        return point.distanceToLineSegment(Point.fromXY(x1, y1), Point.fromXY(x2, y2)) <= distance;
+    @Override public void startDrag(Point point) {
+        double toStart = point.distanceTo(x1, y1);
+        double toEnd = point.distanceTo(x2, y2);
+        if (5*toStart < toEnd) {
+            dragType = DragType.START;
+        }
+        else if (5*toEnd < toStart) {
+            dragType = DragType.END;
+        }
+        else {
+            dragType = DragType.ALL;
+        }
+    }
+
+    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+        switch (dragType) {
+            case START:
+                x1 += deltaFromPrevious.x;
+                y1 += deltaFromPrevious.y;
+                break;
+            case END:
+                x2 += deltaFromPrevious.x;
+                y2 += deltaFromPrevious.y;
+                break;
+            case ALL:
+                x1 += deltaFromPrevious.x;
+                y1 += deltaFromPrevious.y;
+                x2 += deltaFromPrevious.x;
+                y2 += deltaFromPrevious.y;
+                break;
+            default:
+                throw new AssertionError("Unknown drag type: " + dragType);
+        }
+    }
+
+    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+        draw(renderer);
+        Color color = currentColor(DEFAULT_WALL_COLOR);
+        renderer.fillCircle(x1, y1, 0.25f, color);
+        renderer.fillCircle(x2, y2, 0.25f, color);
+    }
+
+    @Override public Map<String, Object> getPropertyMap() {
+        Map<String, Object> properties = mapWithDefaultProperties();
+        properties.put(POSITION_PROPERTY, Arrays.asList(x1, y1, x2, y2));
+        properties.put(RESTITUTION_PROPERTY, restitution);
+        properties.put(KICK_PROPERTY, kick);
+        properties.put(KILL_PROPERTY, killBall);
+        properties.put(RETRACT_WHEN_HIT_PROPERTY, retractWhenHit);
+        properties.put(DISABLED_PROPERTY, disabled);
+        return properties;
     }
 }
