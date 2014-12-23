@@ -21,6 +21,14 @@ public class Point {
       return fromXY(xyList.get(0).doubleValue(), xyList.get(1).doubleValue());
   }
 
+  public Point add(Point other) {
+      return fromXY(x+other.x, y+other.y);
+  }
+
+  public Point subtract(Point other) {
+      return fromXY(x-other.x, y-other.y);
+  }
+
   public double distanceTo(double x, double y) {
       double xdiff = this.x - x;
       double ydiff = this.y - y;

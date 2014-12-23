@@ -27,6 +27,8 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private double yOffset = -2;
 
     Set<FieldElement> selectedElements = new HashSet<>();
+    Point dragStartPoint;
+    Point lastDragPoint;
 
     public void setCanvas(Canvas c) {
         canvas = c;
@@ -121,21 +123,40 @@ public class FxCanvasRenderer implements IFieldRenderer {
 
     }
 
+    Point worldPointFromEvent(MouseEvent event) {
+        return Point.fromXY(pixelToWorldX(event.getX()), pixelToWorldY(event.getY()));
+    }
+
     void handleEditorMouseDown(MouseEvent event) {
         System.out.println("mouseDown: " + pixelToWorldX(event.getX()) + "," + pixelToWorldY(event.getY()));
-        Point worldPoint = Point.fromXY(pixelToWorldX(event.getX()), pixelToWorldY(event.getY()));
+        Point worldPoint = worldPointFromEvent(event);
         selectedElements.clear();
         for (FieldElement elem : field.getFieldElements()) {
             if (elem.isPointWithinDistance(worldPoint, 10.0/scale)) {
                 selectedElements.add(elem);
+                elem.startDrag(worldPoint);
                 break;
             }
         }
+        dragStartPoint = (selectedElements.isEmpty()) ? null : worldPoint;
+        lastDragPoint = null;
         draw();
+    }
+
+    void handleEditorMouseDrag(MouseEvent event) {
+        if (!selectedElements.isEmpty() && dragStartPoint!=null) {
+            Point worldPoint = worldPointFromEvent(event);
+            Point totalDragOffset = worldPoint.subtract(dragStartPoint);
+            Point previousDragOffset = worldPoint.subtract((lastDragPoint!=null) ? lastDragPoint : dragStartPoint);
+            for (FieldElement elem : selectedElements) {
+                elem.handleDrag(dragStartPoint, totalDragOffset, previousDragOffset);
+            }
+            lastDragPoint = worldPoint;
+            draw();
+        }
     }
 
     void handleEditorMouseUp(MouseEvent event) {
         System.out.println("mouseUp: " + pixelToWorldX(event.getX()) + "," + pixelToWorldY(event.getY()));
-        Point worldPoint = Point.fromXY(pixelToWorldX(event.getX()), pixelToWorldY(event.getY()));
     }
 }

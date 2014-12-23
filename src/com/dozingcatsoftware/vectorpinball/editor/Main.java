@@ -121,6 +121,7 @@ public class Main extends Application {
         fieldScroller.setContent(fieldCanvas);
         fieldCanvas.setOnMousePressed(this::handleCanvasMousePressed);
         fieldCanvas.setOnMouseReleased(this::handleCanvasMouseReleased);
+        fieldCanvas.setOnMouseDragged(this::handleCanvasMouseDragged);
     }
 
     void loadBuiltInLevel(int level) {
@@ -183,6 +184,14 @@ public class Main extends Application {
                 break;
             case EDITING:
                 renderer.handleEditorMouseUp(event);
+                break;
+        }
+    }
+
+    void handleCanvasMouseDragged(MouseEvent event) {
+        switch (editorState) {
+            case EDITING:
+                renderer.handleEditorMouseDrag(event);
                 break;
         }
     }

@@ -196,6 +196,8 @@ public class DropTargetGroupElement extends FieldElement {
         for (float[] pos : positions) {
             pos[0] += deltaFromPrevious.x;
             pos[1] += deltaFromPrevious.y;
+            pos[2] += deltaFromPrevious.x;
+            pos[3] += deltaFromPrevious.y;
         }
         if (wallStart!=null && wallEnd!=null) {
             wallStart[0] += deltaFromPrevious.x;
