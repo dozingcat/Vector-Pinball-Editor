@@ -182,8 +182,10 @@ public class WallElement extends FieldElement {
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         draw(renderer);
         Color color = currentColor(DEFAULT_WALL_COLOR);
-        renderer.fillCircle(x1, y1, 0.25f, color);
-        renderer.fillCircle(x2, y2, 0.25f, color);
+        if (isSelected) {
+            renderer.fillCircle(x1, y1, 0.25f, color);
+            renderer.fillCircle(x2, y2, 0.25f, color);
+        }
     }
 
     @Override public Map<String, Object> getPropertyMap() {

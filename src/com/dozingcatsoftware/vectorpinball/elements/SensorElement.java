@@ -111,7 +111,7 @@ public class SensorElement extends FieldElement {
             renderer.drawLine(xmin, ymin, xmax, ymin, EDITOR_OUTLINE_COLOR);
             renderer.drawLine(xmax, ymin, xmax, ymax, EDITOR_OUTLINE_COLOR);
             renderer.drawLine(xmax, ymax, xmin, ymax, EDITOR_OUTLINE_COLOR);
-            renderer.drawLine(xmin, ymax, xmin, ymax, EDITOR_OUTLINE_COLOR);
+            renderer.drawLine(xmin, ymax, xmin, ymin, EDITOR_OUTLINE_COLOR);
 	    }
 	    if (isSelected) {
 	        // TODO: indicate selection

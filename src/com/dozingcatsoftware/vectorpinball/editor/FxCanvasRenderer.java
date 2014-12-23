@@ -1,8 +1,12 @@
 package com.dozingcatsoftware.vectorpinball.editor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.ArcType;
 
@@ -10,6 +14,7 @@ import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class FxCanvasRenderer implements IFieldRenderer {
 
@@ -20,6 +25,8 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private double scale = 30;
     private double xOffset = -2;
     private double yOffset = -2;
+
+    Set<FieldElement> selectedElements = new HashSet<>();
 
     public void setCanvas(Canvas c) {
         canvas = c;
@@ -40,6 +47,14 @@ public class FxCanvasRenderer implements IFieldRenderer {
 
     double worldToPixelY(double y) {
         return canvas.getHeight() - (scale * (y-yOffset));
+    }
+
+    double pixelToWorldX(double x) {
+        return x/scale + xOffset;
+    }
+
+    double pixelToWorldY(double y) {
+        return (canvas.getHeight()-y)/scale + yOffset;
     }
 
     double worldToPixelDistance(double dist) {
@@ -80,10 +95,14 @@ public class FxCanvasRenderer implements IFieldRenderer {
             context.setFill(javafx.scene.paint.Color.BLACK);
             context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
             for (FieldElement elem : field.getFieldElements()) {
-                elem.draw(this);
+                elem.drawForEditor(this, isElementSelected(elem));
             }
             field.drawBalls(this);
         }
+    }
+
+    boolean isElementSelected(FieldElement element) {
+        return selectedElements.contains(element);
     }
 
     @Override public int getWidth() {
@@ -100,5 +119,23 @@ public class FxCanvasRenderer implements IFieldRenderer {
 
     @Override public void setDebugMessage(String debugInfo) {
 
+    }
+
+    void handleEditorMouseDown(MouseEvent event) {
+        System.out.println("mouseDown: " + pixelToWorldX(event.getX()) + "," + pixelToWorldY(event.getY()));
+        Point worldPoint = Point.fromXY(pixelToWorldX(event.getX()), pixelToWorldY(event.getY()));
+        selectedElements.clear();
+        for (FieldElement elem : field.getFieldElements()) {
+            if (elem.isPointWithinDistance(worldPoint, 10.0/scale)) {
+                selectedElements.add(elem);
+                break;
+            }
+        }
+        draw();
+    }
+
+    void handleEditorMouseUp(MouseEvent event) {
+        System.out.println("mouseUp: " + pixelToWorldX(event.getX()) + "," + pixelToWorldY(event.getY()));
+        Point worldPoint = Point.fromXY(pixelToWorldX(event.getX()), pixelToWorldY(event.getY()));
     }
 }

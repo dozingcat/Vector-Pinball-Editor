@@ -164,10 +164,26 @@ public class Main extends Application {
     }
 
     void handleCanvasMousePressed(MouseEvent event) {
-        field.setAllFlippersEngaged(true);
+        switch (editorState) {
+            case SAMPLE_GAME:
+            case SAMPLE_BALL:
+                field.setAllFlippersEngaged(true);
+                break;
+            case EDITING:
+                renderer.handleEditorMouseDown(event);
+                break;
+        }
     }
 
     void handleCanvasMouseReleased(MouseEvent event) {
-        field.setAllFlippersEngaged(false);
+        switch (editorState) {
+            case SAMPLE_GAME:
+            case SAMPLE_BALL:
+                field.setAllFlippersEngaged(false);
+                break;
+            case EDITING:
+                renderer.handleEditorMouseUp(event);
+                break;
+        }
     }
 }
