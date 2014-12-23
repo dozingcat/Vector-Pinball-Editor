@@ -310,7 +310,9 @@ public class RolloverGroupElement extends FieldElement {
             rmap.put(RADIUS_PROPERTY, rollover.radius);
             rmap.put(SCORE_PROPERTY, rollover.score);
             rmap.put(RESET_DELAY_PROPERTY, rollover.resetDelay);
-            rmap.put(COLOR_PROPERTY, rollover.color.toList());
+            if (rollover.color != null) {
+                rmap.put(COLOR_PROPERTY, rollover.color.toList());
+            }
             rolloverMaps.add(rmap);
         }
         properties.put(ROLLOVERS_PROPERTY, rolloverMaps);

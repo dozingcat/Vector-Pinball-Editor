@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
+import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toDegrees;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
 
 import java.util.Arrays;
@@ -226,8 +227,8 @@ public class FlipperElement extends FieldElement {
         Vector2 start = anchorBody.getPosition();
         properties.put(POSITION_PROPERTY, Arrays.asList(start.x, start.y));
         properties.put(LENGTH_PROPERTY, flipperLength);
-        properties.put(MIN_ANGLE_PROPERTY, minangle);
-        properties.put(MAX_ANGLE_PROPERTY, maxangle);
+        properties.put(MIN_ANGLE_PROPERTY, toDegrees(minangle));
+        properties.put(MAX_ANGLE_PROPERTY, toDegrees(maxangle));
         properties.put(UP_SPEED_PROPERTY, upspeed);
         properties.put(DOWN_SPEED_PROPERTY, downspeed);
         return properties;

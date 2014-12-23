@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
+import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toDegrees;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
 
 import java.util.ArrayList;
@@ -139,8 +140,8 @@ public class WallArcElement extends FieldElement {
         properties.put(X_RADIUS_PROPERTY, xRadius);
         properties.put(Y_RADIUS_PROPERTY, yRadius);
         properties.put(NUM_SEGMENTS_PROPERTY, numSegments);
-        properties.put(MIN_ANGLE_PROPERTY, minAngle);
-        properties.put(MAX_ANGLE_PROPERTY, maxAngle);
+        properties.put(MIN_ANGLE_PROPERTY, toDegrees(minAngle));
+        properties.put(MAX_ANGLE_PROPERTY, toDegrees(maxAngle));
         return properties;
     }
 }

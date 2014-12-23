@@ -58,6 +58,7 @@ public class DropTargetGroupElement extends FieldElement {
     public static final String START_DISTANCE_ALONG_WALL_PROPERTY = "startDistanceAlongWall";
     public static final String TARGET_WIDTH_PROPERTY = "targetWidth";
     public static final String GAP_BETWEEN_TARGETS_PROPERTY = "gapBetweenTargets";
+    public static final String RESET_DELAY_PROPERTY = "reset";
     public static final String NUM_TARGETS_PROPERTY = "numTargets";
 
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
@@ -74,6 +75,7 @@ public class DropTargetGroupElement extends FieldElement {
     float startDistanceAlongWall;
     float targetWidth;
     float gapBetweenTargets;
+    float resetDelay;
     int numTargets;
 
 	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
@@ -95,6 +97,7 @@ public class DropTargetGroupElement extends FieldElement {
 	        startDistanceAlongWall = getFloatParameterValueForKey(START_DISTANCE_ALONG_WALL_PROPERTY);
 	        targetWidth = getFloatParameterValueForKey(TARGET_WIDTH_PROPERTY);
 	        gapBetweenTargets = getFloatParameterValueForKey(GAP_BETWEEN_TARGETS_PROPERTY);
+	        resetDelay = getFloatParameterValueForKey(RESET_DELAY_PROPERTY);
 	        numTargets = getIntParameterValueForKey(NUM_TARGETS_PROPERTY);
 
 	        positions = new float[numTargets][];
@@ -143,9 +146,8 @@ public class DropTargetGroupElement extends FieldElement {
 		if (allTargetsHit()) {
 			field.getDelegate().allDropTargetsInGroupHit(field, this);
 
-			float restoreTime = asFloat(this.parameters.get("reset"));
-			if (restoreTime>0) {
-				field.scheduleAction((long)(restoreTime*1000), new Runnable() {
+			if (resetDelay>0) {
+				field.scheduleAction((long)(resetDelay*1000), new Runnable() {
 					@Override
                     public void run() {
 						makeAllTargetsVisible();
@@ -223,6 +225,7 @@ public class DropTargetGroupElement extends FieldElement {
             properties.put(START_DISTANCE_ALONG_WALL_PROPERTY, startDistanceAlongWall);
             properties.put(TARGET_WIDTH_PROPERTY, targetWidth);
             properties.put(GAP_BETWEEN_TARGETS_PROPERTY, gapBetweenTargets);
+            properties.put(RESET_DELAY_PROPERTY, resetDelay);
             properties.put(NUM_TARGETS_PROPERTY, numTargets);
         }
         return properties;

@@ -269,6 +269,7 @@ public abstract class FieldElement {
 	// when implementing getPropertyMap().
 	protected Map<String, Object> mapWithDefaultProperties() {
 	    Map<String, Object> props = new HashMap<String, Object>();
+	    props.put("class", this.getClass().getName());
 	    if (this.elementID != null) {
 	        props.put("id", this.elementID);
 	    }
