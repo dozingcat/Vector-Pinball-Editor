@@ -10,6 +10,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.ArcType;
 
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
@@ -21,12 +23,13 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private Canvas canvas;
     private GraphicsContext context;
     private Field field;
+    private EditableField editableField;
 
     private double scale = 30;
     private double xOffset = -2;
     private double yOffset = -2;
 
-    Set<FieldElement> selectedElements = new HashSet<>();
+    Set<EditableFieldElement> selectedElements = new HashSet<>();
     Point dragStartPoint;
     Point lastDragPoint;
 
@@ -37,6 +40,12 @@ public class FxCanvasRenderer implements IFieldRenderer {
 
     public void setField(Field f) {
         field = f;
+        editableField = null;
+    }
+
+    public void setEditableField(EditableField f) {
+        editableField = f;
+        field = null;
     }
 
     static Paint toFxPaint(Color color) {
@@ -63,24 +72,33 @@ public class FxCanvasRenderer implements IFieldRenderer {
         return scale * dist;
     }
 
-    @Override public void drawLine(float x1, float y1, float x2, float y2, Color color) {
+    @Override public void drawLine(double x1, double y1, double x2, double y2, Color color) {
         context.setStroke(toFxPaint(color));
         context.beginPath();
         context.moveTo(worldToPixelX(x1), worldToPixelY(y1));
         context.lineTo(worldToPixelX(x2), worldToPixelY(y2));
         context.stroke();
     }
+    @Override public void drawLine(float x1, float y1, float x2, float y2, Color color) {
+        drawLine((double)x1, y1, x2, y2, color);
+    }
 
-    @Override public void fillCircle(float cx, float cy, float radius, Color color) {
+    @Override public void fillCircle(double cx, double cy, double radius, Color color) {
         context.setFill(toFxPaint(color));
         context.fillArc(worldToPixelX(cx - radius), worldToPixelY(cy + radius),
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
     }
+    @Override public void fillCircle(float cx, float cy, float radius, Color color) {
+        fillCircle(cx, cy, radius, color);
+    }
 
-    @Override public void frameCircle(float cx, float cy, float radius, Color color) {
+    @Override public void frameCircle(double cx, double cy, double radius, Color color) {
         context.setStroke(toFxPaint(color));
         context.strokeArc(worldToPixelX(cx - radius), worldToPixelY(cy + radius),
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
+    }
+    @Override public void frameCircle(float cx, float cy, float radius, Color color) {
+        frameCircle(cx, cy, radius, color);
     }
 
     @Override public void doDraw() {
@@ -93,17 +111,24 @@ public class FxCanvasRenderer implements IFieldRenderer {
     }
 
     void draw() {
-        synchronized(field) {
-            context.setFill(javafx.scene.paint.Color.BLACK);
-            context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-            for (FieldElement elem : field.getFieldElements()) {
+        context.setFill(javafx.scene.paint.Color.BLACK);
+        context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        if (editableField != null) {
+            for (EditableFieldElement elem : editableField.getElements()) {
                 elem.drawForEditor(this, isElementSelected(elem));
             }
-            field.drawBalls(this);
+        }
+        else if (field != null) {
+            synchronized(field) {
+                for (FieldElement elem : field.getFieldElements()) {
+                    elem.draw(this);
+                }
+                field.drawBalls(this);
+            }
         }
     }
 
-    boolean isElementSelected(FieldElement element) {
+    boolean isElementSelected(EditableFieldElement element) {
         return selectedElements.contains(element);
     }
 
@@ -131,7 +156,8 @@ public class FxCanvasRenderer implements IFieldRenderer {
         System.out.println("mouseDown: " + pixelToWorldX(event.getX()) + "," + pixelToWorldY(event.getY()));
         Point worldPoint = worldPointFromEvent(event);
         selectedElements.clear();
-        for (FieldElement elem : field.getFieldElements()) {
+        if (editableField == null) return;
+        for (EditableFieldElement elem : editableField.getElements()) {
             if (elem.isPointWithinDistance(worldPoint, 10.0/scale)) {
                 selectedElements.add(elem);
                 elem.startDrag(worldPoint);
@@ -144,11 +170,11 @@ public class FxCanvasRenderer implements IFieldRenderer {
     }
 
     void handleEditorMouseDrag(MouseEvent event) {
-        if (!selectedElements.isEmpty() && dragStartPoint!=null) {
+        if (editableField != null && !selectedElements.isEmpty() && dragStartPoint!=null) {
             Point worldPoint = worldPointFromEvent(event);
             Point totalDragOffset = worldPoint.subtract(dragStartPoint);
             Point previousDragOffset = worldPoint.subtract((lastDragPoint!=null) ? lastDragPoint : dragStartPoint);
-            for (FieldElement elem : selectedElements) {
+            for (EditableFieldElement elem : selectedElements) {
                 elem.handleDrag(dragStartPoint, totalDragOffset, previousDragOffset);
             }
             lastDragPoint = worldPoint;

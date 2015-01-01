@@ -1,0 +1,86 @@
+package com.dozingcatsoftware.vectorpinball.editor.elements;
+
+import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.dozingcatsoftware.vectorpinball.model.Color;
+import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.Point;
+
+public class EditableWallElement extends EditableFieldElement {
+
+    public static final String POSITION_PROPERTY = "position";
+    public static final String RESTITUTION_PROPERTY = "restitution";
+    public static final String KICK_PROPERTY = "kick";
+    public static final String KILL_PROPERTY = "kill";
+    public static final String RETRACT_WHEN_HIT_PROPERTY = "retractWhenHit";
+    public static final String DISABLED_PROPERTY = "disabled";
+
+    enum DragType {
+        START, END, ALL,
+    }
+    DragType dragType;
+
+    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+        Color color = currentColor(DEFAULT_WALL_COLOR);
+        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
+        double x1 = asDouble(pos.get(0));
+        double y1 = asDouble(pos.get(1));
+        double x2 = asDouble(pos.get(2));
+        double y2 = asDouble(pos.get(3));
+        renderer.drawLine(x1, y1, x2, y2, color);
+        if (isSelected) {
+            // TODO: adjust selection size for zoom level, needs method on IFieldRenderer.
+            renderer.fillCircle(x1, y1, 0.25, color);
+            renderer.fillCircle(x2, y2, 0.25, color);
+        }
+    }
+
+    @Override public boolean isPointWithinDistance(Point point, double distance) {
+        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
+        Point start = Point.fromXY(asDouble(pos.get(0)), asDouble(pos.get(1)));
+        Point end = Point.fromXY(asDouble(pos.get(2)), asDouble(pos.get(3)));
+        return point.distanceToLineSegment(start, end) <= distance;
+    }
+
+    @Override public void startDrag(Point point) {
+        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
+        double toStart = point.distanceTo(asDouble(pos.get(0)), asDouble(pos.get(1)));
+        double toEnd = point.distanceTo(asDouble(pos.get(2)), asDouble(pos.get(3)));
+        if (5*toStart < toEnd) {
+            dragType = DragType.START;
+        }
+        else if (5*toEnd < toStart) {
+            dragType = DragType.END;
+        }
+        else {
+            dragType = DragType.ALL;
+        }
+    }
+    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
+        List<Object> newPos = new ArrayList<>(pos);
+        switch (dragType) {
+            case START:
+                newPos.set(0, asDouble(pos.get(0)) + deltaFromPrevious.x);
+                newPos.set(1, asDouble(pos.get(1)) + deltaFromPrevious.y);
+                break;
+            case END:
+                newPos.set(2, asDouble(pos.get(2)) + deltaFromPrevious.x);
+                newPos.set(3, asDouble(pos.get(3)) + deltaFromPrevious.y);
+                break;
+            case ALL:
+                newPos.set(0, asDouble(pos.get(0)) + deltaFromPrevious.x);
+                newPos.set(1, asDouble(pos.get(1)) + deltaFromPrevious.y);
+                newPos.set(2, asDouble(pos.get(2)) + deltaFromPrevious.x);
+                newPos.set(3, asDouble(pos.get(3)) + deltaFromPrevious.y);
+                break;
+            default:
+                throw new AssertionError("Unknown drag type: " + dragType);
+        }
+        setProperty(POSITION_PROPERTY, newPos);
+    }
+
+}

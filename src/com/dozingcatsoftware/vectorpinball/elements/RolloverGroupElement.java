@@ -272,7 +272,7 @@ public class RolloverGroupElement extends FieldElement {
     @Override public boolean isPointWithinDistance(Point point, double distance) {
         for (int i=0; i<rollovers.size(); i++) {
             Rollover r = rollovers.get(i);
-            if (point.distanceTo(Point.fromXY(r.cx, r.cy)) <= r.radius + distance) {
+            if (point.distanceTo(r.cx, r.cy) <= r.radius + distance) {
                 return true;
             }
         }

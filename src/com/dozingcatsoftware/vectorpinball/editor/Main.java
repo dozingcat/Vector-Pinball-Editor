@@ -22,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
@@ -136,12 +137,16 @@ public class Main extends Application {
     }
 
     void displayForEditing() {
-        field = new Field();
-        field.resetForLevel(fieldMap);
-
         renderer = new FxCanvasRenderer();
         renderer.setCanvas(fieldCanvas);
+
+        EditableField editableField = EditableField.createFromPropertyMap(fieldMap);
+        renderer.setEditableField(editableField);
+        /*
+        field = new Field();
+        field.resetForLevel(fieldMap);
         renderer.setField(field);
+        */
         renderer.doDraw();
         editorState = EditorState.EDITING;
     }

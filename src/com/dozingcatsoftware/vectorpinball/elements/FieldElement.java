@@ -19,6 +19,11 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public abstract class FieldElement {
 
+    public static final String CLASS_PROPERTY = "class";
+    public static final String ID_PROPERTY = "id";
+    public static final String SCORE_PROPERTY = "score";
+    public static final String COLOR_PROPERTY = "color";
+
 	Map parameters;
 	World box2dWorld;
 	String elementID;
@@ -49,12 +54,12 @@ public abstract class FieldElement {
 	 */
 	public static FieldElement createFromParameters(Map params, FieldElementCollection collection, World world)
 	        throws DependencyNotAvailableException {
-	    if (!params.containsKey("class")) {
+	    if (!params.containsKey(CLASS_PROPERTY)) {
 	        throw new IllegalArgumentException("class not specified for element: " + params);
 	    }
 	    Class elementClass = null;
 		// if package not specified, use this package
-		String className = (String)params.get("class");
+		String className = (String)params.get(CLASS_PROPERTY);
 		if (className.indexOf('.')==-1) {
 			className = "com.dozingcatsoftware.vectorpinball.elements." + className;
 		}
@@ -80,21 +85,21 @@ public abstract class FieldElement {
 	}
 
 	/** Extracts common values from the definition parameter map, and calls finishCreate to allow subclasses to further initialize themselves.
-	 * Subclasses should override finishCreate, and should not override this method.
+	 * Subclasses should override finishCreateElement, and should not override this method.
 	 */
 	public void initialize(Map params, FieldElementCollection collection, World world)
 	        throws DependencyNotAvailableException {
 		this.parameters = params;
 		this.box2dWorld = world;
-		this.elementID = (String)params.get("id");
+		this.elementID = (String)params.get(ID_PROPERTY);
 
-		List<Number> colorList = (List<Number>)params.get("color");
+		List<Number> colorList = (List<Number>)params.get(COLOR_PROPERTY);
 		if (colorList!=null) {
 			this.initialColor = Color.fromList(colorList);
 		}
 
-		if (params.containsKey("score")) {
-			this.score = ((Number)params.get("score")).longValue();
+		if (params.containsKey(SCORE_PROPERTY)) {
+			this.score = ((Number)params.get(SCORE_PROPERTY)).longValue();
 		}
 
 		this.finishCreateElement(params, collection);
@@ -271,13 +276,13 @@ public abstract class FieldElement {
 	    Map<String, Object> props = new HashMap<String, Object>();
 	    props.put("class", this.getClass().getName());
 	    if (this.elementID != null) {
-	        props.put("id", this.elementID);
+	        props.put(ID_PROPERTY, this.elementID);
 	    }
 	    if (this.score != 0) {
-	        props.put("score", this.score);
+	        props.put(SCORE_PROPERTY, this.score);
 	    }
 	    if (this.initialColor != null) {
-	        props.put("color", initialColor.toList());
+	        props.put(COLOR_PROPERTY, initialColor.toList());
 	    }
 	    return props;
 	}
