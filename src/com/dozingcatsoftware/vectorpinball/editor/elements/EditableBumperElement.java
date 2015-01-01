@@ -42,7 +42,8 @@ public class EditableBumperElement extends EditableFieldElement {
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
         refreshIfDirty();
-        return point.distanceTo(Point.fromXY(cx, cy)) <= this.radius + distance;
+        // Ignore distance, just require clicking on circle;
+        return point.distanceTo(cx, cy) <= this.radius;
     }
 
     @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {

@@ -65,9 +65,7 @@ public class EditableWallArcElement extends EditableFieldElement {
     @Override public boolean isPointWithinDistance(Point point, double distance) {
         refreshIfDirty();
         for (double[] segment : this.lineSegments) {
-            Point start = Point.fromXY(segment[0], segment[1]);
-            Point end = Point.fromXY(segment[2], segment[3]);
-            if (point.distanceToLineSegment(start, end) <= distance) {
+            if (point.distanceToLineSegment(segment[0], segment[1], segment[2], segment[3]) <= distance) {
                 return true;
             }
         }

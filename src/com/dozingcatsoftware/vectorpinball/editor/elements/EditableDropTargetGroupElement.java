@@ -92,9 +92,7 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
         double[] firstSegment = positions[0];
         double[] lastSegment = positions[positions.length-1];
         double actualDist = point.distanceToLineSegment(
-                Point.fromXY(firstSegment[0], firstSegment[1]),
-                Point.fromXY(lastSegment[2], lastSegment[3])
-        );
+                firstSegment[0], firstSegment[1], lastSegment[2], lastSegment[3]);
         return actualDist <= distance;
     }
 

@@ -63,11 +63,9 @@ public class EditableSensorElement extends EditableFieldElement {
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
-        // Always treat as rectangle.
-        double centerX = (xmin + xmax) / 2;
-        double centerY = (ymin + ymax) / 2;
-        double actualDist = Math.max(Math.abs(point.x-centerX), Math.abs(point.y-centerY));
-        return actualDist <= distance;
+        refreshIfDirty();
+        // Always treat as rectangle, require click inside and ignore distance.
+        return (point.x>=xmin && point.x<=xmax && point.y>=ymin && point.y<=ymax);
     }
 
     @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {

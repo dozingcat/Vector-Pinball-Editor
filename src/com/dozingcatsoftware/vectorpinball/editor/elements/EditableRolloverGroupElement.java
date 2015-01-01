@@ -43,12 +43,15 @@ public class EditableRolloverGroupElement extends EditableFieldElement {
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
+        double groupRadius = asDouble(getProperty(RADIUS_PROPERTY));
         List<Map<String, Object>> rolloverMaps = (List<Map<String, Object>>)getProperty(ROLLOVERS_PROPERTY);
         for (Map<String, Object> rmap : rolloverMaps) {
             List<Number> pos = (List<Number>)rmap.get(POSITION_PROPERTY);
             double rx = asDouble(pos.get(0));
             double ry = asDouble(pos.get(1));
-            if (point.distanceTo(rx, ry) <= distance) {
+            double radius = rmap.containsKey(RADIUS_PROPERTY) ?
+                    asDouble(rmap.get(RADIUS_PROPERTY)) : groupRadius;
+            if (point.distanceTo(rx, ry) <= radius) {
                 return true;
             }
         }

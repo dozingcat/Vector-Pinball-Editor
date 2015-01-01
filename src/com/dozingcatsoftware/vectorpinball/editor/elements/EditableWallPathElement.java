@@ -42,9 +42,7 @@ public class EditableWallPathElement extends EditableFieldElement {
     @Override public boolean isPointWithinDistance(Point point, double distance) {
         int size = numSegments();
         for (int i=1; i<size; i++) {
-            Point start = Point.fromXY(getSegmentX(i-1), getSegmentY(i-1));
-            Point end = Point.fromXY(getSegmentX(i), getSegmentY(i));
-            if (point.distanceToLineSegment(start, end) <= distance) {
+            if (point.distanceToLineSegment(getSegmentX(i-1), getSegmentY(i-1), getSegmentX(i), getSegmentY(i)) <= distance) {
                 return true;
             }
         }
