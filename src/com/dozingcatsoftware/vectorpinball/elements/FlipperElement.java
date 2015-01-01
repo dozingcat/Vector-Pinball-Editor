@@ -1,10 +1,8 @@
 package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toDegrees;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,6 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * FieldElement subclass for a flipper that is controlled by the player. A flipper consists of a Box2D RevoluteJoint
@@ -185,52 +182,4 @@ public class FlipperElement extends FieldElement {
 
 		renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_COLOR));
 	}
-
-	// Editor methods.
-
-    @Override public boolean isPointWithinDistance(Point point, double distance) {
-        Vector2 position = anchorBody.getPosition();
-        return point.distanceToLineSegment(Point.fromXY(position.x, position.y), getEndPoint()) <= distance;
-    }
-
-    Point getEndPoint() {
-        Vector2 position = anchorBody.getPosition();
-        float angle = joint.getJointAngle();
-        // HACK: angle can briefly get out of range, always draw between min and max
-        if (angle<jointDef.lowerAngle) angle = jointDef.lowerAngle;
-        if (angle>jointDef.upperAngle) angle = jointDef.upperAngle;
-        float x2 = position.x + flipperLength * (float)Math.cos(angle);
-        float y2 = position.y + flipperLength * (float)Math.sin(angle);
-        return Point.fromXY(x2, y2);
-    }
-
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
-        draw(renderer);
-        if (isSelected) {
-            Color color = currentColor(DEFAULT_COLOR);
-            Vector2 start = anchorBody.getPosition();
-            renderer.fillCircle(start.x, start.y, 0.25f, color);
-            Point end = getEndPoint();
-            renderer.fillCircle((float)end.x, (float)end.y, 0.25f, color);
-        }
-    }
-
-
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
-        Vector2 start = anchorBody.getPosition();
-        anchorBody.setTransform(
-                (float)(start.x+deltaFromPrevious.x), (float)(start.y+deltaFromPrevious.y), anchorBody.getAngle());
-    }
-
-    @Override public Map<String, Object> getPropertyMap() {
-        Map<String, Object> properties = mapWithDefaultProperties();
-        Vector2 start = anchorBody.getPosition();
-        properties.put(POSITION_PROPERTY, Arrays.asList(start.x, start.y));
-        properties.put(LENGTH_PROPERTY, flipperLength);
-        properties.put(MIN_ANGLE_PROPERTY, toDegrees(minangle));
-        properties.put(MAX_ANGLE_PROPERTY, toDegrees(maxangle));
-        properties.put(UP_SPEED_PROPERTY, upspeed);
-        properties.put(DOWN_SPEED_PROPERTY, downspeed);
-        return properties;
-    }
 }

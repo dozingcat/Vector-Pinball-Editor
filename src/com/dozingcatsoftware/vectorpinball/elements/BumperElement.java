@@ -2,7 +2,6 @@ package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /** This FieldElement subclass represents a bumper that applies an impulse to a ball when it hits. The impulse magnitude is controlled
  * by the "kick" parameter in the configuration map.
@@ -82,37 +80,4 @@ public class BumperElement extends FieldElement {
 		float py = pegBody.getPosition().y;
 		renderer.fillCircle(px, py, radius, currentColor(DEFAULT_COLOR));
 	}
-
-	// Editor methods.
-
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
-        Color color = currentColor(DEFAULT_COLOR);
-        renderer.fillCircle(cx, cy, radius, currentColor(DEFAULT_COLOR));
-        if (isSelected) {
-            renderer.drawLine(cx - radius, cy - radius, cx + radius, cy - radius, color);
-            renderer.drawLine(cx + radius, cy - radius, cx + radius, cy + radius, color);
-            renderer.drawLine(cx + radius, cy + radius, cx - radius, cy + radius, color);
-            renderer.drawLine(cx - radius, cy + radius, cx - radius, cy - radius, color);
-        }
-    }
-
-    @Override public boolean isPointWithinDistance(Point point, double distance) {
-        return point.distanceTo(Point.fromXY(cx, cy)) <= this.radius + distance;
-    }
-
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
-        // TODO: handle resizing as well as moving.
-        cx += deltaFromPrevious.x;
-        cy += deltaFromPrevious.y;
-    }
-
-    @Override public Map<String, Object> getPropertyMap() {
-        Map<String, Object> properties = mapWithDefaultProperties();
-        properties.put(RADIUS_PROPERTY, this.radius);
-        properties.put(POSITION_PROPERTY, Arrays.asList(this.cx, this.cy));
-        if (this.kick != 0) {
-            properties.put(KICK_PROPERTY, this.kick);
-        }
-        return properties;
-    }
 }

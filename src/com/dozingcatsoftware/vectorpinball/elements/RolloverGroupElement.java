@@ -3,9 +3,7 @@ package com.dozingcatsoftware.vectorpinball.elements;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +13,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * This class represents a collection of rollover elements, such as the rollovers in the top lanes. They are activated
@@ -177,6 +174,7 @@ public class RolloverGroupElement extends FieldElement {
 			if (!activeRollovers.contains(rollover)) {
 				activeRollovers.add(rollover);
 				field.addScore(rollover.score);
+				// TODO: Abstract sound capabilities.
 				//VPSoundpool.playRollover();
 				// set timer to clear rollover if reset parameter is present and >0
 				if (rollover.resetDelay > 0) {
@@ -265,57 +263,5 @@ public class RolloverGroupElement extends FieldElement {
 				renderer.frameCircle(rollover.cx, rollover.cy, rollover.radius, color);
 			}
 		}
-
 	}
-
-	// Editor support.
-    @Override public boolean isPointWithinDistance(Point point, double distance) {
-        for (int i=0; i<rollovers.size(); i++) {
-            Rollover r = rollovers.get(i);
-            if (point.distanceTo(r.cx, r.cy) <= r.radius + distance) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
-        draw(renderer);
-        if (isSelected) {
-            // TODO: Box around selection? Or allow selecting individual rollover?
-        }
-    }
-
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
-        for (int i=0; i<rollovers.size(); i++) {
-            Rollover r = rollovers.get(i);
-            r.cx += deltaFromPrevious.x;
-            r.cy += deltaFromPrevious.y;
-        }
-    }
-
-    @Override public Map<String, Object> getPropertyMap() {
-        Map<String, Object> properties = mapWithDefaultProperties();
-        properties.put(TOGGLE_OFF_PROPERTY, canToggleOff);
-        properties.put(CYCLE_ON_FLIPPER_PROPERTY, cycleOnFlipper);
-        properties.put(IGNORE_BALL_PROPERTY, ignoreBall);
-        properties.put(RADIUS_PROPERTY, defaultRadius);
-        properties.put(RESET_DELAY_PROPERTY, defaultResetDelay);
-
-        List<Map<String, Object>> rolloverMaps = new ArrayList<Map<String, Object>>();
-        for (Rollover rollover : rollovers) {
-            Map<String, Object> rmap = new HashMap<String, Object>();
-            rmap.put(POSITION_PROPERTY, Arrays.asList(rollover.cx, rollover.cy));
-            // FIXME: Need to not include property when using default from top level.
-            rmap.put(RADIUS_PROPERTY, rollover.radius);
-            rmap.put(SCORE_PROPERTY, rollover.score);
-            rmap.put(RESET_DELAY_PROPERTY, rollover.resetDelay);
-            if (rollover.color != null) {
-                rmap.put(COLOR_PROPERTY, rollover.color.toList());
-            }
-            rolloverMaps.add(rmap);
-        }
-        properties.put(ROLLOVERS_PROPERTY, rolloverMaps);
-        return properties;
-    }
 }

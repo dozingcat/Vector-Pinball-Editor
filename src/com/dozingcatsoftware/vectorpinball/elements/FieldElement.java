@@ -2,7 +2,6 @@ package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
@@ -236,54 +234,5 @@ public abstract class FieldElement {
 	            this.newColor :
 	            (this.initialColor != null) ? this.initialColor : defaultColor;
 	    return (flashCounter > 0) ? baseColor.inverted() : baseColor;
-	}
-
-	// Support for editors.
-    /**
-     * Draws the element in the context of a field editor. By default this just calls draw(), but some
-     * elements may want to do something else, for example if they're normally invisible.
-     */
-    public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
-        draw(renderer);
-    }
-
-	/**
-	 * Determines whether a point is sufficiently close to any part of this element.
-	 */
-	abstract public boolean isPointWithinDistance(Point point, double distance);
-
-	/**
-	 * Called when a drag operation begins. Will be followed by any number of handleDrag calls.
-	 * This method can be used to store data needed to update correctly for drags, for example
-	 * which part of the element the drag started at.
-	 */
-	public void startDrag(Point point) {}
-
-	/**
-	 * Called when a drag is in progress. Should update the state of the element so that
-	 * drawForEditor will correctly show the new state, and getPropertyMap will return
-	 * updated properties. May or may not modify the Box2D Body objects used by the element;
-	 * no simulation will be run while a drag is in progress, so Body objects only need
-	 * to be updated if that's where the state is stored.
-	 */
-	abstract public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious);
-
-	abstract public Map<String, Object> getPropertyMap();
-
-	// Returns an editable map with common properties. Subclasses can add their own properties
-	// when implementing getPropertyMap().
-	protected Map<String, Object> mapWithDefaultProperties() {
-	    Map<String, Object> props = new HashMap<String, Object>();
-	    props.put("class", this.getClass().getName());
-	    if (this.elementID != null) {
-	        props.put(ID_PROPERTY, this.elementID);
-	    }
-	    if (this.score != 0) {
-	        props.put(SCORE_PROPERTY, this.score);
-	    }
-	    if (this.initialColor != null) {
-	        props.put(COLOR_PROPERTY, initialColor.toList());
-	    }
-	    return props;
 	}
 }

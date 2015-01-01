@@ -1,6 +1,5 @@
 package com.dozingcatsoftware.vectorpinball.editor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +23,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
-import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
@@ -165,7 +163,6 @@ public class Main extends Application {
 
     void launchSingleBall() {
         if (fieldDriver==null) {
-            //regenerateFieldMap();
             field = new Field();
             field.resetForLevel(editableField.getPropertyMapSnapshot());
             renderer.setField(field);
@@ -188,16 +185,6 @@ public class Main extends Application {
         }
         fieldDriver = null;
         displayForEditing();
-    }
-
-    void regenerateFieldMap() {
-        List<Map<String, Object>> newElementMaps = new ArrayList<>();
-        for (FieldElement elem : field.getFieldElements()) {
-            newElementMaps.add(elem.getPropertyMap());
-        }
-        Map<String, Object> newFieldMap = new HashMap<String, Object>(fieldMap);
-        newFieldMap.put("elements", newElementMaps);
-        fieldMap = newFieldMap;
     }
 
     void handleCanvasMousePressed(MouseEvent event) {

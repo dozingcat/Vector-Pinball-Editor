@@ -4,7 +4,6 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.TAU;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * This FieldElement subclass represents a set of drop targets, which are segments that disappear when hit. When all
@@ -65,47 +63,34 @@ public class DropTargetGroupElement extends FieldElement {
 
 	// store all bodies and positions, use Body's active flag to determine which targets have been hit
 	List<Body> allBodies = new ArrayList<Body>();
+    float[][] positions;
 
-	boolean usesDirectPositions;
-	float[][] positions;
-	// The following are used if positions are not given directly.
-    float[] wallStart;
-    float[] wallEnd;
-    float gapFromWall;
-    float startDistanceAlongWall;
-    float targetWidth;
-    float gapBetweenTargets;
-    float resetDelay;
-    int numTargets;
-
-	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
-		// Individual targets can be specified in "positions" list.
-	    usesDirectPositions = hasParameterKey(POSITIONS_PROPERTY);
-	    if (usesDirectPositions) {
-	        List<List<Number>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
-	        positions = new float[positionList.size()][];
-	        for (int i = 0; i < positionList.size(); i++) {
-	            List<Number> coords = positionList.get(i);
-	            positions[i] = new float[] {asFloat(coords.get(0)), asFloat(coords.get(1)),
+    @Override public void finishCreateElement(Map params, FieldElementCollection collection) {
+        // Individual targets can be specified in "positions" list.
+        if (hasParameterKey(POSITIONS_PROPERTY)) {
+            List<List<Number>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
+            positions = new float[positionList.size()][];
+            for (int i = 0; i < positionList.size(); i++) {
+                List<Number> coords = positionList.get(i);
+                positions[i] = new float[] {asFloat(coords.get(0)), asFloat(coords.get(1)),
                                             asFloat(coords.get(2)), asFloat(coords.get(3))};
-	        }
-	    }
-	    else {
-	        wallStart = getFloatArrayParameterValueForKey(WALL_START_PROPERTY);
-	        wallEnd = getFloatArrayParameterValueForKey(WALL_END_PROPERTY);
-	        gapFromWall = getFloatParameterValueForKey(GAP_FROM_WALL_PROPERTY);
-	        startDistanceAlongWall = getFloatParameterValueForKey(START_DISTANCE_ALONG_WALL_PROPERTY);
-	        targetWidth = getFloatParameterValueForKey(TARGET_WIDTH_PROPERTY);
-	        gapBetweenTargets = getFloatParameterValueForKey(GAP_BETWEEN_TARGETS_PROPERTY);
-	        resetDelay = getFloatParameterValueForKey(RESET_DELAY_PROPERTY);
-	        numTargets = getIntParameterValueForKey(NUM_TARGETS_PROPERTY);
+            }
+        }
+        else {
+            float[] wallStart = getFloatArrayParameterValueForKey(WALL_START_PROPERTY);
+            float[] wallEnd = getFloatArrayParameterValueForKey(WALL_END_PROPERTY);
+            float gapFromWall = getFloatParameterValueForKey(GAP_FROM_WALL_PROPERTY);
+            float startDistanceAlongWall = getFloatParameterValueForKey(START_DISTANCE_ALONG_WALL_PROPERTY);
+            float targetWidth = getFloatParameterValueForKey(TARGET_WIDTH_PROPERTY);
+            float gapBetweenTargets = getFloatParameterValueForKey(GAP_BETWEEN_TARGETS_PROPERTY);
+            int numTargets = getIntParameterValueForKey(NUM_TARGETS_PROPERTY);
 
-	        positions = new float[numTargets][];
-	        double wallAngle = Math.atan2(wallEnd[1] - wallStart[1], wallEnd[0] - wallStart[0]);
-	        double perpToWallAngle = wallAngle + TAU/4;
-	        for (int i = 0; i < numTargets; i++) {
-	            double alongWallStart = startDistanceAlongWall + i * (targetWidth + gapBetweenTargets);
-	            double alongWallEnd = alongWallStart + targetWidth;
+            positions = new float[numTargets][];
+            double wallAngle = Math.atan2(wallEnd[1] - wallStart[1], wallEnd[0] - wallStart[0]);
+            double perpToWallAngle = wallAngle + TAU/4;
+            for (int i = 0; i < numTargets; i++) {
+                double alongWallStart = startDistanceAlongWall + i * (targetWidth + gapBetweenTargets);
+                double alongWallEnd = alongWallStart + targetWidth;
                 float x1 = (float) (wallStart[0] + (alongWallStart * Math.cos(wallAngle)) +
                                                    (gapFromWall * Math.cos(perpToWallAngle)));
                 float y1 = (float) (wallStart[1] + (alongWallStart * Math.sin(wallAngle)) +
@@ -115,47 +100,48 @@ public class DropTargetGroupElement extends FieldElement {
                 float y2 = (float) (wallStart[1] + (alongWallEnd * Math.sin(wallAngle)) +
                                                    (gapFromWall * Math.sin(perpToWallAngle)));
                 positions[i] = new float[] {x1, y1, x2, y2};
-	        }
-	    }
-	}
+            }
+        }
+    }
 
-	@Override public void createBodies(World world) {
-		for (float[] parray : positions) {
-			float restitution = 0f;
-			Body wallBody = Box2DFactory.createThinWall(world, parray[0], parray[1], parray[2], parray[3], restitution);
-			allBodies.add(wallBody);
-		}
-	}
+    @Override public void createBodies(World world) {
+        for (float[] parray : positions) {
+            float restitution = 0f;
+            Body wallBody = Box2DFactory.createThinWall(world, parray[0], parray[1], parray[2], parray[3], restitution);
+            allBodies.add(wallBody);
+        }
+    }
 
-	@Override public List<Body> getBodies() {
-		return allBodies;
-	}
+    @Override public List<Body> getBodies() {
+        return allBodies;
+    }
 
-	/** Returns true if all targets have been hit (and their corresponding bodies made inactive) */
-	public boolean allTargetsHit() {
-		int bsize = allBodies.size();
-		for(int i=0; i<bsize; i++) {
-			if (allBodies.get(i).isActive()) return false;
-		}
-		return true;
-	}
+    /** Returns true if all targets have been hit (and their corresponding bodies made inactive) */
+    public boolean allTargetsHit() {
+        int bsize = allBodies.size();
+        for(int i=0; i<bsize; i++) {
+            if (allBodies.get(i).isActive()) return false;
+        }
+        return true;
+    }
 
-	@Override public void handleCollision(Body ball, Body bodyHit, final Field field) {
-		bodyHit.setActive(false);
-		// if all hit, notify delegate and check for reset parameter
-		if (allTargetsHit()) {
-			field.getDelegate().allDropTargetsInGroupHit(field, this);
+    @Override public void handleCollision(Body ball, Body bodyHit, final Field field) {
+        bodyHit.setActive(false);
+        // if all hit, notify delegate and check for reset parameter
+        if (allTargetsHit()) {
+            field.getDelegate().allDropTargetsInGroupHit(field, this);
 
-			if (resetDelay>0) {
-				field.scheduleAction((long)(resetDelay*1000), new Runnable() {
-					@Override
+            float restoreTime = asFloat(this.parameters.get(RESET_DELAY_PROPERTY));
+            if (restoreTime>0) {
+                field.scheduleAction((long)(restoreTime*1000), new Runnable() {
+                    @Override
                     public void run() {
-						makeAllTargetsVisible();
-					}
-				});
-			}
-		}
-	}
+                        makeAllTargetsVisible();
+                    }
+                });
+            }
+        }
+    }
 
 	/** Makes all targets visible by calling Body.setActive(true) on each target body */
 	public void makeAllTargetsVisible() {
@@ -177,57 +163,4 @@ public class DropTargetGroupElement extends FieldElement {
 			}
 		}
 	}
-
-	   // Editor methods.
-
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
-        draw(renderer);
-    }
-
-    @Override public boolean isPointWithinDistance(Point point, double distance) {
-        float[] firstSegment = positions[0];
-        float[] lastSegment = positions[positions.length-1];
-        double actualDist = point.distanceToLineSegment(
-                Point.fromXY(firstSegment[0], firstSegment[1]),
-                Point.fromXY(lastSegment[2], lastSegment[3])
-        );
-        return actualDist <= distance;
-    }
-
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
-        for (float[] pos : positions) {
-            pos[0] += deltaFromPrevious.x;
-            pos[1] += deltaFromPrevious.y;
-            pos[2] += deltaFromPrevious.x;
-            pos[3] += deltaFromPrevious.y;
-        }
-        if (wallStart!=null && wallEnd!=null) {
-            wallStart[0] += deltaFromPrevious.x;
-            wallStart[1] += deltaFromPrevious.y;
-            wallEnd[0] += deltaFromPrevious.x;
-            wallEnd[1] += deltaFromPrevious.y;
-        }
-    }
-
-    @Override public Map<String, Object> getPropertyMap() {
-        Map<String, Object> properties = mapWithDefaultProperties();
-        if (usesDirectPositions) {
-            List<List<Number>> posList = new ArrayList<List<Number>>();
-            for (float[] pos : positions) {
-                posList.add(Arrays.asList(pos[0], pos[1]));
-            }
-            properties.put(POSITIONS_PROPERTY, posList);
-        }
-        else {
-            properties.put(WALL_START_PROPERTY, Arrays.asList(wallStart[0], wallStart[1]));
-            properties.put(WALL_END_PROPERTY, Arrays.asList(wallEnd[0], wallEnd[1]));
-            properties.put(GAP_FROM_WALL_PROPERTY, gapFromWall);
-            properties.put(START_DISTANCE_ALONG_WALL_PROPERTY, startDistanceAlongWall);
-            properties.put(TARGET_WIDTH_PROPERTY, targetWidth);
-            properties.put(GAP_BETWEEN_TARGETS_PROPERTY, gapBetweenTargets);
-            properties.put(RESET_DELAY_PROPERTY, resetDelay);
-            properties.put(NUM_TARGETS_PROPERTY, numTargets);
-        }
-        return properties;
-    }
 }

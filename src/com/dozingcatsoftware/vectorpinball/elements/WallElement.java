@@ -2,7 +2,6 @@ package com.dozingcatsoftware.vectorpinball.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asFloat;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +9,8 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
 
 /**
  * FieldElement subclass that represents a straight wall. Its position is specified by the "position" parameter
@@ -133,69 +130,4 @@ public class WallElement extends FieldElement {
 		if (isRetracted()) return;
 		renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
 	}
-
-	// Editor support.
-	enum DragType {
-	    START, END, ALL,
-	}
-	DragType dragType;
-
-    @Override public boolean isPointWithinDistance(Point point, double distance) {
-        return point.distanceToLineSegment(Point.fromXY(x1, y1), Point.fromXY(x2, y2)) <= distance;
-    }
-
-    @Override public void startDrag(Point point) {
-        double toStart = point.distanceTo(x1, y1);
-        double toEnd = point.distanceTo(x2, y2);
-        if (5*toStart < toEnd) {
-            dragType = DragType.START;
-        }
-        else if (5*toEnd < toStart) {
-            dragType = DragType.END;
-        }
-        else {
-            dragType = DragType.ALL;
-        }
-    }
-
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
-        switch (dragType) {
-            case START:
-                x1 += deltaFromPrevious.x;
-                y1 += deltaFromPrevious.y;
-                break;
-            case END:
-                x2 += deltaFromPrevious.x;
-                y2 += deltaFromPrevious.y;
-                break;
-            case ALL:
-                x1 += deltaFromPrevious.x;
-                y1 += deltaFromPrevious.y;
-                x2 += deltaFromPrevious.x;
-                y2 += deltaFromPrevious.y;
-                break;
-            default:
-                throw new AssertionError("Unknown drag type: " + dragType);
-        }
-    }
-
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
-        draw(renderer);
-        Color color = currentColor(DEFAULT_WALL_COLOR);
-        if (isSelected) {
-            renderer.fillCircle(x1, y1, 0.25f, color);
-            renderer.fillCircle(x2, y2, 0.25f, color);
-        }
-    }
-
-    @Override public Map<String, Object> getPropertyMap() {
-        Map<String, Object> properties = mapWithDefaultProperties();
-        properties.put(POSITION_PROPERTY, Arrays.asList(x1, y1, x2, y2));
-        properties.put(RESTITUTION_PROPERTY, restitution);
-        properties.put(KICK_PROPERTY, kick);
-        properties.put(KILL_PROPERTY, killBall);
-        properties.put(RETRACT_WHEN_HIT_PROPERTY, retractWhenHit);
-        properties.put(DISABLED_PROPERTY, disabled);
-        return properties;
-    }
 }
