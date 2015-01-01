@@ -89,7 +89,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
     }
     @Override public void fillCircle(float cx, float cy, float radius, Color color) {
-        fillCircle(cx, cy, radius, color);
+        fillCircle((double)cx, (double)cy, radius, color);
     }
 
     @Override public void frameCircle(double cx, double cy, double radius, Color color) {
@@ -98,7 +98,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
     }
     @Override public void frameCircle(float cx, float cy, float radius, Color color) {
-        frameCircle(cx, cy, radius, color);
+        frameCircle((double)cx, (double)cy, radius, color);
     }
 
     @Override public void doDraw() {
@@ -153,7 +153,6 @@ public class FxCanvasRenderer implements IFieldRenderer {
     }
 
     void handleEditorMouseDown(MouseEvent event) {
-        System.out.println("mouseDown: " + pixelToWorldX(event.getX()) + "," + pixelToWorldY(event.getY()));
         Point worldPoint = worldPointFromEvent(event);
         selectedElements.clear();
         if (editableField == null) return;
@@ -183,6 +182,5 @@ public class FxCanvasRenderer implements IFieldRenderer {
     }
 
     void handleEditorMouseUp(MouseEvent event) {
-        System.out.println("mouseUp: " + pixelToWorldX(event.getX()) + "," + pixelToWorldY(event.getY()));
     }
 }

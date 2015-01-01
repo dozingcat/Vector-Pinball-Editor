@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.editor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,13 +27,26 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
+import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 
 // Need to edit project as described in
 // http://stackoverflow.com/questions/24467931/using-javafx-jdk-1-8-0-05-in-eclipse-luna-does-not-work
 
 public class Main extends Application {
     public static void main(String[] args) {
+        //test();
         launch(args);
+    }
+
+    static void test() {
+        Map<String, Object> m = new HashMap<>();
+        m.put("foo", Arrays.asList(1, 2, 3));
+        System.out.println(m);
+        Map<String, Object> m2 = CollectionUtils.mutableDeepCopyOfMap(m);
+        ((List)m2.get("foo")).add(4);
+        System.out.println(m);
+        System.out.println(m2);
+        System.exit(0);
     }
 
     enum EditorState {
@@ -44,6 +58,7 @@ public class Main extends Application {
     ScrollPane fieldScroller;
     Canvas fieldCanvas;
     Field field;
+    EditableField editableField;
     FxCanvasRenderer renderer;
     FieldDriver fieldDriver;
     EditorState editorState = EditorState.EDITING;
@@ -117,7 +132,7 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, width, height));
         primaryStage.show();
 
-        loadBuiltInLevel(3);
+        loadBuiltInLevel(1);
 
     }
 
@@ -140,22 +155,19 @@ public class Main extends Application {
         renderer = new FxCanvasRenderer();
         renderer.setCanvas(fieldCanvas);
 
-        EditableField editableField = EditableField.createFromPropertyMap(fieldMap);
+        if (editableField == null) {
+            editableField = EditableField.createFromPropertyMap(fieldMap);
+        }
         renderer.setEditableField(editableField);
-        /*
-        field = new Field();
-        field.resetForLevel(fieldMap);
-        renderer.setField(field);
-        */
         renderer.doDraw();
         editorState = EditorState.EDITING;
     }
 
     void launchSingleBall() {
         if (fieldDriver==null) {
-            regenerateFieldMap();
+            //regenerateFieldMap();
             field = new Field();
-            field.resetForLevel(fieldMap);
+            field.resetForLevel(editableField.getPropertyMapSnapshot());
             renderer.setField(field);
 
             fieldDriver = new FieldDriver();

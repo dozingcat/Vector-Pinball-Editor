@@ -4,6 +4,8 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.TAU;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asInt;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.dozingcatsoftware.vectorpinball.model.Color;
@@ -96,9 +98,22 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
         return actualDist <= distance;
     }
 
-    @Override public void handleDrag(Point point, Point deltaFromStart,
-            Point deltaFromPrevious) {
-        // TODO
+    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+        refreshIfDirty();
+        if (usesDirectPositions) {
+            List<List<Number>> newPositions = new ArrayList<>();
+            for (double[] pos : positions) {
+                newPositions.add(Arrays.asList(
+                        pos[0] + deltaFromPrevious.x,
+                        pos[1] + deltaFromPrevious.y,
+                        pos[2] + deltaFromPrevious.x,
+                        pos[3] + deltaFromPrevious.y));
+            }
+            setProperty(POSITIONS_PROPERTY, newPositions);
+        }
+        else {
+            // TODO: adjust wall-relative values.
+        }
     }
 
 }

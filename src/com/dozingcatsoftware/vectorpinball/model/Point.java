@@ -3,7 +3,7 @@ package com.dozingcatsoftware.vectorpinball.model;
 import java.util.List;
 
 /**
- * An immutable 2D point.
+ * An immutable 2D point. Includes static methods for computing distances between points and lines.
  */
 public class Point {
   public final double x, y;

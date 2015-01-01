@@ -19,7 +19,7 @@ public class EditableField {
             properties.put(ELEMENTS_PROPERTY, new ArrayList<Object>());
         }
         elements = new ArrayList<>();
-        List<Map<String, Object>> elementMaps = (List<Map<String, Object>>)props.get(ELEMENTS_PROPERTY);
+        List<Map<String, Object>> elementMaps = (List<Map<String, Object>>)properties.get(ELEMENTS_PROPERTY);
         // Strings are allowed in the elements array, should really be fields in element maps.
         for (Object emap : elementMaps) {
             if (emap instanceof Map) {
