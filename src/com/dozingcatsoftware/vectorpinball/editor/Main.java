@@ -55,7 +55,11 @@ public class Main extends Application {
 
     ScrollPane fieldScroller;
     Canvas fieldCanvas;
+    PaletteView palette;
+    ElementInspectorView inspector;
+
     Field field;
+    ElementSelection elementSelection;
     EditableField editableField;
     FxCanvasRenderer renderer;
     FieldDriver fieldDriver;
@@ -63,20 +67,17 @@ public class Main extends Application {
     Map<String, Object> fieldMap = null;
 
     @Override public void start(Stage primaryStage) {
-        /*
-         * primaryStage.setTitle("Hello World!"); Button btn = new Button();
-         * btn.setText("Say 'Hello World'"); btn.setOnAction((event) ->
-         * System.out.println("Hello Lambda!"));
-         *
-         * int width = 1000; int height = 1000;
-         *
-         * Canvas canvas = new Canvas(width, height);
-         * drawMandelbrot(canvas.getGraphicsContext2D(), width, height);
-         *
-         *
-         * StackPane root = new StackPane(); root.getChildren().add(canvas);
-         * //root.getChildren().add(btn);
-         */
+        elementSelection = new ElementSelection();
+        elementSelection.setSelectionChangeCallback(this::handleSelectionChange);
+
+        renderer = new FxCanvasRenderer();
+        renderer.setElementSelection(elementSelection);
+
+        palette = new PaletteView();
+
+        inspector = new ElementInspectorView();
+        inspector.setElementSelection(elementSelection);
+
         int width = 1100;
         int height = 1100;
 
@@ -93,12 +94,10 @@ public class Main extends Application {
         row2.setPercentHeight(50);
         root.getRowConstraints().addAll(row1, row2);
 
-        VBox palette = new VBox();
         palette.setBackground(new Background(new BackgroundFill(Color.RED, null, null)));
         GridPane.setConstraints(palette, 0, 0);
 
-        VBox inspector = new VBox();
-        inspector.setBackground(new Background(new BackgroundFill(Color.BLUE, null, null)));
+        inspector.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, null, null)));
         GridPane.setConstraints(inspector, 0, 1);
 
         VBox fieldBox = new VBox();
@@ -150,7 +149,6 @@ public class Main extends Application {
     }
 
     void displayForEditing() {
-        renderer = new FxCanvasRenderer();
         renderer.setCanvas(fieldCanvas);
 
         if (editableField == null) {
@@ -219,5 +217,9 @@ public class Main extends Application {
             default:
                 break;
         }
+    }
+
+    void handleSelectionChange() {
+        inspector.update();
     }
 }

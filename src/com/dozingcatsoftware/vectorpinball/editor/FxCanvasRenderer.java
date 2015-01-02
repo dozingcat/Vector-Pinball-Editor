@@ -1,7 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.editor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
@@ -24,12 +24,12 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private GraphicsContext context;
     private Field field;
     private EditableField editableField;
+    private ElementSelection elementSelection;
 
     private double scale = 30;
     private double xOffset = -2;
     private double yOffset = -2;
 
-    Set<EditableFieldElement> selectedElements = new HashSet<>();
     Point dragStartPoint;
     Point lastDragPoint;
 
@@ -46,6 +46,10 @@ public class FxCanvasRenderer implements IFieldRenderer {
     public void setEditableField(EditableField f) {
         editableField = f;
         field = null;
+    }
+
+    public void setElementSelection(ElementSelection selection) {
+        elementSelection = selection;
     }
 
     static Paint toFxPaint(Color color) {
@@ -115,7 +119,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
         context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         if (editableField != null) {
             for (EditableFieldElement elem : editableField.getElements()) {
-                elem.drawForEditor(this, isElementSelected(elem));
+                elem.drawForEditor(this, elementSelection.isElementSelected(elem));
             }
         }
         else if (field != null) {
@@ -126,10 +130,6 @@ public class FxCanvasRenderer implements IFieldRenderer {
                 field.drawBalls(this);
             }
         }
-    }
-
-    boolean isElementSelected(EditableFieldElement element) {
-        return selectedElements.contains(element);
     }
 
     @Override public int getWidth() {
@@ -154,26 +154,27 @@ public class FxCanvasRenderer implements IFieldRenderer {
 
     void handleEditorMouseDown(MouseEvent event) {
         Point worldPoint = worldPointFromEvent(event);
-        selectedElements.clear();
+        List<EditableFieldElement> selected = new ArrayList<>();
         if (editableField == null) return;
         for (EditableFieldElement elem : editableField.getElements()) {
             if (elem.isPointWithinDistance(worldPoint, 10.0/scale)) {
-                selectedElements.add(elem);
+                selected.add(elem);
                 elem.startDrag(worldPoint);
                 break;
             }
         }
-        dragStartPoint = (selectedElements.isEmpty()) ? null : worldPoint;
+        elementSelection.setSelectedElements(selected);
+        dragStartPoint = (selected.isEmpty()) ? null : worldPoint;
         lastDragPoint = null;
         draw();
     }
 
     void handleEditorMouseDrag(MouseEvent event) {
-        if (editableField != null && !selectedElements.isEmpty() && dragStartPoint!=null) {
+        if (editableField != null && elementSelection.hasSelection() && dragStartPoint!=null) {
             Point worldPoint = worldPointFromEvent(event);
             Point totalDragOffset = worldPoint.subtract(dragStartPoint);
             Point previousDragOffset = worldPoint.subtract((lastDragPoint!=null) ? lastDragPoint : dragStartPoint);
-            for (EditableFieldElement elem : selectedElements) {
+            for (EditableFieldElement elem : elementSelection.getSelectedElements()) {
                 elem.handleDrag(dragStartPoint, totalDragOffset, previousDragOffset);
             }
             lastDragPoint = worldPoint;

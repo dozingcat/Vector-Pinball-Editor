@@ -36,11 +36,13 @@ public class EditableFlipperElement extends EditableFieldElement {
     }
 
     double endX() {
-        return cx + flipperLength*Math.cos(minangle);
+        double angle = (flipperLength > 0) ? minangle : maxangle;
+        return cx + flipperLength*Math.cos(angle);
     }
 
     double endY() {
-        return cy + flipperLength*Math.sin(minangle);
+        double angle = (flipperLength > 0) ? minangle : maxangle;
+        return cy + flipperLength*Math.sin(angle);
     }
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
