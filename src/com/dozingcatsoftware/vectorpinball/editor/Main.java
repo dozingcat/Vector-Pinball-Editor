@@ -77,6 +77,7 @@ public class Main extends Application {
 
         inspector = new ElementInspectorView();
         inspector.setElementSelection(elementSelection);
+        inspector.setChangeCallback(() -> renderer.doDraw());
 
         int width = 1100;
         int height = 1100;
