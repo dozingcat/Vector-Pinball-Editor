@@ -18,10 +18,15 @@ public abstract class EditableFieldElement {
 
     private Map<String, Object> properties;
     private boolean propertiesDirty = false;
+    private Runnable changeHandler;
 
     public void initFromPropertyMap(Map<String, Object> props) {
         properties = props;
         propertiesDirty = true;
+    }
+
+    public void setChangeHandler(Runnable handler) {
+        changeHandler = handler;
     }
 
     public Map<String, Object> getPropertyMap() {
@@ -31,6 +36,9 @@ public abstract class EditableFieldElement {
     public void setProperty(String key, Object value) {
         properties.put(key, value);
         propertiesDirty = true;
+        if (changeHandler != null) {
+            changeHandler.run();
+        }
     }
 
     public boolean hasProperty(String key) {

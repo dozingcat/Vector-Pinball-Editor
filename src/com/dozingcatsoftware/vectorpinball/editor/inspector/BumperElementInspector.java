@@ -12,6 +12,7 @@ public class BumperElementInspector extends ElementInspector<EditableBumperEleme
         VBox box = new VBox();
         box.getChildren().add(new Label("Bumper"));
         box.getChildren().add(createDecimalTextFieldWithLabel("Radius", EditableBumperElement.RADIUS_PROPERTY));
+        box.getChildren().add(createPositionTextFieldsWithLabel("Center", EditableBumperElement.POSITION_PROPERTY));
 
         pane.getChildren().add(box);
     }

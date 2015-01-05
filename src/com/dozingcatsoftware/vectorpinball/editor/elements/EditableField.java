@@ -13,7 +13,7 @@ public class EditableField {
     Map<String, Object> properties;
     List<EditableFieldElement> elements;
 
-    void initFromProperties(Map<String, Object> props) {
+    void initFromProperties(Map<String, Object> props, Runnable changeHandler) {
         properties = CollectionUtils.mutableDeepCopyOfMap(props);
         if (!properties.containsKey(ELEMENTS_PROPERTY)) {
             properties.put(ELEMENTS_PROPERTY, new ArrayList<Object>());
@@ -23,14 +23,16 @@ public class EditableField {
         // Strings are allowed in the elements array, should really be fields in element maps.
         for (Object emap : elementMaps) {
             if (emap instanceof Map) {
-                elements.add(EditableFieldElement.createFromParameters((Map)emap));
+                EditableFieldElement elem = EditableFieldElement.createFromParameters((Map)emap);
+                elem.setChangeHandler(changeHandler);
+                elements.add(elem);
             }
         }
     }
 
-    public static EditableField createFromPropertyMap(Map<String, Object> props) {
+    public static EditableField createFromPropertyMap(Map<String, Object> props, Runnable changeHandler) {
         EditableField field = new EditableField();
-        field.initFromProperties(props);
+        field.initFromProperties(props, changeHandler);
         return field;
     }
 

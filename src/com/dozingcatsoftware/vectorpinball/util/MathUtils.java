@@ -19,7 +19,7 @@ public class MathUtils {
     }
 
     public static double asDouble(Object obj) {
-        return asFloat(obj, 0);
+        return asDouble(obj, 0);
     }
 
     public static int asInt(Object obj, int defvalue) {

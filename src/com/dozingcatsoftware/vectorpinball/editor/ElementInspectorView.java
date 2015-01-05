@@ -12,7 +12,7 @@ public class ElementInspectorView extends VBox {
     ElementSelection elementSelection;
     Label selectionLabel;
 
-    Object inspectedObject;
+    ElementInspector currentInspector;
     Pane inspectorPane;
 
     Runnable changeCallback;
@@ -31,22 +31,28 @@ public class ElementInspectorView extends VBox {
         changeCallback = callback;
     }
 
+    public void updateInspectorValues() {
+        if (currentInspector != null) {
+            currentInspector.updateControlValuesFromElement();
+        }
+    }
+
     public void update() {
         if (elementSelection != null && elementSelection.hasSelection()) {
             EditableFieldElement elem = elementSelection.getSelectedElements().iterator().next();
-            if (inspectedObject != elem) {
+            if (currentInspector==null || currentInspector.getElement()!=elem) {
                 String className = (String)elem.getProperty(EditableFieldElement.CLASS_PROPERTY);
                 selectionLabel.setText(className);
                 // Create inspector view...
                 this.getChildren().remove(inspectorPane);
                 this.getChildren().add(inspectorPane = new Pane());
 
-                ElementInspector inspector = null;
+                currentInspector = null;
                 try {
                     String inspectorClass = "com.dozingcatsoftware.vectorpinball.editor.inspector." +
                             className + "Inspector";
-                    inspector = (ElementInspector)Class.forName(inspectorClass).newInstance();
-                    inspector.initialize(inspectorPane, elem, changeCallback);
+                    currentInspector = (ElementInspector)Class.forName(inspectorClass).newInstance();
+                    currentInspector.initialize(inspectorPane, elem, changeCallback);
                 }
                 catch(InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
                     ex.printStackTrace();

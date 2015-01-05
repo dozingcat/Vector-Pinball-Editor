@@ -153,7 +153,7 @@ public class Main extends Application {
         renderer.setCanvas(fieldCanvas);
 
         if (editableField == null) {
-            editableField = EditableField.createFromPropertyMap(fieldMap);
+            editableField = EditableField.createFromPropertyMap(fieldMap, () -> inspector.updateInspectorValues());
         }
         renderer.setEditableField(editableField);
         renderer.doDraw();
