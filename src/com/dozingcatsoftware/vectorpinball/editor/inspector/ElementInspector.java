@@ -54,7 +54,13 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
                 textFields.get(i).setText(values.get(i).toString());
             }
         }
+        updateCustomControlValues();
         updatingFromExternalChange = false;
+    }
+
+    // Override to update UI components that aren't handled by the standard
+    // cases in updateControlValuesFromElement.
+    protected void updateCustomControlValues() {
     }
 
     HBox createDecimalTextFieldWithLabel(String label, String propertyName) {
