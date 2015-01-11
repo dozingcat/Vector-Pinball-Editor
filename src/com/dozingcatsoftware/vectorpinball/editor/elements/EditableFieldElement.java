@@ -41,6 +41,14 @@ public abstract class EditableFieldElement {
         }
     }
 
+    public void removeProperty(String key) {
+        properties.remove(key);
+        propertiesDirty = true;
+        if (changeHandler != null) {
+            changeHandler.run();
+        }
+    }
+
     public boolean hasProperty(String key) {
         return properties.containsKey(key);
     }

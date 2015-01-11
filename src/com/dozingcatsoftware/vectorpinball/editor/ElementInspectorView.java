@@ -43,7 +43,6 @@ public class ElementInspectorView extends VBox {
             if (currentInspector==null || currentInspector.getElement()!=elem) {
                 String className = (String)elem.getProperty(EditableFieldElement.CLASS_PROPERTY);
                 selectionLabel.setText(className);
-                // Create inspector view...
                 this.getChildren().remove(inspectorPane);
                 this.getChildren().add(inspectorPane = new Pane());
 

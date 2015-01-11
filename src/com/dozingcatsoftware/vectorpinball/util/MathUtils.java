@@ -6,6 +6,14 @@ public class MathUtils {
 
 	public static float asFloat(Object obj, float defvalue) {
 		if (obj instanceof Number) return ((Number)obj).floatValue();
+		if (obj instanceof String) {
+		    try {
+		        return Float.parseFloat((String)obj);
+		    }
+		    catch (NumberFormatException ex) {
+		        // log?
+		    }
+		}
 		return defvalue;
 	}
 
@@ -15,6 +23,14 @@ public class MathUtils {
 
     public static double asDouble(Object obj, double defvalue) {
         if (obj instanceof Number) return ((Number)obj).doubleValue();
+        if (obj instanceof String) {
+            try {
+                return Double.parseDouble((String)obj);
+            }
+            catch (NumberFormatException ex) {
+                // log?
+            }
+        }
         return defvalue;
     }
 
@@ -24,6 +40,14 @@ public class MathUtils {
 
     public static int asInt(Object obj, int defvalue) {
         if (obj instanceof Number) return ((Number)obj).intValue();
+        if (obj instanceof String) {
+            try {
+                return Integer.parseInt((String)obj);
+            }
+            catch (NumberFormatException ex) {
+                // log?
+            }
+        }
         return defvalue;
     }
 

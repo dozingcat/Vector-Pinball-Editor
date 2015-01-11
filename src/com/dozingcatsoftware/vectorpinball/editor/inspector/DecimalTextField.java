@@ -7,10 +7,17 @@ import javafx.scene.control.TextField;
 
 public class DecimalTextField extends TextField {
 
+    public static int DEFAULT_WIDTH = 100;
+
     static Pattern DECIMAL_PATTERN = Pattern.compile("[+-]?(\\d+(\\.\\d*)?|\\.\\d+)");
 
     Double minValue = null;
     Double maxValue = null;
+
+    public DecimalTextField() {
+        super();
+        this.setPrefWidth(DEFAULT_WIDTH);
+    }
 
     public void setMinValue(Double value) {
         minValue = value;

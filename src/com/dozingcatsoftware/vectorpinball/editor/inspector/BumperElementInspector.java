@@ -1,6 +1,5 @@
 package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
-import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -10,9 +9,9 @@ public class BumperElementInspector extends ElementInspector<EditableBumperEleme
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
-        box.getChildren().add(new Label("Bumper"));
-        box.getChildren().add(createDecimalTextFieldWithLabel("Radius", EditableBumperElement.RADIUS_PROPERTY));
-        box.getChildren().add(createPositionTextFieldsWithLabel("Center", EditableBumperElement.POSITION_PROPERTY));
+        box.getChildren().add(createHBoxWithLabel("Bumper"));
+        box.getChildren().add(createDecimalStringFieldWithLabel("Radius", EditableBumperElement.RADIUS_PROPERTY));
+        box.getChildren().add(createPositionStringFieldsWithLabel("Center", EditableBumperElement.POSITION_PROPERTY));
 
         pane.getChildren().add(box);
     }
