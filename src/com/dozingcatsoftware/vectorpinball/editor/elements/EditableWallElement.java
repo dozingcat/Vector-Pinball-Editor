@@ -3,7 +3,9 @@ package com.dozingcatsoftware.vectorpinball.editor.elements;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -36,6 +38,10 @@ public class EditableWallElement extends EditableFieldElement {
             renderer.fillCircle(x1, y1, 0.25, color);
             renderer.fillCircle(x2, y2, 0.25, color);
         }
+    }
+
+    @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
+        props.put(POSITION_PROPERTY, Arrays.asList("-0.5", "0", "-0.5", "2"));
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {

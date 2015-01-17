@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
@@ -73,7 +74,7 @@ public class Main extends Application {
         renderer = new FxCanvasRenderer();
         renderer.setElementSelection(elementSelection);
 
-        palette = new PaletteView();
+        palette = new PaletteView(this::createElement);
 
         inspector = new ElementInspectorView();
         inspector.setElementSelection(elementSelection);
@@ -222,5 +223,13 @@ public class Main extends Application {
 
     void handleSelectionChange() {
         inspector.update();
+    }
+
+    void createElement(Class<? extends EditableFieldElement> elementClass) {
+        if (editableField!=null && fieldDriver==null) {
+            EditableFieldElement newElement = editableField.addNewElement(elementClass);
+            elementSelection.selectElement(newElement);
+            renderer.doDraw();
+        }
     }
 }

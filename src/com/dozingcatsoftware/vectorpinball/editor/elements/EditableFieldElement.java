@@ -2,6 +2,7 @@ package com.dozingcatsoftware.vectorpinball.editor.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ public abstract class EditableFieldElement {
     public static final String COLOR_PROPERTY = "color";
 
     static final Color DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
+    static final String CLASS_PREFIX = "com.dozingcatsoftware.vectorpinball.editor.elements.Editable";
 
     private Map<String, Object> properties;
     private boolean propertiesDirty = false;
@@ -24,6 +26,19 @@ public abstract class EditableFieldElement {
         properties = props;
         propertiesDirty = true;
     }
+
+    public void initAsNewElement(EditableField field) {
+        properties = new HashMap<>();
+        properties.put(CLASS_PROPERTY, getClass().getName().replace(CLASS_PREFIX, ""));
+        addPropertiesForNewElement(properties, field);
+        propertiesDirty = true;
+    }
+
+    /**
+     * Must be implemented by subclasses to fill a map of properties for the
+     * element when it has been added to an existing field.
+     */
+    protected abstract void addPropertiesForNewElement(Map<String, Object> props, EditableField field);
 
     public void setChangeHandler(Runnable handler) {
         changeHandler = handler;
@@ -75,7 +90,7 @@ public abstract class EditableFieldElement {
             // if package not specified, use this package
             String className = (String)params.get(CLASS_PROPERTY);
             if (className.indexOf('.')==-1) {
-                className = "com.dozingcatsoftware.vectorpinball.editor.elements.Editable" + className;
+                className = CLASS_PREFIX + className;
             }
             Class elementClass = Class.forName(className);
             self = (EditableFieldElement) elementClass.newInstance();

@@ -12,8 +12,10 @@ public class EditableField {
 
     Map<String, Object> properties;
     List<EditableFieldElement> elements;
+    Runnable changeHandler;
 
     void initFromProperties(Map<String, Object> props, Runnable changeHandler) {
+        this.changeHandler = changeHandler;
         properties = CollectionUtils.mutableDeepCopyOfMap(props);
         if (!properties.containsKey(ELEMENTS_PROPERTY)) {
             properties.put(ELEMENTS_PROPERTY, new ArrayList<Object>());
@@ -34,6 +36,20 @@ public class EditableField {
         EditableField field = new EditableField();
         field.initFromProperties(props, changeHandler);
         return field;
+    }
+
+    public EditableFieldElement addNewElement(Class<? extends EditableFieldElement> elementClass) {
+        EditableFieldElement elem;
+        try {
+            elem = elementClass.newInstance();
+            elem.initAsNewElement(this);
+            elem.setChangeHandler(changeHandler);
+            elements.add(elem);
+            return elem;
+        }
+        catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<EditableFieldElement> getElements() {

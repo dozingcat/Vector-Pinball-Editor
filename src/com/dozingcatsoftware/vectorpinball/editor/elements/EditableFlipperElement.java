@@ -5,6 +5,7 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -33,6 +34,15 @@ public class EditableFlipperElement extends EditableFieldElement {
         this.flipperLength = asDouble(getProperty(LENGTH_PROPERTY));
         this.minangle = toRadians(asDouble(getProperty(MIN_ANGLE_PROPERTY)));
         this.maxangle = toRadians(asDouble(getProperty(MAX_ANGLE_PROPERTY)));
+    }
+
+    @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
+        props.put(POSITION_PROPERTY, Arrays.asList(0, 0));
+        props.put(LENGTH_PROPERTY, "2.5");
+        props.put(MIN_ANGLE_PROPERTY, "-20");
+        props.put(MAX_ANGLE_PROPERTY, "20");
+        props.put(UP_SPEED_PROPERTY, "7");
+        props.put(DOWN_SPEED_PROPERTY, "3");
     }
 
     double endX() {

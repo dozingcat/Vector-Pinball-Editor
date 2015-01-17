@@ -6,6 +6,7 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -52,6 +53,13 @@ public class EditableWallArcElement extends EditableFieldElement {
             double y2 = centerY + yRadius * (float)Math.sin(angle2);
             lineSegments[i] = (new double[] {x1, y1, x2, y2});
         }
+    }
+
+    @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
+        props.put(RADIUS_PROPERTY, "0.5");
+        props.put(CENTER_PROPERTY, Arrays.asList("-0.5", "0"));
+        props.put(MIN_ANGLE_PROPERTY, "0");
+        props.put(MAX_ANGLE_PROPERTY, "135");
     }
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {

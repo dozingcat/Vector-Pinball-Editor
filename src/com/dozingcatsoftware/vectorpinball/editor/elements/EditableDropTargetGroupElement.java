@@ -7,6 +7,7 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asInt;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -42,10 +43,10 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
         // Individual targets can be specified in "positions" list.
         usesDirectPositions = hasProperty(POSITIONS_PROPERTY);
         if (usesDirectPositions) {
-            List<List<Number>> positionList = (List) getProperty(POSITIONS_PROPERTY);
+            List<List<Object>> positionList = (List) getProperty(POSITIONS_PROPERTY);
             positions = new double[positionList.size()][];
             for (int i = 0; i < positionList.size(); i++) {
-                List<Number> coords = positionList.get(i);
+                List<Object> coords = positionList.get(i);
                 positions[i] = new double[] {asDouble(coords.get(0)), asDouble(coords.get(1)),
                                              asDouble(coords.get(2)), asDouble(coords.get(3))};
             }
@@ -77,6 +78,15 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
                 positions[i] = new double[] {x1, y1, x2, y2};
             }
         }
+    }
+
+    @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
+        props.put(POSITIONS_PROPERTY, Arrays.asList(
+                Arrays.asList(-0.5, 0.0, -0.5, 0.8),
+                Arrays.asList(-0.5, 1.0, -0.5, 1.8),
+                Arrays.asList(-0.5, 2.0, -0.5, 2.8)
+        ));
+        props.put(RESET_DELAY_PROPERTY, "2");
     }
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {

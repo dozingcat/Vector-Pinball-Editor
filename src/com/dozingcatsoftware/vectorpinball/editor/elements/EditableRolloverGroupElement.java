@@ -3,6 +3,7 @@ package com.dozingcatsoftware.vectorpinball.editor.elements;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,12 +28,19 @@ public class EditableRolloverGroupElement extends EditableFieldElement {
 
     // This element doesn't use dirty checking.
 
+    @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
+        props.put(RADIUS_PROPERTY, "0.5");
+        Map<String, Object> rollover = new HashMap<>();
+        rollover.put(POSITION_PROPERTY, Arrays.asList("-0.5", "-0.5"));
+        props.put(ROLLOVERS_PROPERTY, Arrays.asList(rollover));
+    }
+
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         Color groupColor = currentColor(DEFAULT_COLOR);
         double groupRadius = asDouble(getProperty(RADIUS_PROPERTY));
         List<Map<String, Object>> rolloverMaps = (List<Map<String, Object>>)getProperty(ROLLOVERS_PROPERTY);
         for (Map<String, Object> rmap : rolloverMaps) {
-            List<Number> pos = (List<Number>)rmap.get(POSITION_PROPERTY);
+            List<Object> pos = (List<Object>)rmap.get(POSITION_PROPERTY);
             Color color = rmap.containsKey(COLOR_PROPERTY) ?
                     Color.fromList((List<Number>)rmap.get(COLOR_PROPERTY)) : groupColor;
             double radius = rmap.containsKey(RADIUS_PROPERTY) ?

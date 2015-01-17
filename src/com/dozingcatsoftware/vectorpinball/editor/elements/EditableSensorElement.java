@@ -4,6 +4,7 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -44,8 +45,11 @@ public class EditableSensorElement extends EditableFieldElement {
         }
     }
 
-    @Override
-    public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+    @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
+        props.put(RECT_PROPERTY, Arrays.asList("-0.5", "-0.5", "0", "0"));
+    }
+
+    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
         if (isCircular()) {
             double cx = (xmin+xmax) / 2;

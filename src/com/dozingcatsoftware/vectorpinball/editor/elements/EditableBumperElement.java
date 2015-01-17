@@ -4,6 +4,7 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -26,6 +27,12 @@ public class EditableBumperElement extends EditableFieldElement {
         this.cy = asDouble(pos.get(1));
         this.radius = asDouble(getProperty(RADIUS_PROPERTY));
         this.color = currentColor(DEFAULT_COLOR);
+    }
+
+    @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
+        props.put(POSITION_PROPERTY, Arrays.asList("-0.5", "-0.5"));
+        props.put(RADIUS_PROPERTY, "0.5");
+        props.put(KICK_PROPERTY, "1.0");
     }
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
