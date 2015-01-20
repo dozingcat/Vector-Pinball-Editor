@@ -24,7 +24,6 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private GraphicsContext context;
     private Field field;
     private EditableField editableField;
-    private ElementSelection elementSelection;
 
     private double scale = 30;
     private double xOffset = -2;
@@ -46,10 +45,6 @@ public class FxCanvasRenderer implements IFieldRenderer {
     public void setEditableField(EditableField f) {
         editableField = f;
         field = null;
-    }
-
-    public void setElementSelection(ElementSelection selection) {
-        elementSelection = selection;
     }
 
     static Paint toFxPaint(Color color) {
@@ -119,7 +114,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
         context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         if (editableField != null) {
             for (EditableFieldElement elem : editableField.getElements()) {
-                elem.drawForEditor(this, elementSelection.isElementSelected(elem));
+                elem.drawForEditor(this, editableField.isElementSelected(elem));
             }
         }
         else if (field != null) {
@@ -163,18 +158,18 @@ public class FxCanvasRenderer implements IFieldRenderer {
                 break;
             }
         }
-        elementSelection.setSelectedElements(selected);
+        editableField.setSelectedElements(selected);
         dragStartPoint = (selected.isEmpty()) ? null : worldPoint;
         lastDragPoint = null;
         draw();
     }
 
     void handleEditorMouseDrag(MouseEvent event) {
-        if (editableField != null && elementSelection.hasSelection() && dragStartPoint!=null) {
+        if (editableField != null && editableField.hasSelection() && dragStartPoint!=null) {
             Point worldPoint = worldPointFromEvent(event);
             Point totalDragOffset = worldPoint.subtract(dragStartPoint);
             Point previousDragOffset = worldPoint.subtract((lastDragPoint!=null) ? lastDragPoint : dragStartPoint);
-            for (EditableFieldElement elem : elementSelection.getSelectedElements()) {
+            for (EditableFieldElement elem : editableField.getSelectedElements()) {
                 elem.handleDrag(dragStartPoint, totalDragOffset, previousDragOffset);
             }
             lastDragPoint = worldPoint;

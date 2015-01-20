@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.beans.InvalidationListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
@@ -88,7 +87,12 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
     HBox createDecimalStringFieldWithLabel(String label, String propertyName) {
         HBox box = createHBoxWithLabel(label);
         DecimalTextField textField = new DecimalTextField();
-        textField.textProperty().addListener((event) -> updateDecimalValue(propertyName, textField));
+
+        textField.setOnAction((event) -> updateDecimalValue(propertyName, textField));
+        textField.focusedProperty().addListener((target, wasFocused, isFocused) -> {
+            if (!isFocused) updateDecimalValue(propertyName, textField);
+        });
+
         box.getChildren().add(textField);
         decimalPropertyToTextField.put(propertyName, textField);
         return box;
@@ -102,8 +106,13 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
 
         List<TextField> positionTextFields = Arrays.asList(xField, yField);
         positionPropertyToTextFields.put(propertyName, positionTextFields);
-        InvalidationListener changeHandler = (event) -> updatePositionValue(propertyName, positionTextFields);
-        positionTextFields.forEach((field) -> field.textProperty().addListener(changeHandler));
+
+        positionTextFields.forEach((field) -> {
+            field.setOnAction((event) -> updatePositionValue(propertyName, positionTextFields));
+            field.focusedProperty().addListener((target, wasFocused, isFocused) -> {
+                if (!isFocused) updatePositionValue(propertyName, positionTextFields);
+            });
+        });
         return box;
     }
 

@@ -60,7 +60,6 @@ public class Main extends Application {
     ElementInspectorView inspector;
 
     Field field;
-    ElementSelection elementSelection;
     EditableField editableField;
     FxCanvasRenderer renderer;
     FieldDriver fieldDriver;
@@ -68,17 +67,19 @@ public class Main extends Application {
     Map<String, Object> fieldMap = null;
 
     @Override public void start(Stage primaryStage) {
-        elementSelection = new ElementSelection();
-        elementSelection.setSelectionChangeCallback(this::handleSelectionChange);
+        editableField = new EditableField();
+        editableField.setElementChangedCallback(this::handleElementChange);
+        editableField.setSelectionChangedCallback(this::handleSelectionChange);
 
         renderer = new FxCanvasRenderer();
-        renderer.setElementSelection(elementSelection);
+        renderer.setEditableField(editableField);
 
         palette = new PaletteView(this::createElement);
 
         inspector = new ElementInspectorView();
-        inspector.setElementSelection(elementSelection);
         inspector.setChangeCallback(() -> renderer.doDraw());
+        inspector.setEditableField(editableField);
+
 
         int width = 1100;
         int height = 1100;
@@ -152,11 +153,7 @@ public class Main extends Application {
 
     void displayForEditing() {
         renderer.setCanvas(fieldCanvas);
-
-        if (editableField == null) {
-            editableField = EditableField.createFromPropertyMap(fieldMap, () -> inspector.updateInspectorValues());
-        }
-        renderer.setEditableField(editableField);
+        editableField.initFromProperties(fieldMap);
         renderer.doDraw();
         editorState = EditorState.EDITING;
     }
@@ -225,10 +222,14 @@ public class Main extends Application {
         inspector.update();
     }
 
+    void handleElementChange() {
+        inspector.updateInspectorValues();
+    }
+
     void createElement(Class<? extends EditableFieldElement> elementClass) {
         if (editableField!=null && fieldDriver==null) {
             EditableFieldElement newElement = editableField.addNewElement(elementClass);
-            elementSelection.selectElement(newElement);
+            editableField.selectElement(newElement);
             renderer.doDraw();
         }
     }

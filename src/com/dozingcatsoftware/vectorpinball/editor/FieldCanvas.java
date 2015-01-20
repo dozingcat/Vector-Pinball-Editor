@@ -6,7 +6,7 @@ import com.dozingcatsoftware.vectorpinball.model.Color;
 
 public class FieldCanvas extends Canvas {
 
-    public FieldCanvas(ElementSelection elementSelection) {
+    public FieldCanvas() {
         super(500, 500);
         widthProperty().addListener(event -> draw());
         heightProperty().addListener(event -> draw());
