@@ -62,6 +62,8 @@ public class Main extends Application {
     Field field;
     EditableField editableField;
     FxCanvasRenderer renderer;
+    UndoStack undoStack;
+
     FieldDriver fieldDriver;
     EditorState editorState = EditorState.EDITING;
     Map<String, Object> fieldMap = null;
@@ -80,6 +82,9 @@ public class Main extends Application {
         inspector.setChangeCallback(() -> renderer.doDraw());
         inspector.setEditableField(editableField);
 
+        undoStack = new UndoStack();
+        undoStack.setEditableField(editableField);
+        renderer.setUndoStack(undoStack);
 
         int width = 1100;
         int height = 1100;
@@ -116,6 +121,14 @@ public class Main extends Application {
         endGameButton.setOnAction((event) -> stopGame());
         fieldControls.getChildren().add(endGameButton);
 
+        Button undoButton = new Button("Undo");
+        undoButton.setOnAction((event) -> undoEdit());
+        fieldControls.getChildren().add(undoButton);
+
+        Button redoButton = new Button("Redo");
+        redoButton.setOnAction((event) -> redoEdit());
+        fieldControls.getChildren().add(redoButton);
+
 
         fieldScroller = new ScrollPane();
         fieldScroller.setStyle("-fx-background: black;");
@@ -149,6 +162,9 @@ public class Main extends Application {
         JarFileFieldReader fieldReader = new JarFileFieldReader();
         fieldMap = fieldReader.layoutMapForLevel(level);
         displayForEditing();
+
+        undoStack.clearStack();
+        undoStack.pushSnapshot();
     }
 
     void displayForEditing() {
@@ -181,7 +197,10 @@ public class Main extends Application {
             fieldDriver.stop();
         }
         fieldDriver = null;
-        displayForEditing();
+
+        renderer.setEditableField(editableField);
+        renderer.doDraw();
+        editorState = EditorState.EDITING;
     }
 
     void handleCanvasMousePressed(MouseEvent event) {
@@ -232,5 +251,15 @@ public class Main extends Application {
             editableField.selectElement(newElement);
             renderer.doDraw();
         }
+    }
+
+    void undoEdit() {
+        undoStack.undo();
+        renderer.doDraw();
+    }
+
+    void redoEdit() {
+        undoStack.redo();
+        renderer.doDraw();
     }
 }

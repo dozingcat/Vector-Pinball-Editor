@@ -14,13 +14,12 @@ import com.dozingcatsoftware.vectorpinball.editor.inspector.ElementInspector;
 public class ElementInspectorView extends VBox {
 
     EditableField editableField;
-    Label selectionLabel;
+    Runnable changeCallback;
 
+    Label selectionLabel;
     ElementInspector currentInspector;
     Pane inspectorPane;
     Button deleteElementButton;
-
-    Runnable changeCallback;
 
     public ElementInspectorView() {
         selectionLabel = new Label("");

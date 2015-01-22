@@ -24,6 +24,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private GraphicsContext context;
     private Field field;
     private EditableField editableField;
+    private UndoStack undoStack;
 
     private double scale = 30;
     private double xOffset = -2;
@@ -45,6 +46,10 @@ public class FxCanvasRenderer implements IFieldRenderer {
     public void setEditableField(EditableField f) {
         editableField = f;
         field = null;
+    }
+
+    public void setUndoStack(UndoStack stack) {
+        undoStack = stack;
     }
 
     static Paint toFxPaint(Color color) {
@@ -178,5 +183,8 @@ public class FxCanvasRenderer implements IFieldRenderer {
     }
 
     void handleEditorMouseUp(MouseEvent event) {
+        if (editableField != null && editableField.hasSelection() && dragStartPoint!=null) {
+            undoStack.pushSnapshot();
+        }
     }
 }

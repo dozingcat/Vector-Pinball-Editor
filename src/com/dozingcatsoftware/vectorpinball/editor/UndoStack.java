@@ -10,13 +10,8 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 public class UndoStack {
 
     static class Entry {
-        final Map<String, Object> fieldMap;
-        final Set<Integer> selectedIndexes;
-
-        Entry(Map<String, Object> fmap, Set<Integer> selection) {
-            fieldMap = fmap;
-            selectedIndexes = selection;
-        }
+        Map<String, Object> fieldMap;
+        Set<Integer> selectedIndexes;
     }
 
     EditableField editableField;
@@ -27,8 +22,19 @@ public class UndoStack {
         editableField = field;
     }
 
+    public void clearStack() {
+        entries.clear();
+    }
+
     public void pushSnapshot() {
-        // Remove anything after currentEntryIndex, and append to end.
+        Entry entry = new Entry();
+        entry.fieldMap = editableField.getPropertyMapSnapshot();
+        while (entries.size() > currentEntryIndex+1) {
+            entries.remove(entries.size()-1);
+        }
+        entries.add(entry);
+        currentEntryIndex += 1;
+        System.out.println("Pushed undo snapshot, size="+entries.size());
     }
 
     public boolean canUndo() {
@@ -44,7 +50,7 @@ public class UndoStack {
             throw new IllegalStateException("Can't undo");
         }
         currentEntryIndex -= 1;
-        // restore EditableField
+        restoreFromCurrentIndex();
     }
 
     public void redo() {
@@ -52,6 +58,14 @@ public class UndoStack {
             throw new IllegalStateException("Can't undo");
         }
         currentEntryIndex += 1;
-        // restore EditableField
+        restoreFromCurrentIndex();
+    }
+
+    void restoreFromCurrentIndex() {
+        Entry topEntry = entries.get(currentEntryIndex);
+        editableField.initFromProperties(topEntry.fieldMap);
+        if (topEntry.selectedIndexes != null) {
+            editableField.setSelectedElementIndexes(topEntry.selectedIndexes);
+        }
     }
 }
