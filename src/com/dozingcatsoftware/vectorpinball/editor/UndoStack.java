@@ -27,14 +27,17 @@ public class UndoStack {
     }
 
     public void pushSnapshot() {
-        Entry entry = new Entry();
-        entry.fieldMap = editableField.getPropertyMapSnapshot();
-        while (entries.size() > currentEntryIndex+1) {
-            entries.remove(entries.size()-1);
+        Map<String, Object> fieldMapSnapshot = editableField.getPropertyMapSnapshot();
+        if (currentEntryIndex<0 || !entries.get(currentEntryIndex).fieldMap.equals(fieldMapSnapshot)) {
+            Entry entry = new Entry();
+            entry.fieldMap = fieldMapSnapshot;
+            while (entries.size() > currentEntryIndex+1) {
+                entries.remove(entries.size()-1);
+            }
+            entries.add(entry);
+            currentEntryIndex += 1;
+            System.out.println("Pushed undo snapshot, size="+entries.size());
         }
-        entries.add(entry);
-        currentEntryIndex += 1;
-        System.out.println("Pushed undo snapshot, size="+entries.size());
     }
 
     public boolean canUndo() {
