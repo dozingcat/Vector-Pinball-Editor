@@ -24,6 +24,7 @@ public class UndoStack {
 
     public void clearStack() {
         entries.clear();
+        currentEntryIndex = -1;
     }
 
     public void pushSnapshot() {

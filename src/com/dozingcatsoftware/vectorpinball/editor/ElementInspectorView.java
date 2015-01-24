@@ -14,6 +14,7 @@ import com.dozingcatsoftware.vectorpinball.editor.inspector.ElementInspector;
 public class ElementInspectorView extends VBox {
 
     EditableField editableField;
+    UndoStack undoStack;
     Runnable changeCallback;
 
     Label selectionLabel;
@@ -32,6 +33,10 @@ public class ElementInspectorView extends VBox {
 
     public void setEditableField(EditableField field) {
         editableField = field;
+    }
+
+    public void setUndoStack(UndoStack stack) {
+        undoStack = stack;
     }
 
     public void setChangeCallback(Runnable callback) {

@@ -9,7 +9,13 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.KeyCharacterCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -70,21 +76,22 @@ public class Main extends Application {
 
     @Override public void start(Stage primaryStage) {
         editableField = new EditableField();
-        editableField.setElementChangedCallback(this::handleElementChange);
+        editableField.setElementChangedCallback(this::handleElementChangeFromField);
         editableField.setSelectionChangedCallback(this::handleSelectionChange);
+
+        undoStack = new UndoStack();
+        undoStack.setEditableField(editableField);
 
         renderer = new FxCanvasRenderer();
         renderer.setEditableField(editableField);
+        renderer.setUndoStack(undoStack);
 
         palette = new PaletteView(this::createElement);
 
         inspector = new ElementInspectorView();
-        inspector.setChangeCallback(() -> renderer.doDraw());
+        inspector.setChangeCallback(this::handleElementChangeFromInspector);
         inspector.setEditableField(editableField);
-
-        undoStack = new UndoStack();
-        undoStack.setEditableField(editableField);
-        renderer.setUndoStack(undoStack);
+        inspector.setUndoStack(undoStack);
 
         int width = 1100;
         int height = 1100;
@@ -140,13 +147,40 @@ public class Main extends Application {
 
         GridPane.setConstraints(fieldBox, 1, 0, 1, 2);
 
-        root.getChildren().addAll(palette, inspector, fieldBox);
+        MenuBar menuBar = buildMenuBar();
+        root.getChildren().addAll(menuBar, palette, inspector, fieldBox);
 
         primaryStage.setScene(new Scene(root, width, height));
         primaryStage.show();
 
         loadBuiltInLevel(1);
+    }
 
+    MenuBar buildMenuBar() {
+        Menu fileMenu = new Menu("File");
+        MenuItem newItem = new MenuItem("New Table");
+        newItem.setAccelerator(new KeyCharacterCombination("N", KeyCombination.SHORTCUT_DOWN));
+
+        Menu newFromTemplateItem = new Menu("New From Template");
+        MenuItem newFromTable1Item = new MenuItem("Table 1");
+        newFromTable1Item.setOnAction((event) -> loadBuiltInLevel(1));
+        MenuItem newFromTable2Item = new MenuItem("Table 2");
+        newFromTable2Item.setOnAction((event) -> loadBuiltInLevel(2));
+        MenuItem newFromTable3Item = new MenuItem("Table 3");
+        newFromTable3Item.setOnAction((event) -> loadBuiltInLevel(3));
+        newFromTemplateItem.getItems().addAll(newFromTable1Item, newFromTable2Item, newFromTable3Item);
+
+        MenuItem openItem = new MenuItem("Open");
+        openItem.setAccelerator(new KeyCharacterCombination("O", KeyCombination.SHORTCUT_DOWN));
+        MenuItem saveItem = new MenuItem("Save");
+        saveItem.setAccelerator(new KeyCharacterCombination("S", KeyCombination.SHORTCUT_DOWN));
+        fileMenu.getItems().addAll(newItem, newFromTemplateItem, openItem, new SeparatorMenuItem(), saveItem);
+
+        MenuBar mbar = new MenuBar();
+        mbar.getMenus().addAll(fileMenu);
+        mbar.setUseSystemMenuBar(true);
+        System.out.println(mbar.isUseSystemMenuBar());
+        return mbar;
     }
 
     void createCanvas(int width, int height) {
@@ -241,8 +275,13 @@ public class Main extends Application {
         inspector.update();
     }
 
-    void handleElementChange() {
+    void handleElementChangeFromField() {
         inspector.updateInspectorValues();
+    }
+
+    void handleElementChangeFromInspector() {
+        renderer.doDraw();
+        undoStack.pushSnapshot();
     }
 
     void createElement(Class<? extends EditableFieldElement> elementClass) {
@@ -250,16 +289,21 @@ public class Main extends Application {
             EditableFieldElement newElement = editableField.addNewElement(elementClass);
             editableField.selectElement(newElement);
             renderer.doDraw();
+            undoStack.pushSnapshot();
         }
     }
 
     void undoEdit() {
-        undoStack.undo();
-        renderer.doDraw();
+        if (undoStack.canUndo()) {
+            undoStack.undo();
+            renderer.doDraw();
+        }
     }
 
     void redoEdit() {
-        undoStack.redo();
-        renderer.doDraw();
+        if (undoStack.canRedo()) {
+            undoStack.redo();
+            renderer.doDraw();
+        }
     }
 }
