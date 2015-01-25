@@ -1,5 +1,12 @@
 package com.dozingcatsoftware.vectorpinball.editor;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +33,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
@@ -33,6 +41,7 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
+import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 // Need to edit project as described in
 // http://stackoverflow.com/questions/24467931/using-javafx-jdk-1-8-0-05-in-eclipse-luna-does-not-work
@@ -60,6 +69,7 @@ public class Main extends Application {
         SAMPLE_GAME,
     }
 
+    Stage mainStage;
     ScrollPane fieldScroller;
     Canvas fieldCanvas;
     PaletteView palette;
@@ -74,7 +84,12 @@ public class Main extends Application {
     EditorState editorState = EditorState.EDITING;
     Map<String, Object> fieldMap = null;
 
+    FileSystem fileSystem = FileSystems.getDefault();
+    Path savedFilePath;
+
     @Override public void start(Stage primaryStage) {
+        this.mainStage = primaryStage;
+
         editableField = new EditableField();
         editableField.setElementChangedCallback(this::handleElementChangeFromField);
         editableField.setSelectionChangedCallback(this::handleSelectionChange);
@@ -128,6 +143,7 @@ public class Main extends Application {
         endGameButton.setOnAction((event) -> stopGame());
         fieldControls.getChildren().add(endGameButton);
 
+        /*
         Button undoButton = new Button("Undo");
         undoButton.setOnAction((event) -> undoEdit());
         fieldControls.getChildren().add(undoButton);
@@ -135,7 +151,7 @@ public class Main extends Application {
         Button redoButton = new Button("Redo");
         redoButton.setOnAction((event) -> redoEdit());
         fieldControls.getChildren().add(redoButton);
-
+        */
 
         fieldScroller = new ScrollPane();
         fieldScroller.setStyle("-fx-background: black;");
@@ -156,28 +172,46 @@ public class Main extends Application {
         loadBuiltInLevel(1);
     }
 
+    MenuItem createMenuItem(String label, String shortcutChar, Runnable onAction) {
+        MenuItem item = new MenuItem(label);
+        if (shortcutChar != null) {
+            item.setAccelerator(new KeyCharacterCombination(shortcutChar, KeyCombination.SHORTCUT_DOWN));
+        }
+        if (onAction != null) {
+            item.setOnAction((event) -> onAction.run());
+        }
+        return item;
+    }
     MenuBar buildMenuBar() {
         Menu fileMenu = new Menu("File");
-        MenuItem newItem = new MenuItem("New Table");
-        newItem.setAccelerator(new KeyCharacterCombination("N", KeyCombination.SHORTCUT_DOWN));
 
-        Menu newFromTemplateItem = new Menu("New From Template");
-        MenuItem newFromTable1Item = new MenuItem("Table 1");
-        newFromTable1Item.setOnAction((event) -> loadBuiltInLevel(1));
-        MenuItem newFromTable2Item = new MenuItem("Table 2");
-        newFromTable2Item.setOnAction((event) -> loadBuiltInLevel(2));
-        MenuItem newFromTable3Item = new MenuItem("Table 3");
-        newFromTable3Item.setOnAction((event) -> loadBuiltInLevel(3));
-        newFromTemplateItem.getItems().addAll(newFromTable1Item, newFromTable2Item, newFromTable3Item);
+        Menu newFromTemplateMenu = new Menu("New From Template");
+        newFromTemplateMenu.getItems().addAll(
+                createMenuItem("Table 1", null, () -> loadBuiltInLevel(1)),
+                createMenuItem("Table 2", null, () -> loadBuiltInLevel(2)),
+                createMenuItem("Table 3", null, () -> loadBuiltInLevel(3))
+        );
 
         MenuItem openItem = new MenuItem("Open");
         openItem.setAccelerator(new KeyCharacterCombination("O", KeyCombination.SHORTCUT_DOWN));
         MenuItem saveItem = new MenuItem("Save");
         saveItem.setAccelerator(new KeyCharacterCombination("S", KeyCombination.SHORTCUT_DOWN));
-        fileMenu.getItems().addAll(newItem, newFromTemplateItem, openItem, new SeparatorMenuItem(), saveItem);
+        fileMenu.getItems().addAll(
+                createMenuItem("New Table", "N", null),
+                newFromTemplateMenu,
+                new SeparatorMenuItem(),
+                createMenuItem("Open", "O", this::openFile),
+                createMenuItem("Save", "S", this::saveFile)
+        );
+
+        Menu editMenu = new Menu("Edit");
+        MenuItem undoItem = createMenuItem("Undo", "Z", this::undoEdit);
+        MenuItem redoItem = createMenuItem("Redo", null, this::redoEdit);
+        redoItem.setAccelerator(new KeyCharacterCombination("Z", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
+        editMenu.getItems().addAll(undoItem, redoItem);
 
         MenuBar mbar = new MenuBar();
-        mbar.getMenus().addAll(fileMenu);
+        mbar.getMenus().addAll(fileMenu, editMenu);
         mbar.setUseSystemMenuBar(true);
         System.out.println(mbar.isUseSystemMenuBar());
         return mbar;
@@ -191,14 +225,19 @@ public class Main extends Application {
         fieldCanvas.setOnMouseDragged(this::handleCanvasMouseDragged);
     }
 
-    void loadBuiltInLevel(int level) {
-        System.out.println("Reading table");
-        JarFileFieldReader fieldReader = new JarFileFieldReader();
-        fieldMap = fieldReader.layoutMapForLevel(level);
+    void loadFieldMap(Map<String, Object> map) {
+        fieldMap = map;
         displayForEditing();
 
         undoStack.clearStack();
         undoStack.pushSnapshot();
+        savedFilePath = null;
+    }
+
+    void loadBuiltInLevel(int level) {
+        System.out.println("Reading table");
+        JarFileFieldReader fieldReader = new JarFileFieldReader();
+        loadFieldMap(fieldReader.layoutMapForLevel(level));
     }
 
     void displayForEditing() {
@@ -304,6 +343,59 @@ public class Main extends Application {
         if (undoStack.canRedo()) {
             undoStack.redo();
             renderer.doDraw();
+        }
+    }
+
+    void openFile() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Open Table");
+        File selectedFile = chooser.showOpenDialog(mainStage);
+        if (selectedFile != null) {
+            Path openFilePath = selectedFile.toPath();
+            // TODO: Check for implausibly large files.
+            byte[] contents = null;
+            Map<String, Object> map = null;
+            try {
+                contents = Files.readAllBytes(openFilePath);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                return;
+            }
+            try {
+                map = JSONUtils.mapFromJSONString(new String(contents, StandardCharsets.UTF_8));
+            }
+            catch (JSONUtils.ParsingException ex) {
+                ex.printStackTrace();
+                return;
+            }
+            loadFieldMap(map);
+            savedFilePath = openFilePath;
+        }
+    }
+
+    void saveFile() {
+        if (savedFilePath != null) {
+            writeToSavedFilePath();
+        }
+        else {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Save Table");
+            File selectedFile = chooser.showSaveDialog(mainStage);
+            if (selectedFile != null) {
+                savedFilePath = selectedFile.toPath();
+                writeToSavedFilePath();
+            }
+        }
+    }
+
+    void writeToSavedFilePath() {
+        String fileText = JSONUtils.jsonStringFromObject(editableField.getPropertyMapSnapshot());
+        try {
+            Files.write(savedFilePath, fileText.getBytes(StandardCharsets.UTF_8));
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 }
