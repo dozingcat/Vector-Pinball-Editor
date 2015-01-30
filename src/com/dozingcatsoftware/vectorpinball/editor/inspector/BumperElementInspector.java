@@ -12,6 +12,8 @@ public class BumperElementInspector extends ElementInspector<EditableBumperEleme
         box.getChildren().add(createHBoxWithLabel("Bumper"));
         box.getChildren().add(createDecimalStringFieldWithLabel("Radius", EditableBumperElement.RADIUS_PROPERTY));
         box.getChildren().add(createPositionStringFieldsWithLabel("Center", EditableBumperElement.POSITION_PROPERTY));
+        box.getChildren().add(createIntegerFieldWithLabel("Score", EditableBumperElement.SCORE_PROPERTY));
+        box.getChildren().add(createIntegerFieldWithLabel("Kick", EditableBumperElement.KICK_PROPERTY));
 
         pane.getChildren().add(box);
     }

@@ -26,6 +26,7 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
     boolean updatingFromExternalChange = false;
 
     Map<String, TextField> decimalPropertyToTextField = new HashMap<>();
+    Map<String, TextField> integerPropertyToTextField = new HashMap<>();
     Map<String, List<TextField>> positionPropertyToTextFields = new HashMap<>();
     Map<String, CheckBox> booleanPropertyToCheckBox = new HashMap<>();
 
@@ -53,6 +54,10 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
         for (String prop : decimalPropertyToTextField.keySet()) {
             Object value = getElement().getProperty(prop);
             decimalPropertyToTextField.get(prop).setText(value!=null ? value.toString() : "");
+        }
+        for (String prop : integerPropertyToTextField.keySet()) {
+            Object value = getElement().getProperty(prop);
+            integerPropertyToTextField.get(prop).setText(value!=null ? value.toString() : "");
         }
         for (String prop : positionPropertyToTextFields.keySet()) {
             List<?> values = (List<?>)getElement().getProperty(prop);
@@ -98,6 +103,20 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
         return box;
     }
 
+    HBox createIntegerFieldWithLabel(String label, String propertyName) {
+        HBox box = createHBoxWithLabel(label);
+        IntegerTextField textField = new IntegerTextField();
+
+        textField.setOnAction((event) -> updateIntegerValue(propertyName, textField));
+        textField.focusedProperty().addListener((target, wasFocused, isFocused) -> {
+            if (!isFocused) updateIntegerValue(propertyName, textField);
+        });
+
+        box.getChildren().add(textField);
+        integerPropertyToTextField.put(propertyName, textField);
+        return box;
+    }
+
     HBox createPositionStringFieldsWithLabel(String label, String propertyName) {
         HBox box = createHBoxWithLabel(label);
         DecimalTextField xField = new DecimalTextField();
@@ -125,6 +144,7 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
         return box;
     }
 
+    // Decimals are stored as strings to avoid rounding issues.
     void updateDecimalValue(String propertyName, TextField textField) {
         if (updatingFromExternalChange) return;
         String stringValue = textField.getText();
@@ -133,6 +153,18 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
         }
         else {
             getElement().setProperty(propertyName, stringValue);
+        }
+        notifyChanged();
+    }
+
+    void updateIntegerValue(String propertyName, TextField textField) {
+        if (updatingFromExternalChange) return;
+        String stringValue = textField.getText();
+        if (stringValue==null || stringValue.length()==0) {
+            getElement().removeProperty(propertyName);
+        }
+        else {
+            getElement().setProperty(propertyName, Long.valueOf(stringValue));
         }
         notifyChanged();
     }

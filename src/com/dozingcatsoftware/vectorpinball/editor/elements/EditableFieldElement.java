@@ -14,6 +14,7 @@ public abstract class EditableFieldElement {
 
     public static final String CLASS_PROPERTY = "class";
     public static final String COLOR_PROPERTY = "color";
+    public static final String SCORE_PROPERTY = "score";
 
     static final Color DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
     static final String CLASS_PREFIX = "com.dozingcatsoftware.vectorpinball.editor.elements.Editable";

@@ -69,6 +69,8 @@ public class Main extends Application {
         SAMPLE_GAME,
     }
 
+    static String WINDOW_TITLE_PREFIX = "Vector Pinball: ";
+
     Stage mainStage;
     ScrollPane fieldScroller;
     Canvas fieldCanvas;
@@ -238,6 +240,7 @@ public class Main extends Application {
         System.out.println("Reading table");
         JarFileFieldReader fieldReader = new JarFileFieldReader();
         loadFieldMap(fieldReader.layoutMapForLevel(level));
+        mainStage.setTitle(WINDOW_TITLE_PREFIX + "Table Template " + level);
     }
 
     void displayForEditing() {
@@ -370,6 +373,7 @@ public class Main extends Application {
             }
             loadFieldMap(map);
             savedFilePath = openFilePath;
+            mainStage.setTitle(WINDOW_TITLE_PREFIX + savedFilePath.toString());
         }
     }
 
@@ -384,6 +388,7 @@ public class Main extends Application {
             if (selectedFile != null) {
                 savedFilePath = selectedFile.toPath();
                 writeToSavedFilePath();
+                mainStage.setTitle("Vector Pinball: " + savedFilePath.toString());
             }
         }
     }
