@@ -27,6 +27,7 @@ public class EditableWallElement extends EditableFieldElement {
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         Color color = currentColor(DEFAULT_WALL_COLOR);
+        double selectionCircleRadius = 0.25 / renderer.getRelativeScale();
         List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
         double x1 = asDouble(pos.get(0));
         double y1 = asDouble(pos.get(1));
@@ -35,8 +36,8 @@ public class EditableWallElement extends EditableFieldElement {
         renderer.drawLine(x1, y1, x2, y2, color);
         if (isSelected) {
             // TODO: adjust selection size for zoom level, needs method on IFieldRenderer.
-            renderer.fillCircle(x1, y1, 0.25, color);
-            renderer.fillCircle(x2, y2, 0.25, color);
+            renderer.fillCircle(x1, y1, selectionCircleRadius, color);
+            renderer.fillCircle(x2, y2, selectionCircleRadius, color);
         }
     }
 

@@ -86,6 +86,7 @@ public class ElementInspectorView extends VBox {
             this.getChildren().remove(inspectorPane);
             this.getChildren().remove(deleteElementButton);
             inspectorPane = null;
+            currentInspector = null;
         }
     }
 }

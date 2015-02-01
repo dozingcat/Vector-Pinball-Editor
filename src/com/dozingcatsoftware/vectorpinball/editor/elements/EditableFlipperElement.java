@@ -57,7 +57,12 @@ public class EditableFlipperElement extends EditableFieldElement {
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
-        renderer.drawLine(cx, cy, endX(), endY(), currentColor(DEFAULT_COLOR));
+        Color color = currentColor(DEFAULT_COLOR);
+        renderer.drawLine(cx, cy, endX(), endY(), color);
+        if (isSelected) {
+            renderer.fillCircle(cx, cy, 0.35*renderer.getRelativeScale(), color);
+            renderer.fillCircle(endX(), endY(), 0.15*renderer.getRelativeScale(), color);
+        }
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {

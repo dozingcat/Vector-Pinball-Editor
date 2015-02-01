@@ -20,13 +20,15 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class FxCanvasRenderer implements IFieldRenderer {
 
+    static final double DEFAULT_SCALE = 30;
+
     private Canvas canvas;
     private GraphicsContext context;
     private Field field;
     private EditableField editableField;
     private UndoStack undoStack;
 
-    private double scale = 30;
+    private double scale = DEFAULT_SCALE;
     private double xOffset = -2;
     private double yOffset = -2;
 
@@ -53,7 +55,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
     }
 
     static Paint toFxPaint(Color color) {
-        return javafx.scene.paint.Color.rgb(color.red, color.green, color.blue);
+        return javafx.scene.paint.Color.rgb(color.red, color.green, color.blue, color.alpha/255.0);
     }
 
     double worldToPixelX(double x) {
@@ -105,6 +107,17 @@ public class FxCanvasRenderer implements IFieldRenderer {
         frameCircle((double)cx, (double)cy, radius, color);
     }
 
+    @Override public void fillPolygon(double[] xPoints, double[] yPoints, Color color) {
+        double[] pixelX = new double[xPoints.length];
+        double[] pixelY = new double[yPoints.length];
+        for (int i=0; i<xPoints.length; i++) {
+            pixelX[i] = worldToPixelX(xPoints[i]);
+            pixelY[i] = worldToPixelY(yPoints[i]);
+        }
+        context.setFill(toFxPaint(color));
+        context.fillPolygon(pixelX, pixelY, pixelX.length);
+    }
+
     @Override public void doDraw() {
         if (Platform.isFxApplicationThread()) {
             draw();
@@ -146,6 +159,10 @@ public class FxCanvasRenderer implements IFieldRenderer {
 
     @Override public void setDebugMessage(String debugInfo) {
 
+    }
+
+    @Override public double getRelativeScale() {
+        return scale/DEFAULT_SCALE;
     }
 
     Point worldPointFromEvent(MouseEvent event) {

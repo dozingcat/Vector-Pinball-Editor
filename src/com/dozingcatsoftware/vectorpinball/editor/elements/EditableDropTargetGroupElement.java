@@ -96,7 +96,28 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
         for(double[] pos : positions) {
             renderer.drawLine(pos[0], pos[1], pos[2], pos[3], color);
         }
+        if (isSelected) {
+            // Draw a translucent rectangle around each target.
+            Color colorWithAlpha = Color.fromRGB(color.red, color.green, color.blue, color.alpha/2);
+            double dist = 0.1 * renderer.getRelativeScale();
+            double[] xPoints = new double[4];
+            double[] yPoints = new double[4];
+            for(double[] pos : positions) {
+                double angle = Math.atan2(pos[3]-pos[1], pos[2]-pos[0]);
+                double perpAngle = angle + TAU/4;
+                // Extend past each endpoint of target, then go perpendicular to get polygon vertices.
+                xPoints[0] = pos[0] - dist*Math.cos(angle) + dist*Math.cos(perpAngle);
+                yPoints[0] = pos[1] - dist*Math.sin(angle) + dist*Math.sin(perpAngle);
+                xPoints[1] = pos[2] + dist*Math.cos(angle) + dist*Math.cos(perpAngle);
+                yPoints[1] = pos[3] + dist*Math.sin(angle) + dist*Math.sin(perpAngle);
+                xPoints[2] = pos[2] + dist*Math.cos(angle) - dist*Math.cos(perpAngle);
+                yPoints[2] = pos[3] + dist*Math.sin(angle) - dist*Math.sin(perpAngle);
+                xPoints[3] = pos[0] - dist*Math.cos(angle) - dist*Math.cos(perpAngle);
+                yPoints[3] = pos[1] - dist*Math.sin(angle) - dist*Math.sin(perpAngle);
 
+                renderer.fillPolygon(xPoints, yPoints, colorWithAlpha);
+            }
+        }
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {

@@ -18,11 +18,16 @@ public interface IFieldRenderer {
     public void frameCircle(float cx, float cy, float radius, Color color);
     public void frameCircle(double cx, double cy, double radius, Color color);
 
+    public void fillPolygon(double[] xPoints, double[] yPoints, Color color);
+
 	public void doDraw();
 
 	public int getWidth();
 
 	public int getHeight();
+
+	// 1=normal view, >1 zoomed in, <1 zoomed out.
+	public double getRelativeScale();
 
     public void setDebugMessage(String debugMessage);
 

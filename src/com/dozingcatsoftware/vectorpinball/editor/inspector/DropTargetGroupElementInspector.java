@@ -38,6 +38,8 @@ public class DropTargetGroupElementInspector extends ElementInspector<EditableDr
         addButton.setOnAction((event) -> addNewTargetWithPosition());
         box.getChildren().add(addButton);
 
+        // TODO: Properties relative to wall.
+
         pane.getChildren().add(box);
     }
 

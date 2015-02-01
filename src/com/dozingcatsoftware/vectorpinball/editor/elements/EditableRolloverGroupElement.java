@@ -46,6 +46,10 @@ public class EditableRolloverGroupElement extends EditableFieldElement {
             double radius = rmap.containsKey(RADIUS_PROPERTY) ?
                     asDouble(rmap.get(RADIUS_PROPERTY)) : groupRadius;
             renderer.frameCircle(asDouble(pos.get(0)), asDouble(pos.get(1)), radius, color);
+            if (isSelected) {
+                Color colorWithAlpha = Color.fromRGB(color.red, color.green, color.blue, color.alpha/2);
+                renderer.fillCircle(asDouble(pos.get(0)), asDouble(pos.get(1)), radius, colorWithAlpha);
+            }
         }
         // TODO: indicate selection
     }

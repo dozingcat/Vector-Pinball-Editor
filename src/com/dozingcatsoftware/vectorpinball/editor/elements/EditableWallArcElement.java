@@ -68,6 +68,20 @@ public class EditableWallArcElement extends EditableFieldElement {
         for (double[] segment : this.lineSegments) {
             renderer.drawLine(segment[0], segment[1], segment[2], segment[3], color);
         }
+        if (isSelected) {
+            double endpointRadius = 0.25 / renderer.getRelativeScale();
+            renderer.fillCircle(lineSegments[0][0], lineSegments[0][1], endpointRadius, color);
+            double[] last = lineSegments[lineSegments.length-1];
+            renderer.fillCircle(last[2], last[3], endpointRadius, color);
+
+            Color colorWithAlpha = Color.fromRGB(color.red, color.green, color.blue, color.alpha/2);
+            List<Object> centerPos = (List<Object>)getProperty(CENTER_PROPERTY);
+            double cx = asDouble(centerPos.get(0));
+            double cy = asDouble(centerPos.get(1));
+            renderer.fillCircle(cx, cy, endpointRadius, colorWithAlpha);
+            renderer.drawLine(cx, cy, lineSegments[0][0], lineSegments[0][1], colorWithAlpha);
+            renderer.drawLine(cx, cy, last[2], last[3], colorWithAlpha);
+        }
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
