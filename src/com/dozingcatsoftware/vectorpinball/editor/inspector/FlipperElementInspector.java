@@ -5,7 +5,7 @@ import javafx.scene.layout.VBox;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFlipperElement;
 
-public class FlipperElementInspector extends ElementInspector<EditableFlipperElement> {
+public class FlipperElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();

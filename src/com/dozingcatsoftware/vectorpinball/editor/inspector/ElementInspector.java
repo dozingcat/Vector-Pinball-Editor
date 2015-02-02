@@ -13,15 +13,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
-import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
-
-public abstract class ElementInspector<T extends EditableFieldElement> {
+public abstract class ElementInspector {
 
     public static final int DEFAULT_HBOX_SPACING = 5;
     public static final Insets DEFAULT_HBOX_INSETS = new Insets(4, 5, 4, 10);
     public static final int DEFAULT_LABEL_WIDTH = 60;
 
-    T element;
+    PropertyContainer propertyContainer;
     Runnable changeCallback;
     boolean updatingFromExternalChange = false;
 
@@ -30,8 +28,8 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
     Map<String, List<TextField>> positionPropertyToTextFields = new HashMap<>();
     Map<String, CheckBox> booleanPropertyToCheckBox = new HashMap<>();
 
-    public void initialize(Pane pane, T element, Runnable changeCallback) {
-        this.element = element;
+    public void initialize(Pane pane, PropertyContainer propertyContainer, Runnable changeCallback) {
+        this.propertyContainer = propertyContainer;
         this.changeCallback = changeCallback;
         drawInPane(pane);
         updateControlValuesFromElement();
@@ -39,8 +37,8 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
 
     abstract void drawInPane(Pane pane);
 
-    public T getElement() {
-        return element;
+    public PropertyContainer getPropertyContainer() {
+        return propertyContainer;
     }
 
     protected void notifyChanged() {
@@ -52,22 +50,22 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
     public void updateControlValuesFromElement() {
         updatingFromExternalChange = true;
         for (String prop : decimalPropertyToTextField.keySet()) {
-            Object value = getElement().getProperty(prop);
+            Object value = getPropertyContainer().getProperty(prop);
             decimalPropertyToTextField.get(prop).setText(value!=null ? value.toString() : "");
         }
         for (String prop : integerPropertyToTextField.keySet()) {
-            Object value = getElement().getProperty(prop);
+            Object value = getPropertyContainer().getProperty(prop);
             integerPropertyToTextField.get(prop).setText(value!=null ? value.toString() : "");
         }
         for (String prop : positionPropertyToTextFields.keySet()) {
-            List<?> values = (List<?>)getElement().getProperty(prop);
+            List<?> values = (List<?>)getPropertyContainer().getProperty(prop);
             List<TextField> textFields = positionPropertyToTextFields.get(prop);
             for (int i=0; i<textFields.size(); i++) {
                 textFields.get(i).setText(values.get(i).toString());
             }
         }
         for (String prop : booleanPropertyToCheckBox.keySet()) {
-            Boolean value = (Boolean)getElement().getProperty(prop);
+            Boolean value = (Boolean)getPropertyContainer().getProperty(prop);
             booleanPropertyToCheckBox.get(prop).setSelected(Boolean.TRUE.equals(value));
         }
         updateCustomControlValues();
@@ -79,7 +77,7 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
     protected void updateCustomControlValues() {
     }
 
-    HBox createHBoxWithLabel(String text) {
+    static HBox createHBoxWithLabel(String text) {
         HBox box = new HBox(DEFAULT_HBOX_SPACING);
         box.setPadding(DEFAULT_HBOX_INSETS);
         box.setAlignment(Pos.CENTER_LEFT);
@@ -149,10 +147,10 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
         if (updatingFromExternalChange) return;
         String stringValue = textField.getText();
         if (stringValue==null || stringValue.length()==0) {
-            getElement().removeProperty(propertyName);
+            getPropertyContainer().removeProperty(propertyName);
         }
         else {
-            getElement().setProperty(propertyName, stringValue);
+            getPropertyContainer().setProperty(propertyName, stringValue);
         }
         notifyChanged();
     }
@@ -161,10 +159,10 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
         if (updatingFromExternalChange) return;
         String stringValue = textField.getText();
         if (stringValue==null || stringValue.length()==0) {
-            getElement().removeProperty(propertyName);
+            getPropertyContainer().removeProperty(propertyName);
         }
         else {
-            getElement().setProperty(propertyName, Long.valueOf(stringValue));
+            getPropertyContainer().setProperty(propertyName, Long.valueOf(stringValue));
         }
         notifyChanged();
     }
@@ -172,13 +170,13 @@ public abstract class ElementInspector<T extends EditableFieldElement> {
     void updatePositionValue(String propertyName, List<TextField> textFields) {
         if (updatingFromExternalChange) return;
         List<String> position = Arrays.asList(textFields.get(0).getText(), textFields.get(1).getText());
-        getElement().setProperty(propertyName, position);
+        getPropertyContainer().setProperty(propertyName, position);
         notifyChanged();
     }
 
     void updateBooleanCheckBoxValue(String propertyName, CheckBox cbox) {
         if (updatingFromExternalChange) return;
-        getElement().setProperty(propertyName, cbox.isSelected());
+        getPropertyContainer().setProperty(propertyName, cbox.isSelected());
         notifyChanged();
     }
 }

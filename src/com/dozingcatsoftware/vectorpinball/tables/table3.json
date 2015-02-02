@@ -1,5 +1,6 @@
     {
-        "name": "Connect Four",
+		"version": 1,
+        "name": "Ringmaster",
         "width": 20,
         "height": 30,
         

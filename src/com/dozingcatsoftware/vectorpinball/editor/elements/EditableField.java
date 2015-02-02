@@ -14,6 +14,19 @@ import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
  **/
 public class EditableField {
 
+    public static final String WIDTH_PROPERTY = "width";
+    public static final String HEIGHT_PROPERTY = "height";
+    public static final String TIME_RATIO_PROPERTY = "targetTimeRatio";
+    public static final String GRAVITY_PROPERTY = "gravity";
+    public static final String NUM_BALLS_PROPERTY = "numballs";
+    public static final String BALL_RADIUS_PROPERTY = "ballradius";
+
+    public static final String LAUNCH_PROPERTY = "launch";
+    public static final String LAUNCH_POSITION_PROPERTY = "position";
+    public static final String LAUNCH_VELOCITY_PROPERTY = "velocity";
+    public static final String LAUNCH_RANDOM_VELOCITY_PROPERTY = "random_velocity";
+    public static final String LAUNCH_DEAD_ZONE_PROPERTY = "deadzone";
+
     public static final String ELEMENTS_PROPERTY = "elements";
 
     Map<String, Object> properties;
@@ -61,6 +74,21 @@ public class EditableField {
         catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Object getProperty(String propertyName) {
+        if (properties == null) return null;
+        return properties.get(propertyName);
+    }
+
+    public void setProperty(String propertyName, Object value) {
+        if (properties == null) return;
+        properties.put(propertyName, value);
+    }
+
+    public void removeProperty(String propertyName) {
+        if (properties == null) return;
+        properties.remove(propertyName);
     }
 
     public List<EditableFieldElement> getElements() {

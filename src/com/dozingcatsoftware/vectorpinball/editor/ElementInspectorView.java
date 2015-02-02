@@ -10,6 +10,8 @@ import javafx.scene.layout.VBox;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.editor.inspector.ElementInspector;
+import com.dozingcatsoftware.vectorpinball.editor.inspector.GlobalPropertiesInspector;
+import com.dozingcatsoftware.vectorpinball.editor.inspector.PropertyContainer;
 
 public class ElementInspectorView extends VBox {
 
@@ -59,12 +61,16 @@ public class ElementInspectorView extends VBox {
     }
 
     public void update() {
-        if (editableField != null && editableField.hasSelection()) {
+        if (editableField == null) {
+            // Shouldn't happen.
+            return;
+        }
+        if (editableField.hasSelection()) {
             EditableFieldElement elem = editableField.getSelectedElements().iterator().next();
-            if (currentInspector==null || currentInspector.getElement()!=elem) {
+            if (currentInspector==null || currentInspector.getPropertyContainer().getOwner()!=elem) {
                 String className = (String)elem.getProperty(EditableFieldElement.CLASS_PROPERTY);
                 selectionLabel.setText(className);
-                this.getChildren().remove(inspectorPane);
+                if (inspectorPane!=null) this.getChildren().remove(inspectorPane);
                 this.getChildren().remove(deleteElementButton);
                 this.getChildren().add(inspectorPane = new Pane());
 
@@ -73,7 +79,7 @@ public class ElementInspectorView extends VBox {
                     String inspectorClass = "com.dozingcatsoftware.vectorpinball.editor.inspector." +
                             className + "Inspector";
                     currentInspector = (ElementInspector)Class.forName(inspectorClass).newInstance();
-                    currentInspector.initialize(inspectorPane, elem, changeCallback);
+                    currentInspector.initialize(inspectorPane, PropertyContainer.forFieldElement(elem), changeCallback);
                 }
                 catch(InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
                     ex.printStackTrace();
@@ -82,11 +88,12 @@ public class ElementInspectorView extends VBox {
             }
         }
         else {
-            selectionLabel.setText("No selection");
-            this.getChildren().remove(inspectorPane);
+            selectionLabel.setText("Field properties");
+            if (inspectorPane!=null) this.getChildren().remove(inspectorPane);
             this.getChildren().remove(deleteElementButton);
-            inspectorPane = null;
-            currentInspector = null;
+            this.getChildren().add(inspectorPane = new Pane());
+            currentInspector = new GlobalPropertiesInspector();
+            currentInspector.initialize(inspectorPane, PropertyContainer.forField(editableField), changeCallback);
         }
     }
 }

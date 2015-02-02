@@ -4,9 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-import com.dozingcatsoftware.vectorpinball.editor.elements.EditableSensorElement;
-
-public class SensorElementInspector extends ElementInspector<EditableSensorElement> {
+public class SensorElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();

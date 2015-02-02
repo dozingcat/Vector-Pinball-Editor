@@ -16,7 +16,7 @@ import javafx.scene.layout.VBox;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableDropTargetGroupElement;
 
-public class DropTargetGroupElementInspector extends ElementInspector<EditableDropTargetGroupElement> {
+public class DropTargetGroupElementInspector extends ElementInspector {
 
     static class PositionRow {
         Pane region;
@@ -77,7 +77,7 @@ public class DropTargetGroupElementInspector extends ElementInspector<EditableDr
         List<List<Object>> newPositions = null;
 
         List<List<Object>> positions =
-                (List)this.getElement().getProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY);
+                (List)this.getPropertyContainer().getProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY);
         if (positions==null || positions.size()==0) {
             newPositions = Arrays.asList(Arrays.asList("-0.5", "-0.5", "-0.5", "0.5"));
         }
@@ -113,13 +113,13 @@ public class DropTargetGroupElementInspector extends ElementInspector<EditableDr
                     String.valueOf(last1_2 + (last1_2 - last2_2)),
                     String.valueOf(last1_3 + (last1_3 - last2_3))));
         }
-        getElement().setProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY, newPositions);
+        getPropertyContainer().setProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY, newPositions);
         notifyChanged();
     }
 
     @Override protected void updateCustomControlValues() {
         List<List<Object>> positions =
-                (List)this.getElement().getProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY);
+                (List)this.getPropertyContainer().getProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY);
         if (positions == null) positions = Collections.emptyList();
 
         while (positionRows.size() < positions.size()) {
@@ -145,7 +145,7 @@ public class DropTargetGroupElementInspector extends ElementInspector<EditableDr
             newPositions.add(Arrays.asList(fields.get(0).getText(), fields.get(1).getText(),
                     fields.get(2).getText(), fields.get(3).getText()));
         }
-        getElement().setProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY, newPositions);
+        getPropertyContainer().setProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY, newPositions);
         notifyChanged();
     }
 }

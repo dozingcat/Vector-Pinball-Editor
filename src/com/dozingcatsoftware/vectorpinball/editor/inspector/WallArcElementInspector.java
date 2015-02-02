@@ -5,7 +5,7 @@ import javafx.scene.layout.VBox;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallArcElement;
 
-public class WallArcElementInspector extends ElementInspector<EditableWallArcElement> {
+public class WallArcElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();

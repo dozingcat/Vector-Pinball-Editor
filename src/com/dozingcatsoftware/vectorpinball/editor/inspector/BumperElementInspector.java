@@ -5,7 +5,7 @@ import javafx.scene.layout.VBox;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableBumperElement;
 
-public class BumperElementInspector extends ElementInspector<EditableBumperElement> {
+public class BumperElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();

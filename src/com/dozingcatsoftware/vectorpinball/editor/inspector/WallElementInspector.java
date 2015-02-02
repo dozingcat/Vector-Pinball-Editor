@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallElement;
 
-public class WallElementInspector extends ElementInspector<EditableWallElement> {
+public class WallElementInspector extends ElementInspector {
 
     List<TextField> endpointTextFields;
 
@@ -54,12 +54,12 @@ public class WallElementInspector extends ElementInspector<EditableWallElement> 
                 endpointTextFields.get(1).getText(),
                 endpointTextFields.get(2).getText(),
                 endpointTextFields.get(3).getText());
-        getElement().setProperty(EditableWallElement.POSITION_PROPERTY, endpoints);
+        getPropertyContainer().setProperty(EditableWallElement.POSITION_PROPERTY, endpoints);
         notifyChanged();
     }
 
     @Override public void updateCustomControlValues() {
-        List<?> endpoints = (List<?>)getElement().getProperty(EditableWallElement.POSITION_PROPERTY);
+        List<?> endpoints = (List<?>)getPropertyContainer().getProperty(EditableWallElement.POSITION_PROPERTY);
         for (int i=0; i<4; i++) {
             endpointTextFields.get(i).setText(endpoints.get(i).toString());
         }
