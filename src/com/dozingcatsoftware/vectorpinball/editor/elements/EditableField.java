@@ -12,7 +12,7 @@ import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 /**
  * Contains the field elements and global field properties, and manages the selected items.
  **/
-public class EditableField {
+public class EditableField implements PropertyContainer {
 
     public static final String WIDTH_PROPERTY = "width";
     public static final String HEIGHT_PROPERTY = "height";
@@ -76,17 +76,21 @@ public class EditableField {
         }
     }
 
-    public Object getProperty(String propertyName) {
+    @Override public boolean hasProperty(String propertyName) {
+        return (properties!=null && properties.containsKey(propertyName));
+    }
+
+    @Override public Object getProperty(String propertyName) {
         if (properties == null) return null;
         return properties.get(propertyName);
     }
 
-    public void setProperty(String propertyName, Object value) {
+    @Override public void setProperty(String propertyName, Object value) {
         if (properties == null) return;
         properties.put(propertyName, value);
     }
 
-    public void removeProperty(String propertyName) {
+    @Override public void removeProperty(String propertyName) {
         if (properties == null) return;
         properties.remove(propertyName);
     }

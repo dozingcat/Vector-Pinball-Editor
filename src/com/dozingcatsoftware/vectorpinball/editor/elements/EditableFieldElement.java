@@ -10,7 +10,7 @@ import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Point;
 
-public abstract class EditableFieldElement {
+public abstract class EditableFieldElement implements PropertyContainer {
 
     public static final String CLASS_PROPERTY = "class";
     public static final String COLOR_PROPERTY = "color";
@@ -49,7 +49,7 @@ public abstract class EditableFieldElement {
         return properties;
     }
 
-    public void setProperty(String key, Object value) {
+    @Override public void setProperty(String key, Object value) {
         properties.put(key, value);
         propertiesDirty = true;
         if (changeHandler != null) {
@@ -57,7 +57,7 @@ public abstract class EditableFieldElement {
         }
     }
 
-    public void removeProperty(String key) {
+    @Override public void removeProperty(String key) {
         properties.remove(key);
         propertiesDirty = true;
         if (changeHandler != null) {
@@ -65,11 +65,11 @@ public abstract class EditableFieldElement {
         }
     }
 
-    public boolean hasProperty(String key) {
+    @Override public boolean hasProperty(String key) {
         return properties.containsKey(key);
     }
 
-    public Object getProperty(String key) {
+    @Override public Object getProperty(String key) {
         return properties.get(key);
     }
 

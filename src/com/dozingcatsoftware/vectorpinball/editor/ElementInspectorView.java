@@ -11,7 +11,6 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.editor.inspector.ElementInspector;
 import com.dozingcatsoftware.vectorpinball.editor.inspector.GlobalPropertiesInspector;
-import com.dozingcatsoftware.vectorpinball.editor.inspector.PropertyContainer;
 
 public class ElementInspectorView extends VBox {
 
@@ -67,7 +66,7 @@ public class ElementInspectorView extends VBox {
         }
         if (editableField.hasSelection()) {
             EditableFieldElement elem = editableField.getSelectedElements().iterator().next();
-            if (currentInspector==null || currentInspector.getPropertyContainer().getOwner()!=elem) {
+            if (currentInspector==null || currentInspector.getPropertyContainer()!=elem) {
                 String className = (String)elem.getProperty(EditableFieldElement.CLASS_PROPERTY);
                 selectionLabel.setText(className);
                 if (inspectorPane!=null) this.getChildren().remove(inspectorPane);
@@ -79,7 +78,7 @@ public class ElementInspectorView extends VBox {
                     String inspectorClass = "com.dozingcatsoftware.vectorpinball.editor.inspector." +
                             className + "Inspector";
                     currentInspector = (ElementInspector)Class.forName(inspectorClass).newInstance();
-                    currentInspector.initialize(inspectorPane, PropertyContainer.forFieldElement(elem), changeCallback);
+                    currentInspector.initialize(inspectorPane, elem, changeCallback);
                 }
                 catch(InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
                     ex.printStackTrace();
@@ -93,7 +92,7 @@ public class ElementInspectorView extends VBox {
             this.getChildren().remove(deleteElementButton);
             this.getChildren().add(inspectorPane = new Pane());
             currentInspector = new GlobalPropertiesInspector();
-            currentInspector.initialize(inspectorPane, PropertyContainer.forField(editableField), changeCallback);
+            currentInspector.initialize(inspectorPane, editableField, changeCallback);
         }
     }
 }
