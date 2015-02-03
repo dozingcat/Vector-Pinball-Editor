@@ -247,6 +247,7 @@ public class Main extends Application {
         renderer.setCanvas(fieldCanvas);
         editableField.initFromProperties(fieldMap);
         renderer.doDraw();
+        inspector.updateInspectorValues();
         editorState = EditorState.EDITING;
     }
 
@@ -329,9 +330,11 @@ public class Main extends Application {
     void createElement(Class<? extends EditableFieldElement> elementClass) {
         if (editableField!=null && fieldDriver==null) {
             EditableFieldElement newElement = editableField.addNewElement(elementClass);
+            // Push to undo stack before selecting the new element, so that the previous
+            // selection will be restored if we undo.
+            undoStack.pushSnapshot();
             editableField.selectElement(newElement);
             renderer.doDraw();
-            undoStack.pushSnapshot();
         }
     }
 
@@ -339,6 +342,7 @@ public class Main extends Application {
         if (undoStack.canUndo()) {
             undoStack.undo();
             renderer.doDraw();
+            inspector.updateInspectorValues();
         }
     }
 
@@ -346,6 +350,7 @@ public class Main extends Application {
         if (undoStack.canRedo()) {
             undoStack.redo();
             renderer.doDraw();
+            inspector.updateInspectorValues();
         }
     }
 

@@ -30,6 +30,11 @@ public class UndoStack {
     public void pushSnapshot() {
         Map<String, Object> fieldMapSnapshot = editableField.getPropertyMapSnapshot();
         if (currentEntryIndex<0 || !entries.get(currentEntryIndex).fieldMap.equals(fieldMapSnapshot)) {
+            // Save the currently selected items, so that if we undo we can restore them.
+            if (currentEntryIndex >= 0) {
+                Entry currentEntry = entries.get(currentEntryIndex);
+                currentEntry.selectedIndexes = editableField.getSelectedElementIndexes();
+            }
             Entry entry = new Entry();
             entry.fieldMap = fieldMapSnapshot;
             while (entries.size() > currentEntryIndex+1) {
