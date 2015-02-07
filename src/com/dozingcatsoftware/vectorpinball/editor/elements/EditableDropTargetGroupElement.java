@@ -143,7 +143,33 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
             setProperty(POSITIONS_PROPERTY, newPositions);
         }
         else {
-            // TODO: adjust wall-relative values.
+            // We only need to update the gapFromWall and startDistanceAlongWall properties,
+            // and to do that we only need to look at the start of the first target.
+            double newX = positions[0][0] + deltaFromPrevious.x;
+            double newY = positions[0][1] + deltaFromPrevious.y;
+            double distToWall = Point.distanceFromPointToLine(
+                    newX, newY, wallStart[0], wallStart[1], wallEnd[0], wallEnd[1]);
+            // Which side of the wall are we on? Go +90 degrees from wall vector
+            // and see if dot product with vector from wall to target start is positive.
+            double wallAngle = Math.atan2(wallEnd[1]-wallStart[1], wallEnd[0]-wallStart[0]);
+            double wallDiffX = newX - wallStart[0];
+            double wallDiffY = newY - wallStart[1];
+            if (wallDiffX*Math.cos(wallAngle+TAU/4) + wallDiffY*Math.sin(wallAngle+TAU/4) < 0) {
+                distToWall = -distToWall;
+            }
+            // Now we need the distance "along" the wall. Move to the line that the targets are on,
+            // compute the distance, and take the dot product with wallAngle to get the sign.
+            double targetLineX = wallStart[0] + distToWall*Math.cos(wallAngle + TAU/4);
+            double targetLineY = wallStart[1] + distToWall*Math.sin(wallAngle + TAU/4);
+            double distAlongWall = Point.distanceBetween(newX, newY, targetLineX, targetLineY);
+            double lineDiffX = newX - targetLineX;
+            double lineDiffY = newY - targetLineY;
+            if (lineDiffX*Math.cos(wallAngle) + lineDiffY*Math.sin(wallAngle) < 0) {
+                distAlongWall = -distAlongWall;
+            }
+
+            setProperty(GAP_FROM_WALL_PROPERTY, distToWall);
+            setProperty(START_DISTANCE_ALONG_WALL_PROPERTY, distAlongWall);
         }
     }
 

@@ -30,7 +30,10 @@ public class DropTargetGroupElementInspector extends ElementInspector {
         VBox box = new VBox(5);
         box.getChildren().add(new Label("Drop targets"));
 
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                "Reset delay", EditableDropTargetGroupElement.RESET_DELAY_PROPERTY));
         // Positions: array of 4-element decimal arrays
+        box.getChildren().add(new Label("Specific positions"));
         positionRegion = new VBox(5);
         box.getChildren().add(positionRegion);
 
@@ -39,6 +42,23 @@ public class DropTargetGroupElementInspector extends ElementInspector {
         box.getChildren().add(addButton);
 
         // TODO: Properties relative to wall.
+        box.getChildren().add(new Label("Relative to wall"));
+        box.getChildren().add(new Label("(Only if no positions)"));
+
+        box.getChildren().add(createPositionStringFieldsWithLabel(
+                "Wall start", EditableDropTargetGroupElement.WALL_START_PROPERTY));
+        box.getChildren().add(createPositionStringFieldsWithLabel(
+                "Wall end", EditableDropTargetGroupElement.WALL_END_PROPERTY));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                "Gap from wall", EditableDropTargetGroupElement.GAP_FROM_WALL_PROPERTY));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                "Start along wall", EditableDropTargetGroupElement.START_DISTANCE_ALONG_WALL_PROPERTY));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                "Target width", EditableDropTargetGroupElement.TARGET_WIDTH_PROPERTY));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                "Gap between targets", EditableDropTargetGroupElement.GAP_BETWEEN_TARGETS_PROPERTY));
+        box.getChildren().add(createIntegerFieldWithLabel(
+                "# of targets", EditableDropTargetGroupElement.NUM_TARGETS_PROPERTY));
 
         pane.getChildren().add(box);
     }

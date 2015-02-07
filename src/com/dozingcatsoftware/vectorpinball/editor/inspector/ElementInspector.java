@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.dozingcatsoftware.vectorpinball.editor.elements.PropertyContainer;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
@@ -14,6 +12,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+
+import com.dozingcatsoftware.vectorpinball.editor.elements.PropertyContainer;
 
 public abstract class ElementInspector {
 
@@ -63,7 +63,8 @@ public abstract class ElementInspector {
             List<?> values = (List<?>)getPropertyContainer().getProperty(prop);
             List<TextField> textFields = positionPropertyToTextFields.get(prop);
             for (int i=0; i<textFields.size(); i++) {
-                textFields.get(i).setText(values.get(i).toString());
+                String value = (values!=null && values.size()>i) ? values.get(i).toString() : "";
+                textFields.get(i).setText(value);
             }
         }
         for (String prop : booleanPropertyToCheckBox.keySet()) {

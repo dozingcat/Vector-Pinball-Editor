@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
@@ -115,7 +116,7 @@ public class Main extends Application {
 
         GridPane root = new GridPane();
 
-        ColumnConstraints col1 = new ColumnConstraints(300);
+        ColumnConstraints col1 = new ColumnConstraints(350);
         ColumnConstraints col2 = new ColumnConstraints(0, 700, Double.MAX_VALUE);
         col2.setHgrow(Priority.ALWAYS);
         root.getColumnConstraints().addAll(col1, col2);
@@ -129,8 +130,12 @@ public class Main extends Application {
         palette.setBackground(new Background(new BackgroundFill(Color.RED, null, null)));
         GridPane.setConstraints(palette, 0, 0);
 
+        ScrollPane inspectorScroller = new ScrollPane();
+        inspectorScroller.setContent(inspector);
+        inspectorScroller.setStyle("-fx-background: lightblue;");
+        inspectorScroller.setPadding(new Insets(10, 10, 10, 10));
         inspector.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, null, null)));
-        GridPane.setConstraints(inspector, 0, 1);
+        GridPane.setConstraints(inspectorScroller, 0, 1);
 
         VBox fieldBox = new VBox();
         HBox fieldControls = new HBox(10);
@@ -166,7 +171,7 @@ public class Main extends Application {
         GridPane.setConstraints(fieldBox, 1, 0, 1, 2);
 
         MenuBar menuBar = buildMenuBar();
-        root.getChildren().addAll(menuBar, palette, inspector, fieldBox);
+        root.getChildren().addAll(menuBar, palette, inspectorScroller, fieldBox);
 
         primaryStage.setScene(new Scene(root, width, height));
         primaryStage.show();
