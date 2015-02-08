@@ -1,15 +1,12 @@
 package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
@@ -19,17 +16,17 @@ public abstract class ElementInspector {
 
     public static final int DEFAULT_HBOX_SPACING = 5;
     public static final Insets DEFAULT_HBOX_INSETS = new Insets(4, 5, 4, 10);
-    public static final int DEFAULT_LABEL_WIDTH = 60;
+    public static final int DEFAULT_LABEL_WIDTH = 80;
 
     PropertyContainer propertyContainer;
     Runnable changeCallback;
     boolean updatingFromExternalChange = false;
 
-    Map<String, TextField> decimalPropertyToTextField = new HashMap<>();
-    Map<String, TextField> integerPropertyToTextField = new HashMap<>();
-    Map<String, List<TextField>> positionPropertyToTextFields = new HashMap<>();
-    Map<String, CheckBox> booleanPropertyToCheckBox = new HashMap<>();
-    Map<String, ColorSelector> colorPropertyToSelector = new HashMap<>();
+    Map<String, DecimalStringPropertyEditor> decimalPropertyToEditor= new HashMap<>();
+    Map<String, IntegerPropertyEditor> integerPropertyToEditor = new HashMap<>();
+    Map<String, PositionPropertyEditor> positionPropertyToEditor = new HashMap<>();
+    Map<String, BooleanPropertyEditor> booleanPropertyToEditor = new HashMap<>();
+    Map<String, ColorPropertyEditor> colorPropertyToSelector = new HashMap<>();
 
     public void initialize(Pane pane, PropertyContainer propertyContainer, Runnable changeCallback) {
         this.propertyContainer = propertyContainer;
@@ -52,25 +49,21 @@ public abstract class ElementInspector {
 
     public void updateControlValuesFromElement() {
         updatingFromExternalChange = true;
-        for (String prop : decimalPropertyToTextField.keySet()) {
+        for (String prop : decimalPropertyToEditor.keySet()) {
             Object value = getPropertyContainer().getProperty(prop);
-            decimalPropertyToTextField.get(prop).setText(value!=null ? value.toString() : "");
+            decimalPropertyToEditor.get(prop).updateFromValue(value);
         }
-        for (String prop : integerPropertyToTextField.keySet()) {
-            Object value = getPropertyContainer().getProperty(prop);
-            integerPropertyToTextField.get(prop).setText(value!=null ? value.toString() : "");
+        for (String prop : integerPropertyToEditor.keySet()) {
+            Number value = (Number)getPropertyContainer().getProperty(prop);
+            integerPropertyToEditor.get(prop).updateFromValue(value);
         }
-        for (String prop : positionPropertyToTextFields.keySet()) {
-            List<?> values = (List<?>)getPropertyContainer().getProperty(prop);
-            List<TextField> textFields = positionPropertyToTextFields.get(prop);
-            for (int i=0; i<textFields.size(); i++) {
-                String value = (values!=null && values.size()>i) ? values.get(i).toString() : "";
-                textFields.get(i).setText(value);
-            }
+        for (String prop : positionPropertyToEditor.keySet()) {
+            List<Object> values = (List<Object>)getPropertyContainer().getProperty(prop);
+            positionPropertyToEditor.get(prop).updateFromValue(values);
         }
-        for (String prop : booleanPropertyToCheckBox.keySet()) {
+        for (String prop : booleanPropertyToEditor.keySet()) {
             Boolean value = (Boolean)getPropertyContainer().getProperty(prop);
-            booleanPropertyToCheckBox.get(prop).setSelected(Boolean.TRUE.equals(value));
+            booleanPropertyToEditor.get(prop).updateFromValue(value);
         }
         for (String prop : colorPropertyToSelector.keySet()) {
             List<Number> value = (List<Number>)getPropertyContainer().getProperty(prop);
@@ -95,108 +88,55 @@ public abstract class ElementInspector {
         return box;
     }
 
+    void setOrRemoveProperty(String propertyName, Object value) {
+        if (updatingFromExternalChange) return;
+        getPropertyContainer().setOrRemoveProperty(propertyName, value);
+        notifyChanged();
+    }
+
     HBox createDecimalStringFieldWithLabel(String label, String propertyName) {
         HBox box = createHBoxWithLabel(label);
-        DecimalTextField textField = new DecimalTextField();
-
-        textField.setOnAction((event) -> updateDecimalValue(propertyName, textField));
-        textField.focusedProperty().addListener((target, wasFocused, isFocused) -> {
-            if (!isFocused) updateDecimalValue(propertyName, textField);
-        });
-
-        box.getChildren().add(textField);
-        decimalPropertyToTextField.put(propertyName, textField);
+        DecimalStringPropertyEditor editor = new DecimalStringPropertyEditor();
+        editor.setOnChange(() -> setOrRemoveProperty(propertyName, editor.getValue()));
+        box.getChildren().add(editor.getContainer());
+        decimalPropertyToEditor.put(propertyName, editor);
         return box;
     }
 
     HBox createIntegerFieldWithLabel(String label, String propertyName) {
         HBox box = createHBoxWithLabel(label);
-        IntegerTextField textField = new IntegerTextField();
-
-        textField.setOnAction((event) -> updateIntegerValue(propertyName, textField));
-        textField.focusedProperty().addListener((target, wasFocused, isFocused) -> {
-            if (!isFocused) updateIntegerValue(propertyName, textField);
-        });
-
-        box.getChildren().add(textField);
-        integerPropertyToTextField.put(propertyName, textField);
+        IntegerPropertyEditor editor = new IntegerPropertyEditor();
+        editor.setOnChange(() -> setOrRemoveProperty(propertyName, editor.getValue()));
+        box.getChildren().add(editor.getContainer());
+        integerPropertyToEditor.put(propertyName, editor);
         return box;
     }
 
     HBox createPositionStringFieldsWithLabel(String label, String propertyName) {
         HBox box = createHBoxWithLabel(label);
-        DecimalTextField xField = new DecimalTextField();
-        DecimalTextField yField = new DecimalTextField();
-        box.getChildren().addAll(xField, yField);
-
-        List<TextField> positionTextFields = Arrays.asList(xField, yField);
-        positionPropertyToTextFields.put(propertyName, positionTextFields);
-
-        positionTextFields.forEach((field) -> {
-            field.setOnAction((event) -> updatePositionValue(propertyName, positionTextFields));
-            field.focusedProperty().addListener((target, wasFocused, isFocused) -> {
-                if (!isFocused) updatePositionValue(propertyName, positionTextFields);
-            });
-        });
+        PositionPropertyEditor editor = new PositionPropertyEditor();
+        editor.setOnChange(() -> setOrRemoveProperty(propertyName, editor.getValue()));
+        box.getChildren().add(editor.getContainer());
+        positionPropertyToEditor.put(propertyName, editor);
         return box;
     }
 
     HBox createBooleanCheckBoxFieldWithLabel(String label, String propertyName) {
         HBox box = createHBoxWithLabel(label);
-        CheckBox checkbox = new CheckBox();
-        checkbox.selectedProperty().addListener((event) -> updateBooleanCheckBoxValue(propertyName, checkbox));
-        box.getChildren().add(checkbox);
-        booleanPropertyToCheckBox.put(propertyName, checkbox);
+        BooleanPropertyEditor editor = new BooleanPropertyEditor();
+        editor.setOnChange(() -> setOrRemoveProperty(propertyName, editor.getValue()));
+        box.getChildren().add(editor.getContainer());
+        booleanPropertyToEditor.put(propertyName, editor);
         return box;
     }
 
     HBox createColorSelectorWithLabel(String label, String propertyName) {
         HBox box = createHBoxWithLabel(label);
-        ColorSelector selector = new ColorSelector();
-        selector.setOnChange(() -> {
-            getPropertyContainer().setOrRemoveProperty(propertyName, selector.getValue());
-            notifyChanged();
-        });
+        ColorPropertyEditor selector = new ColorPropertyEditor();
+        selector.setOnChange(() -> setOrRemoveProperty(propertyName, selector.getValue()));
         box.getChildren().add(selector.getContainer());
         colorPropertyToSelector.put(propertyName, selector);
         return box;
     }
 
-    // Decimals are stored as strings to avoid rounding issues.
-    void updateDecimalValue(String propertyName, TextField textField) {
-        if (updatingFromExternalChange) return;
-        String stringValue = textField.getText();
-        if (stringValue==null || stringValue.length()==0) {
-            getPropertyContainer().removeProperty(propertyName);
-        }
-        else {
-            getPropertyContainer().setProperty(propertyName, stringValue);
-        }
-        notifyChanged();
-    }
-
-    void updateIntegerValue(String propertyName, TextField textField) {
-        if (updatingFromExternalChange) return;
-        String stringValue = textField.getText();
-        if (stringValue==null || stringValue.length()==0) {
-            getPropertyContainer().removeProperty(propertyName);
-        }
-        else {
-            getPropertyContainer().setProperty(propertyName, Long.valueOf(stringValue));
-        }
-        notifyChanged();
-    }
-
-    void updatePositionValue(String propertyName, List<TextField> textFields) {
-        if (updatingFromExternalChange) return;
-        List<String> position = Arrays.asList(textFields.get(0).getText(), textFields.get(1).getText());
-        getPropertyContainer().setProperty(propertyName, position);
-        notifyChanged();
-    }
-
-    void updateBooleanCheckBoxValue(String propertyName, CheckBox cbox) {
-        if (updatingFromExternalChange) return;
-        getPropertyContainer().setProperty(propertyName, cbox.isSelected());
-        notifyChanged();
-    }
 }

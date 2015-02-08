@@ -2,13 +2,13 @@ package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
 import javafx.scene.layout.HBox;
 
-public class DecimalStringEditor extends PropertyEditor<String> {
+public class IntegerPropertyEditor extends PropertyEditor<Number> {
 
-    DecimalTextField textField;
+    IntegerTextField textField;
 
-    public DecimalStringEditor() {
+    public IntegerPropertyEditor() {
         HBox box = new HBox();
-        this.textField = new DecimalTextField();
+        this.textField = new IntegerTextField();
         this.textField.setOnAction((event) -> runChangeHandler());
         this.textField.focusedProperty().addListener((target, wasFocused, isFocused) -> {
             if (!isFocused) runChangeHandler();
@@ -17,12 +17,12 @@ public class DecimalStringEditor extends PropertyEditor<String> {
         setContainer(box);
     }
 
-    @Override public String getValue() {
+    @Override Long getValue() {
         String text = textField.getText();
-        return (text!=null && text.length()>0 && textField.isTextValid(text)) ? text : null;
+        return (text!=null && text.length()>0 && textField.isTextValid(text)) ? Long.valueOf(text) : null;
     }
 
-    @Override void updateFromValue(String value) {
+    @Override void updateFromValue(Number value) {
         textField.setText((value!=null) ? value.toString() : "");
     }
 }

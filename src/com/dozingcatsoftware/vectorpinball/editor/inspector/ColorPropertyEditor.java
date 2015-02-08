@@ -4,22 +4,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
-public class ColorSelector extends PropertyEditor<List<Number>> {
+public class ColorPropertyEditor extends PropertyEditor<List<Number>> {
+    public static int DEFAULT_TEXTFIELD_WIDTH = 100;
+
     Pane container;
-    TextField textField;
+    HexColorTextField textField;
     Pane colorBox;
 
     // Allows lengths of 3 to 8, but only 3, 4, 6, and 8 are valid.
     static final Pattern COLOR_REGEX = Pattern.compile("[0-9a-fA-F]{3,8}");
+    static final Pattern COLOR_REGEX_PARTIAL = Pattern.compile("[0-9a-fA-F]{1,8}");
 
-    public ColorSelector() {
+    public ColorPropertyEditor() {
         HBox box = new HBox();
-        this.textField = new TextField();
-        this.textField.setPrefWidth(75);
+        this.textField = new HexColorTextField();
+        this.textField.setPrefWidth(DEFAULT_TEXTFIELD_WIDTH);
         this.textField.setOnAction((event) -> runChangeHandler());
         this.textField.focusedProperty().addListener((target, wasFocused, isFocused) -> {
             if (!isFocused) runChangeHandler();
@@ -76,6 +78,13 @@ public class ColorSelector extends PropertyEditor<List<Number>> {
         }
         else {
             textField.setText("");
+        }
+    }
+
+    static class HexColorTextField extends ConstrainedTextField {
+        @Override boolean isTextValid(String text) {
+            if (text==null || text.length()==0) return true;
+            return COLOR_REGEX_PARTIAL.matcher(text).matches();
         }
     }
 }

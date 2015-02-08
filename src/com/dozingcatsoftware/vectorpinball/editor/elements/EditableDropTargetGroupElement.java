@@ -122,11 +122,13 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
         refreshIfDirty();
-        double[] firstSegment = positions[0];
-        double[] lastSegment = positions[positions.length-1];
-        double actualDist = point.distanceToLineSegment(
-                firstSegment[0], firstSegment[1], lastSegment[2], lastSegment[3]);
-        return actualDist <= distance;
+        for (double[] pos : positions) {
+            double actualDist = point.distanceToLineSegment(pos[0], pos[1], pos[2], pos[3]);
+            if (actualDist <= distance) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
