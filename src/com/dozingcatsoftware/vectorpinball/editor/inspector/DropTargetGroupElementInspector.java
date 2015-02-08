@@ -29,6 +29,8 @@ public class DropTargetGroupElementInspector extends ElementInspector {
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox(5);
         box.getChildren().add(new Label("Drop targets"));
+        box.getChildren().add(createColorSelectorWithLabel(
+                "Color", EditableDropTargetGroupElement.COLOR_PROPERTY));
 
         box.getChildren().add(createDecimalStringFieldWithLabel(
                 "Reset delay", EditableDropTargetGroupElement.RESET_DELAY_PROPERTY));

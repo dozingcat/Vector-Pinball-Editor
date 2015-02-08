@@ -17,6 +17,7 @@ public class WallElementInspector extends ElementInspector {
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createHBoxWithLabel("Wall"));
+        box.getChildren().add(createColorSelectorWithLabel("Color", EditableWallElement.COLOR_PROPERTY));
         // Position property has 4 values, 2 each for start and end.
         endpointTextFields = Arrays.asList(
                 createEndpointTextField(),

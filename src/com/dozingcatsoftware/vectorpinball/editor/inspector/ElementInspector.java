@@ -29,6 +29,7 @@ public abstract class ElementInspector {
     Map<String, TextField> integerPropertyToTextField = new HashMap<>();
     Map<String, List<TextField>> positionPropertyToTextFields = new HashMap<>();
     Map<String, CheckBox> booleanPropertyToCheckBox = new HashMap<>();
+    Map<String, ColorSelector> colorPropertyToSelector = new HashMap<>();
 
     public void initialize(Pane pane, PropertyContainer propertyContainer, Runnable changeCallback) {
         this.propertyContainer = propertyContainer;
@@ -70,6 +71,10 @@ public abstract class ElementInspector {
         for (String prop : booleanPropertyToCheckBox.keySet()) {
             Boolean value = (Boolean)getPropertyContainer().getProperty(prop);
             booleanPropertyToCheckBox.get(prop).setSelected(Boolean.TRUE.equals(value));
+        }
+        for (String prop : colorPropertyToSelector.keySet()) {
+            List<Number> value = (List<Number>)getPropertyContainer().getProperty(prop);
+            colorPropertyToSelector.get(prop).updateFromValue(value);
         }
         updateCustomControlValues();
         updatingFromExternalChange = false;
@@ -142,6 +147,18 @@ public abstract class ElementInspector {
         checkbox.selectedProperty().addListener((event) -> updateBooleanCheckBoxValue(propertyName, checkbox));
         box.getChildren().add(checkbox);
         booleanPropertyToCheckBox.put(propertyName, checkbox);
+        return box;
+    }
+
+    HBox createColorSelectorWithLabel(String label, String propertyName) {
+        HBox box = createHBoxWithLabel(label);
+        ColorSelector selector = new ColorSelector();
+        selector.setOnChange(() -> {
+            getPropertyContainer().setOrRemoveProperty(propertyName, selector.getValue());
+            notifyChanged();
+        });
+        box.getChildren().add(selector.getContainer());
+        colorPropertyToSelector.put(propertyName, selector);
         return box;
     }
 
