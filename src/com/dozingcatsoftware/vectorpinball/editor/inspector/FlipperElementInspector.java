@@ -9,13 +9,13 @@ public class FlipperElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
-        box.getChildren().add(createColorSelectorWithLabel("Color", EditableFlipperElement.COLOR_PROPERTY));
-        box.getChildren().add(createPositionStringFieldsWithLabel("Center", EditableFlipperElement.POSITION_PROPERTY));
-        box.getChildren().add(createDecimalStringFieldWithLabel("Length", EditableFlipperElement.LENGTH_PROPERTY));
-        box.getChildren().add(createDecimalStringFieldWithLabel("Min angle", EditableFlipperElement.MIN_ANGLE_PROPERTY));
-        box.getChildren().add(createDecimalStringFieldWithLabel("Max angle", EditableFlipperElement.MAX_ANGLE_PROPERTY));
-        box.getChildren().add(createDecimalStringFieldWithLabel("Up speed", EditableFlipperElement.UP_SPEED_PROPERTY));
-        box.getChildren().add(createDecimalStringFieldWithLabel("Down speed", EditableFlipperElement.DOWN_SPEED_PROPERTY));
+        box.getChildren().add(createColorSelectorWithLabel(EditableFlipperElement.COLOR_PROPERTY, "Color"));
+        box.getChildren().add(createPositionStringFieldsWithLabel(EditableFlipperElement.POSITION_PROPERTY, "Center"));
+        box.getChildren().add(createDecimalStringFieldWithLabel(EditableFlipperElement.LENGTH_PROPERTY, "Length"));
+        box.getChildren().add(createDecimalStringFieldWithLabel(EditableFlipperElement.MIN_ANGLE_PROPERTY, "Min angle"));
+        box.getChildren().add(createDecimalStringFieldWithLabel(EditableFlipperElement.MAX_ANGLE_PROPERTY, "Max angle"));
+        box.getChildren().add(createDecimalStringFieldWithLabel(EditableFlipperElement.UP_SPEED_PROPERTY, "Up speed"));
+        box.getChildren().add(createDecimalStringFieldWithLabel(EditableFlipperElement.DOWN_SPEED_PROPERTY, "Down speed"));
         pane.getChildren().add(box);
     }
 

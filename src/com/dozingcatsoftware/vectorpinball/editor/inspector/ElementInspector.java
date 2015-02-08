@@ -1,7 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javafx.geometry.Insets;
@@ -22,11 +21,7 @@ public abstract class ElementInspector {
     Runnable changeCallback;
     boolean updatingFromExternalChange = false;
 
-    Map<String, DecimalStringPropertyEditor> decimalPropertyToEditor= new HashMap<>();
-    Map<String, IntegerPropertyEditor> integerPropertyToEditor = new HashMap<>();
-    Map<String, PositionPropertyEditor> positionPropertyToEditor = new HashMap<>();
-    Map<String, BooleanPropertyEditor> booleanPropertyToEditor = new HashMap<>();
-    Map<String, ColorPropertyEditor> colorPropertyToSelector = new HashMap<>();
+    Map<String, PropertyEditor> propertyToEditor = new HashMap<>();
 
     public void initialize(Pane pane, PropertyContainer propertyContainer, Runnable changeCallback) {
         this.propertyContainer = propertyContainer;
@@ -49,25 +44,9 @@ public abstract class ElementInspector {
 
     public void updateControlValuesFromElement() {
         updatingFromExternalChange = true;
-        for (String prop : decimalPropertyToEditor.keySet()) {
+        for (String prop : propertyToEditor.keySet()) {
             Object value = getPropertyContainer().getProperty(prop);
-            decimalPropertyToEditor.get(prop).updateFromValue(value);
-        }
-        for (String prop : integerPropertyToEditor.keySet()) {
-            Number value = (Number)getPropertyContainer().getProperty(prop);
-            integerPropertyToEditor.get(prop).updateFromValue(value);
-        }
-        for (String prop : positionPropertyToEditor.keySet()) {
-            List<Object> values = (List<Object>)getPropertyContainer().getProperty(prop);
-            positionPropertyToEditor.get(prop).updateFromValue(values);
-        }
-        for (String prop : booleanPropertyToEditor.keySet()) {
-            Boolean value = (Boolean)getPropertyContainer().getProperty(prop);
-            booleanPropertyToEditor.get(prop).updateFromValue(value);
-        }
-        for (String prop : colorPropertyToSelector.keySet()) {
-            List<Number> value = (List<Number>)getPropertyContainer().getProperty(prop);
-            colorPropertyToSelector.get(prop).updateFromValue(value);
+            propertyToEditor.get(prop).updateFromValue(value);
         }
         updateCustomControlValues();
         updatingFromExternalChange = false;
@@ -94,49 +73,32 @@ public abstract class ElementInspector {
         notifyChanged();
     }
 
-    HBox createDecimalStringFieldWithLabel(String label, String propertyName) {
+    HBox createHBoxWithLabelAndEditor(String propertyName, String label, PropertyEditor editor) {
         HBox box = createHBoxWithLabel(label);
-        DecimalStringPropertyEditor editor = new DecimalStringPropertyEditor();
         editor.setOnChange(() -> setOrRemoveProperty(propertyName, editor.getValue()));
         box.getChildren().add(editor.getContainer());
-        decimalPropertyToEditor.put(propertyName, editor);
+        propertyToEditor.put(propertyName, editor);
         return box;
     }
 
-    HBox createIntegerFieldWithLabel(String label, String propertyName) {
-        HBox box = createHBoxWithLabel(label);
-        IntegerPropertyEditor editor = new IntegerPropertyEditor();
-        editor.setOnChange(() -> setOrRemoveProperty(propertyName, editor.getValue()));
-        box.getChildren().add(editor.getContainer());
-        integerPropertyToEditor.put(propertyName, editor);
-        return box;
+    HBox createDecimalStringFieldWithLabel(String propertyName, String label) {
+        return createHBoxWithLabelAndEditor(propertyName, label, new DecimalStringPropertyEditor());
     }
 
-    HBox createPositionStringFieldsWithLabel(String label, String propertyName) {
-        HBox box = createHBoxWithLabel(label);
-        PositionPropertyEditor editor = new PositionPropertyEditor();
-        editor.setOnChange(() -> setOrRemoveProperty(propertyName, editor.getValue()));
-        box.getChildren().add(editor.getContainer());
-        positionPropertyToEditor.put(propertyName, editor);
-        return box;
+    HBox createIntegerFieldWithLabel(String propertyName, String label) {
+        return createHBoxWithLabelAndEditor(propertyName, label, new IntegerPropertyEditor());
     }
 
-    HBox createBooleanCheckBoxFieldWithLabel(String label, String propertyName) {
-        HBox box = createHBoxWithLabel(label);
-        BooleanPropertyEditor editor = new BooleanPropertyEditor();
-        editor.setOnChange(() -> setOrRemoveProperty(propertyName, editor.getValue()));
-        box.getChildren().add(editor.getContainer());
-        booleanPropertyToEditor.put(propertyName, editor);
-        return box;
+    HBox createPositionStringFieldsWithLabel(String propertyName, String label) {
+        return createHBoxWithLabelAndEditor(propertyName, label, new PositionPropertyEditor());
     }
 
-    HBox createColorSelectorWithLabel(String label, String propertyName) {
-        HBox box = createHBoxWithLabel(label);
-        ColorPropertyEditor selector = new ColorPropertyEditor();
-        selector.setOnChange(() -> setOrRemoveProperty(propertyName, selector.getValue()));
-        box.getChildren().add(selector.getContainer());
-        colorPropertyToSelector.put(propertyName, selector);
-        return box;
+    HBox createBooleanCheckBoxFieldWithLabel(String propertyName, String label) {
+        return createHBoxWithLabelAndEditor(propertyName, label, new BooleanPropertyEditor());
+    }
+
+    HBox createColorSelectorWithLabel(String propertyName, String label) {
+        return createHBoxWithLabelAndEditor(propertyName, label, new ColorPropertyEditor());
     }
 
 }

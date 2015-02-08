@@ -17,7 +17,7 @@ public class WallElementInspector extends ElementInspector {
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createHBoxWithLabel("Wall"));
-        box.getChildren().add(createColorSelectorWithLabel("Color", EditableWallElement.COLOR_PROPERTY));
+        box.getChildren().add(createColorSelectorWithLabel(EditableWallElement.COLOR_PROPERTY, "Color"));
         // Position property has 4 values, 2 each for start and end.
         endpointTextFields = Arrays.asList(
                 createEndpointTextField(),
@@ -34,10 +34,10 @@ public class WallElementInspector extends ElementInspector {
         box.getChildren().add(endBox);
 
         box.getChildren().add(createDecimalStringFieldWithLabel(
-                "Kick", EditableWallElement.KICK_PROPERTY));
+                EditableWallElement.KICK_PROPERTY, "Kick"));
 
         box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
-                "Retract when hit", EditableWallElement.RETRACT_WHEN_HIT_PROPERTY));
+                EditableWallElement.RETRACT_WHEN_HIT_PROPERTY, "Retract when hit"));
 
         pane.getChildren().add(box);
     }

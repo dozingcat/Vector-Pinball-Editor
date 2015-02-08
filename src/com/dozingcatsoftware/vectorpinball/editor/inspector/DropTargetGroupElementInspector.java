@@ -30,10 +30,10 @@ public class DropTargetGroupElementInspector extends ElementInspector {
         VBox box = new VBox(5);
         box.getChildren().add(new Label("Drop targets"));
         box.getChildren().add(createColorSelectorWithLabel(
-                "Color", EditableDropTargetGroupElement.COLOR_PROPERTY));
+                EditableDropTargetGroupElement.COLOR_PROPERTY, "Color"));
 
         box.getChildren().add(createDecimalStringFieldWithLabel(
-                "Reset delay", EditableDropTargetGroupElement.RESET_DELAY_PROPERTY));
+                EditableDropTargetGroupElement.RESET_DELAY_PROPERTY, "Reset delay"));
         // Positions: array of 4-element decimal arrays
         box.getChildren().add(new Label("Specific positions"));
         positionRegion = new VBox(5);
@@ -48,19 +48,19 @@ public class DropTargetGroupElementInspector extends ElementInspector {
         box.getChildren().add(new Label("(Only if no positions)"));
 
         box.getChildren().add(createPositionStringFieldsWithLabel(
-                "Wall start", EditableDropTargetGroupElement.WALL_START_PROPERTY));
+                EditableDropTargetGroupElement.WALL_START_PROPERTY, "Wall start"));
         box.getChildren().add(createPositionStringFieldsWithLabel(
-                "Wall end", EditableDropTargetGroupElement.WALL_END_PROPERTY));
+                EditableDropTargetGroupElement.WALL_END_PROPERTY, "Wall end"));
         box.getChildren().add(createDecimalStringFieldWithLabel(
-                "Gap from wall", EditableDropTargetGroupElement.GAP_FROM_WALL_PROPERTY));
+                EditableDropTargetGroupElement.GAP_FROM_WALL_PROPERTY, "Gap from wall"));
         box.getChildren().add(createDecimalStringFieldWithLabel(
-                "Start along wall", EditableDropTargetGroupElement.START_DISTANCE_ALONG_WALL_PROPERTY));
+                EditableDropTargetGroupElement.START_DISTANCE_ALONG_WALL_PROPERTY, "Start along wall"));
         box.getChildren().add(createDecimalStringFieldWithLabel(
-                "Target width", EditableDropTargetGroupElement.TARGET_WIDTH_PROPERTY));
+                EditableDropTargetGroupElement.TARGET_WIDTH_PROPERTY, "Target width"));
         box.getChildren().add(createDecimalStringFieldWithLabel(
-                "Gap between targets", EditableDropTargetGroupElement.GAP_BETWEEN_TARGETS_PROPERTY));
+                EditableDropTargetGroupElement.GAP_BETWEEN_TARGETS_PROPERTY, "Gap between targets"));
         box.getChildren().add(createIntegerFieldWithLabel(
-                "# of targets", EditableDropTargetGroupElement.NUM_TARGETS_PROPERTY));
+                EditableDropTargetGroupElement.NUM_TARGETS_PROPERTY, "# of targets"));
 
         pane.getChildren().add(box);
     }

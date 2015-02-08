@@ -30,10 +30,10 @@ public class PositionPropertyEditor extends PropertyEditor<List<Object>> {
     }
 
     @Override void updateFromValue(List<Object> value) {
-        Object xval = value.get(0);
+        Object xval = (value!=null && value.size()>0) ? value.get(0) : "";
         xField.setText(xval!=null ? xval.toString() : "");
 
-        Object yval = value.get(1);
+        Object yval = (value!=null && value.size()>1) ? value.get(1) : "";
         yField.setText(yval!=null ? yval.toString() : "");
     }
 

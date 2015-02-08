@@ -29,7 +29,7 @@ public class WallPathElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
-        box.getChildren().add(createColorSelectorWithLabel("Color", EditableDropTargetGroupElement.COLOR_PROPERTY));
+        box.getChildren().add(createColorSelectorWithLabel(EditableDropTargetGroupElement.COLOR_PROPERTY, "Color"));
         box.getChildren().add(new Label("Points"));
 
         // Positions: array of 2-element decimal arrays
