@@ -15,7 +15,7 @@ public abstract class ElementInspector {
 
     public static final int DEFAULT_HBOX_SPACING = 5;
     public static final Insets DEFAULT_HBOX_INSETS = new Insets(4, 5, 4, 10);
-    public static final int DEFAULT_LABEL_WIDTH = 80;
+    public static final int DEFAULT_LABEL_WIDTH = 90;
 
     PropertyContainer propertyContainer;
     Runnable changeCallback;

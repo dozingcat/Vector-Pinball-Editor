@@ -62,7 +62,8 @@ public class WallElementInspector extends ElementInspector {
     @Override public void updateCustomControlValues() {
         List<?> endpoints = (List<?>)getPropertyContainer().getProperty(EditableWallElement.POSITION_PROPERTY);
         for (int i=0; i<4; i++) {
-            endpointTextFields.get(i).setText(endpoints.get(i).toString());
+            String val = (endpoints!=null && endpoints.size()>i) ? endpoints.get(i).toString() : "";
+            endpointTextFields.get(i).setText(val);
         }
     }
 }
