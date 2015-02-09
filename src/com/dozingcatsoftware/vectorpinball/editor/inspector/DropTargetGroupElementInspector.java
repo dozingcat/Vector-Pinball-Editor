@@ -71,12 +71,9 @@ public class DropTargetGroupElementInspector extends ElementInspector {
         row.region = new HBox(5);
         row.textFields = new ArrayList<>();
         for (int i=0; i<4; i++) {
-            TextField field = new DecimalTextField();
+            DecimalTextField field = new DecimalTextField();
             field.setPrefWidth(50);
-            field.setOnAction((event) -> updatePositionsList());
-            field.focusedProperty().addListener((target, wasFocused, isFocused) -> {
-                if (!isFocused) updatePositionsList();
-            });
+            field.setChangeHandler(this::updatePositionsList);
 
             row.region.getChildren().add(field);
             row.textFields.add(field);

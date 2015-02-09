@@ -65,12 +65,9 @@ public class WallPathElementInspector extends ElementInspector {
         row.region = new HBox(5);
         row.textFields = new ArrayList<>();
         for (int i=0; i<2; i++) {
-            TextField field = new DecimalTextField();
+            DecimalTextField field = new DecimalTextField();
             field.setPrefWidth(60);
-            field.setOnAction((event) -> updatePointsList());
-            field.focusedProperty().addListener((target, wasFocused, isFocused) -> {
-                if (!isFocused) updatePointsList();
-            });
+            field.setChangeHandler(this::updatePointsList);
 
             row.region.getChildren().add(field);
             row.textFields.add(field);

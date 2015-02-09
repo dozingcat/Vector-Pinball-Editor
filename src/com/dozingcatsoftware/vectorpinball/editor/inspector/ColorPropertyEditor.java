@@ -22,10 +22,7 @@ public class ColorPropertyEditor extends PropertyEditor<List<Number>> {
         HBox box = new HBox();
         this.textField = new HexColorTextField();
         this.textField.setPrefWidth(DEFAULT_TEXTFIELD_WIDTH);
-        this.textField.setOnAction((event) -> runChangeHandler());
-        this.textField.focusedProperty().addListener((target, wasFocused, isFocused) -> {
-            if (!isFocused) runChangeHandler();
-        });
+        this.textField.setChangeHandler(this::runChangeHandler);
         box.getChildren().add(textField);
         setContainer(box);
     }

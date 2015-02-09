@@ -12,14 +12,10 @@ public class PositionPropertyEditor extends PropertyEditor<List<Object>> {
     public PositionPropertyEditor() {
         HBox box = new HBox();
         xField = new DecimalTextField();
+        xField.setChangeHandler(this::runChangeHandler);
         yField = new DecimalTextField();
+        yField.setChangeHandler(this::runChangeHandler);
 
-        Arrays.asList(xField, yField).forEach((field) -> {
-            field.setOnAction((event) -> runChangeHandler());
-            field.focusedProperty().addListener((target, wasFocused, isFocused) -> {
-                if (!isFocused) runChangeHandler();
-            });
-        });
         box.getChildren().addAll(xField, yField);
         setContainer(box);
     }

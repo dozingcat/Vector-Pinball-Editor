@@ -44,10 +44,7 @@ public class WallElementInspector extends ElementInspector {
 
     TextField createEndpointTextField() {
         DecimalTextField field = new DecimalTextField();
-        field.setOnAction((event) -> updateEndpoints());
-        field.focusedProperty().addListener((target, wasFocused, isFocused) -> {
-            if (!isFocused) updateEndpoints();
-        });
+        field.setChangeHandler(this::updateEndpoints);
         return field;
     }
 

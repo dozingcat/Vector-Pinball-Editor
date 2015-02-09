@@ -27,5 +27,11 @@ public abstract class ConstrainedTextField extends TextField {
         }
     }
 
+    public void setChangeHandler(Runnable action) {
+        setOnAction((event) -> action.run());
+        focusedProperty().addListener((target, wasFocused, isFocused) -> {
+            if (!isFocused) action.run();
+        });
+    }
 
 }

@@ -9,10 +9,7 @@ public class IntegerPropertyEditor extends PropertyEditor<Number> {
     public IntegerPropertyEditor() {
         HBox box = new HBox();
         this.textField = new IntegerTextField();
-        this.textField.setOnAction((event) -> runChangeHandler());
-        this.textField.focusedProperty().addListener((target, wasFocused, isFocused) -> {
-            if (!isFocused) runChangeHandler();
-        });
+        this.textField.setChangeHandler(this::runChangeHandler);
         box.getChildren().add(textField);
         setContainer(box);
     }
