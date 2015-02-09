@@ -18,6 +18,7 @@ public class GlobalPropertiesInspector extends ElementInspector {
         VBox box = new VBox();
 
         box.getChildren().addAll(
+                createStringFieldWithLabel(EditableField.NAME_PROPERTY, "Name"),
                 createDecimalStringFieldWithLabel(EditableField.WIDTH_PROPERTY, "Width"),
                 createDecimalStringFieldWithLabel(EditableField.HEIGHT_PROPERTY, "Height"),
                 createDecimalStringFieldWithLabel(EditableField.GRAVITY_PROPERTY, "Gravity"),

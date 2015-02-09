@@ -14,6 +14,7 @@ import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
  **/
 public class EditableField implements PropertyContainer {
 
+    public static final String NAME_PROPERTY = "name";
     public static final String WIDTH_PROPERTY = "width";
     public static final String HEIGHT_PROPERTY = "height";
     public static final String DELEGATE_PROPERTY = "delegate";

@@ -9,6 +9,7 @@ public class FlipperElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
+        box.getChildren().add(createStringFieldWithLabel(EditableFlipperElement.ID_PROPERTY, "ID"));
         box.getChildren().add(createColorSelectorWithLabel(EditableFlipperElement.COLOR_PROPERTY, "Color"));
         box.getChildren().add(createPositionStringFieldsWithLabel(EditableFlipperElement.POSITION_PROPERTY, "Center"));
         box.getChildren().add(createDecimalStringFieldWithLabel(EditableFlipperElement.LENGTH_PROPERTY, "Length"));

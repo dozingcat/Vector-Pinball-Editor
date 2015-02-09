@@ -9,6 +9,7 @@ public class WallArcElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
+        box.getChildren().add(createStringFieldWithLabel(EditableWallArcElement.ID_PROPERTY, "ID"));
         box.getChildren().add(createColorSelectorWithLabel(EditableWallArcElement.COLOR_PROPERTY, "Color"));
         box.getChildren().add(createPositionStringFieldsWithLabel(EditableWallArcElement.CENTER_PROPERTY, "Center"));
         box.getChildren().add(createDecimalStringFieldWithLabel(EditableWallArcElement.RADIUS_PROPERTY, "Radius"));

@@ -81,6 +81,10 @@ public abstract class ElementInspector {
         return box;
     }
 
+    HBox createStringFieldWithLabel(String propertyName, String label) {
+        return createHBoxWithLabelAndEditor(propertyName, label, new StringPropertyEditor());
+    }
+
     HBox createDecimalStringFieldWithLabel(String propertyName, String label) {
         return createHBoxWithLabelAndEditor(propertyName, label, new DecimalStringPropertyEditor());
     }

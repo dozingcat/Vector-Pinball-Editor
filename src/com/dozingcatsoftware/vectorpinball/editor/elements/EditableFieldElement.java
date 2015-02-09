@@ -13,6 +13,7 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 public abstract class EditableFieldElement implements PropertyContainer {
 
     public static final String CLASS_PROPERTY = "class";
+    public static final String ID_PROPERTY = "id";
     public static final String COLOR_PROPERTY = "color";
     public static final String SCORE_PROPERTY = "score";
 

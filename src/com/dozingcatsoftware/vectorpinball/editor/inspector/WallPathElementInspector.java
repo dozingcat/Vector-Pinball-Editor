@@ -14,7 +14,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-import com.dozingcatsoftware.vectorpinball.editor.elements.EditableDropTargetGroupElement;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallPathElement;
 
 public class WallPathElementInspector extends ElementInspector {
@@ -29,7 +28,8 @@ public class WallPathElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
-        box.getChildren().add(createColorSelectorWithLabel(EditableDropTargetGroupElement.COLOR_PROPERTY, "Color"));
+        box.getChildren().add(createStringFieldWithLabel(EditableWallPathElement.ID_PROPERTY, "ID"));
+        box.getChildren().add(createColorSelectorWithLabel(EditableWallPathElement.COLOR_PROPERTY, "Color"));
         box.getChildren().add(new Label("Points"));
 
         // Positions: array of 2-element decimal arrays
@@ -41,7 +41,7 @@ public class WallPathElementInspector extends ElementInspector {
 
     @Override protected void updateCustomControlValues() {
         List<List<Object>> positions =
-                (List)this.getPropertyContainer().getProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY);
+                (List)this.getPropertyContainer().getProperty(EditableWallPathElement.POSITIONS_PROPERTY);
         if (positions == null) positions = Collections.emptyList();
 
         while (pointRows.size() < positions.size()) {

@@ -10,6 +10,7 @@ public class BumperElementInspector extends ElementInspector {
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createHBoxWithLabel("Bumper"));
+        box.getChildren().add(createStringFieldWithLabel(EditableBumperElement.ID_PROPERTY, "ID"));
         box.getChildren().add(createColorSelectorWithLabel(EditableBumperElement.COLOR_PROPERTY, "Color"));
         box.getChildren().add(createDecimalStringFieldWithLabel(EditableBumperElement.RADIUS_PROPERTY, "Radius"));
         box.getChildren().add(createPositionStringFieldsWithLabel(EditableBumperElement.POSITION_PROPERTY, "Center"));

@@ -10,7 +10,7 @@ public class PositionPropertyEditor extends PropertyEditor<List<Object>> {
     DecimalTextField xField, yField;
 
     public PositionPropertyEditor() {
-        HBox box = new HBox();
+        HBox box = new HBox(5);
         xField = new DecimalTextField();
         xField.setChangeHandler(this::runChangeHandler);
         yField = new DecimalTextField();
