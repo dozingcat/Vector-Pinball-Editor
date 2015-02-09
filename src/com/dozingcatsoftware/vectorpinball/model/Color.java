@@ -52,6 +52,6 @@ public class Color {
                 (int) (this.red + (other.red - this.red) * fraction),
                 (int) (this.green + (other.green - this.green) * fraction),
                 (int) (this.blue + (other.blue - this.blue) * fraction),
-                alpha);
+                (int) (this.alpha + (other.alpha - this.alpha) * fraction));
     }
 }

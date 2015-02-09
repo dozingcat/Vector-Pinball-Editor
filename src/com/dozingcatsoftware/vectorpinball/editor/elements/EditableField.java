@@ -16,16 +16,17 @@ public class EditableField implements PropertyContainer {
 
     public static final String WIDTH_PROPERTY = "width";
     public static final String HEIGHT_PROPERTY = "height";
-    public static final String TIME_RATIO_PROPERTY = "targetTimeRatio";
+    public static final String DELEGATE_PROPERTY = "delegate";
+    public static final String TARGET_TIME_RATIO_PROPERTY = "targetTimeRatio";
     public static final String GRAVITY_PROPERTY = "gravity";
     public static final String NUM_BALLS_PROPERTY = "numballs";
     public static final String BALL_RADIUS_PROPERTY = "ballradius";
-
-    public static final String LAUNCH_PROPERTY = "launch";
-    public static final String LAUNCH_POSITION_PROPERTY = "position";
-    public static final String LAUNCH_VELOCITY_PROPERTY = "velocity";
-    public static final String LAUNCH_RANDOM_VELOCITY_PROPERTY = "random_velocity";
-    public static final String LAUNCH_DEAD_ZONE_PROPERTY = "deadzone";
+    public static final String BALL_COLOR_PROPERTY = "ballcolor";
+    public static final String SECONDARY_BALL_COLOR_PROPERTY = "secondaryBallColor";
+    public static final String LAUNCH_POSITION_PROPERTY = "launchPosition";
+    public static final String LAUNCH_VELOCITY_PROPERTY = "launchVelocity";
+    public static final String LAUNCH_RANDOM_VELOCITY_PROPERTY = "launchVelocityRandomDelta";
+    public static final String LAUNCH_DEAD_ZONE_PROPERTY = "launchDeadZone";
 
     public static final String ELEMENTS_PROPERTY = "elements";
 

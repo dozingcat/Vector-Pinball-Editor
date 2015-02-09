@@ -268,6 +268,7 @@ public class Main extends Application {
             fieldDriver.start();
         }
         field.getDelegate().gameStarted(field);
+        field.removeDeadBalls();
         field.launchBall();
         editorState = EditorState.SAMPLE_BALL;
 

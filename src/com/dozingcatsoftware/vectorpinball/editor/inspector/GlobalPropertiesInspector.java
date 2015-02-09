@@ -11,14 +11,21 @@ public class GlobalPropertiesInspector extends ElementInspector {
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
 
-        box.getChildren().add(createDecimalStringFieldWithLabel(EditableField.WIDTH_PROPERTY, "Width"));
-        box.getChildren().add(createDecimalStringFieldWithLabel(EditableField.HEIGHT_PROPERTY, "Height"));
-        box.getChildren().add(createDecimalStringFieldWithLabel(EditableField.GRAVITY_PROPERTY, "Gravity"));
-        box.getChildren().add(createDecimalStringFieldWithLabel(EditableField.TIME_RATIO_PROPERTY, "Timescale"));
-        box.getChildren().add(createIntegerFieldWithLabel(EditableField.NUM_BALLS_PROPERTY, "# Balls"));
-        box.getChildren().add(createDecimalStringFieldWithLabel(EditableField.BALL_RADIUS_PROPERTY, "Ball radius"));
+        box.getChildren().addAll(
+                createDecimalStringFieldWithLabel(EditableField.WIDTH_PROPERTY, "Width"),
+                createDecimalStringFieldWithLabel(EditableField.HEIGHT_PROPERTY, "Height"),
+                createDecimalStringFieldWithLabel(EditableField.GRAVITY_PROPERTY, "Gravity"),
+                createDecimalStringFieldWithLabel(EditableField.TARGET_TIME_RATIO_PROPERTY, "Timescale"),
+                createIntegerFieldWithLabel(EditableField.NUM_BALLS_PROPERTY, "# Balls"),
+                createDecimalStringFieldWithLabel(EditableField.BALL_RADIUS_PROPERTY, "Ball radius"),
+                createColorSelectorWithLabel(EditableField.BALL_COLOR_PROPERTY, "Ball color"),
+                createColorSelectorWithLabel(EditableField.SECONDARY_BALL_COLOR_PROPERTY, "Secondary color"),
+                createPositionStringFieldsWithLabel(EditableField.LAUNCH_POSITION_PROPERTY, "Launch position"),
+                createPositionStringFieldsWithLabel(EditableField.LAUNCH_VELOCITY_PROPERTY, "Launch velocity"),
+                createPositionStringFieldsWithLabel(EditableField.LAUNCH_RANDOM_VELOCITY_PROPERTY, "Velocity delta")
+        );
 
-        box.getChildren().add(new Label("TODO: Ball color, launch params"));
+        box.getChildren().add(new Label("TODO: dead zone"));
 
         pane.getChildren().add(box);
     }

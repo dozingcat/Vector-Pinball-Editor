@@ -221,11 +221,11 @@ public class Field implements ContactListener {
     /** Launches a new ball. The position and velocity of the ball are controlled by the "launch" key in the field layout JSON.
      */
     public Body launchBall() {
-    	List<Number> position = layout.getLaunchPosition();
+    	List<Float> position = layout.getLaunchPosition();
     	List<Float> velocity = layout.getLaunchVelocity();
     	float radius = layout.getBallRadius();
 
-		Body ball = Box2DFactory.createCircle(world, position.get(0).floatValue(), position.get(1).floatValue(), radius, false);
+		Body ball = Box2DFactory.createCircle(world, position.get(0), position.get(1), radius, false);
 		ball.setBullet(true);
 		ball.setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
 		this.balls.add(ball);
@@ -292,17 +292,19 @@ public class Field implements ContactListener {
 
 
     ArrayList<Body> deadBalls = new ArrayList<Body>(); // avoid allocation every time
-    /** Removes balls that are not in play, as determined by optional "deadzone" property of launch parameters in field layout.
+    /**
+     * Removes balls that are not in play, as determined by optional "deadzone" property of
+     * launch parameters in field layout.
      */
-    public void handleDeadBalls() {
-    	List<Number> deadRect = layout.getLaunchDeadZone();
+    public void removeDeadBalls() {
+    	List<Float> deadRect = layout.getLaunchDeadZone();
     	if (deadRect==null) return;
 
     	for(int i=0; i<this.balls.size(); i++) {
     		Body ball = this.balls.get(i);
     		Vector2 bpos = ball.getPosition();
-    		if (bpos.x > deadRect.get(0).floatValue() && bpos.y > deadRect.get(1).floatValue() &&
-    			bpos.x < deadRect.get(2).floatValue() && bpos.y < deadRect.get(3).floatValue()) {
+    		if (bpos.x > deadRect.get(0) && bpos.y > deadRect.get(1) &&
+    			bpos.x < deadRect.get(2) && bpos.y < deadRect.get(3)) {
     			deadBalls.add(ball);
     	    	world.destroyBody(ball);
     		}
@@ -311,11 +313,7 @@ public class Field implements ContactListener {
     	for(int i=0; i<deadBalls.size(); i++) {
     		this.balls.remove(deadBalls.get(i));
     	}
-
-    	if (deadBalls.size()>0) {
-    		launchBall();
-        	deadBalls.clear();
-    	}
+    	deadBalls.clear();
     }
 
     /** Called by FieldView to draw the balls currently in play.
