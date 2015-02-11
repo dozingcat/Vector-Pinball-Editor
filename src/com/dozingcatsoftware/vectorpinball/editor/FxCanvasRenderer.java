@@ -21,6 +21,9 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 public class FxCanvasRenderer implements IFieldRenderer {
 
     static final double DEFAULT_SCALE = 30;
+    // Zoom levels greater than 2 result in poor performance using the simple
+    // approach of creating a larger canvas.
+    static final double[] SCALE_RATIOS = {1.0/2, 2.0/3, 1.0, 3.0/2, 2.0};
 
     private Canvas canvas;
     private GraphicsContext context;
@@ -29,6 +32,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private UndoStack undoStack;
 
     private double scale = DEFAULT_SCALE;
+    private int scaleRatioIndex = 2;
     private double xOffset = -2;
     private double yOffset = -2;
 
@@ -162,7 +166,21 @@ public class FxCanvasRenderer implements IFieldRenderer {
     }
 
     @Override public double getRelativeScale() {
-        return scale/DEFAULT_SCALE;
+        return SCALE_RATIOS[scaleRatioIndex];
+    }
+
+    public void zoomIn() {
+        if (scaleRatioIndex < SCALE_RATIOS.length-1) {
+            scaleRatioIndex++;
+            scale = SCALE_RATIOS[scaleRatioIndex] * DEFAULT_SCALE;
+        }
+    }
+
+    public void zoomOut() {
+        if (scaleRatioIndex > 0) {
+            scaleRatioIndex--;
+            scale = SCALE_RATIOS[scaleRatioIndex] * DEFAULT_SCALE;
+        }
     }
 
     Point worldPointFromEvent(MouseEvent event) {

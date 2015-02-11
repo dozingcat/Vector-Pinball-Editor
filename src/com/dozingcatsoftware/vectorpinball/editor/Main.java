@@ -72,6 +72,11 @@ public class Main extends Application {
 
     static String WINDOW_TITLE_PREFIX = "Vector Pinball: ";
 
+    static int WINDOW_WIDTH = 1100;
+    static int WINDOW_HEIGHT = 1100;
+    static int BASE_CANVAS_WIDTH = 700;
+    static int BASE_CANVAS_HEIGHT = 1000;
+
     Stage mainStage;
     ScrollPane fieldScroller;
     Canvas fieldCanvas;
@@ -111,9 +116,6 @@ public class Main extends Application {
         inspector.setEditableField(editableField);
         inspector.setUndoStack(undoStack);
 
-        int width = 1100;
-        int height = 1100;
-
         GridPane root = new GridPane();
 
         ColumnConstraints col1 = new ColumnConstraints(350);
@@ -150,21 +152,20 @@ public class Main extends Application {
         endGameButton.setOnAction((event) -> stopGame());
         fieldControls.getChildren().add(endGameButton);
 
-        /*
-        Button undoButton = new Button("Undo");
-        undoButton.setOnAction((event) -> undoEdit());
-        fieldControls.getChildren().add(undoButton);
 
-        Button redoButton = new Button("Redo");
-        redoButton.setOnAction((event) -> redoEdit());
-        fieldControls.getChildren().add(redoButton);
-        */
+        Button zoomInButton = new Button("Zoom in");
+        zoomInButton.setOnAction((event) -> zoomIn());
+        fieldControls.getChildren().add(zoomInButton);
+
+        Button zoomOutButton = new Button("Zoom out");
+        zoomOutButton.setOnAction((event) -> zoomOut());
+        fieldControls.getChildren().add(zoomOutButton);
 
         fieldScroller = new ScrollPane();
         fieldScroller.setStyle("-fx-background: black;");
         VBox.setVgrow(fieldScroller, Priority.ALWAYS);
 
-        createCanvas(700, 1000);
+        createCanvas(BASE_CANVAS_WIDTH, BASE_CANVAS_HEIGHT);
 
         fieldBox.getChildren().addAll(fieldControls, fieldScroller);
 
@@ -173,7 +174,7 @@ public class Main extends Application {
         MenuBar menuBar = buildMenuBar();
         root.getChildren().addAll(menuBar, palette, inspectorScroller, fieldBox);
 
-        primaryStage.setScene(new Scene(root, width, height));
+        primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
         primaryStage.show();
 
         loadBuiltInLevel(1);
@@ -224,12 +225,26 @@ public class Main extends Application {
         return mbar;
     }
 
-    void createCanvas(int width, int height) {
+    void createCanvas(double width, double height) {
         fieldCanvas = new Canvas(width, height);
         fieldScroller.setContent(fieldCanvas);
         fieldCanvas.setOnMousePressed(this::handleCanvasMousePressed);
         fieldCanvas.setOnMouseReleased(this::handleCanvasMouseReleased);
         fieldCanvas.setOnMouseDragged(this::handleCanvasMouseDragged);
+    }
+
+    void zoomIn() {
+        renderer.zoomIn();
+        createCanvas(BASE_CANVAS_WIDTH * renderer.getRelativeScale(), BASE_CANVAS_HEIGHT * renderer.getRelativeScale());
+        renderer.setCanvas(fieldCanvas);
+        renderer.doDraw();
+    }
+
+    void zoomOut() {
+        renderer.zoomOut();
+        createCanvas(BASE_CANVAS_WIDTH * renderer.getRelativeScale(), BASE_CANVAS_HEIGHT * renderer.getRelativeScale());
+        renderer.setCanvas(fieldCanvas);
+        renderer.doDraw();
     }
 
     void loadFieldMap(Map<String, Object> map) {
