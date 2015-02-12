@@ -4,26 +4,40 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javafx.geometry.Pos;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 
 public class ColorPropertyEditor extends PropertyEditor<List<Number>> {
     public static int DEFAULT_TEXTFIELD_WIDTH = 100;
 
     Pane container;
     HexColorTextField textField;
-    Pane colorBox;
+    Region colorBox;
 
     // Allows lengths of 3 to 8, but only 3, 4, 6, and 8 are valid.
     static final Pattern COLOR_REGEX = Pattern.compile("[0-9a-fA-F]{3,8}");
     static final Pattern COLOR_REGEX_PARTIAL = Pattern.compile("[0-9a-fA-F]{1,8}");
 
     public ColorPropertyEditor() {
-        HBox box = new HBox();
+        HBox box = new HBox(5);
+        box.setAlignment(Pos.CENTER_LEFT);
         this.textField = new HexColorTextField();
         this.textField.setPrefWidth(DEFAULT_TEXTFIELD_WIDTH);
         this.textField.setChangeHandler(this::runChangeHandler);
         box.getChildren().add(textField);
+
+        colorBox = new Region();
+        colorBox.setPrefWidth(20);
+        colorBox.setPrefHeight(20);
+        colorBox.setMaxHeight(20);
+        colorBox.setVisible(false);
+        box.getChildren().add(colorBox);
+
         setContainer(box);
     }
 
@@ -64,17 +78,26 @@ public class ColorPropertyEditor extends PropertyEditor<List<Number>> {
     @Override public void updateFromValue(List<Number> value) {
         if (value==null) {
             textField.setText("");
+            colorBox.setVisible(false);
         }
         else if (value.size() == 3) {
             textField.setText(String.format("%02x%02x%02x",
                     value.get(0), value.get(1), value.get(2)));
+            Color color = Color.rgb(value.get(0).intValue(), value.get(1).intValue(), value.get(2).intValue());
+            colorBox.setBackground(new Background(new BackgroundFill(color, null, null)));
+            colorBox.setVisible(true);
         }
         else if (value.size() == 4) {
             textField.setText(String.format("%02x%02x%02x%02x",
                     value.get(0), value.get(1), value.get(2), value.get(3)));
+            Color color = Color.rgb(value.get(0).intValue(), value.get(1).intValue(), value.get(2).intValue(),
+                    value.get(3).intValue() / 255.0);
+            colorBox.setBackground(new Background(new BackgroundFill(color, null, null)));
+            colorBox.setVisible(true);
         }
         else {
             textField.setText("");
+            colorBox.setVisible(false);
         }
     }
 
