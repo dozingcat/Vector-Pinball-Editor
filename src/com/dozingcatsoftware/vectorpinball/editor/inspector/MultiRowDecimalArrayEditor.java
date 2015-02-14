@@ -34,6 +34,7 @@ public class MultiRowDecimalArrayEditor extends PropertyEditor<List<String>> {
     }
 
     @Override void updateFromValue(List<String> value) {
+        if (value == null) return;
         for (int i=0; i<value.size(); i++) {
             Object val = (value!=null && value.size()>i) ? value.get(i) : "";
             textFields.get(i).setText(val.toString());
