@@ -76,6 +76,7 @@ public class Main extends Application {
     static int WINDOW_HEIGHT = 1100;
     static int BASE_CANVAS_WIDTH = 700;
     static int BASE_CANVAS_HEIGHT = 1000;
+    static int TOOLS_COLUMN_WIDTH = 360;
 
     Stage mainStage;
     ScrollPane fieldScroller;
@@ -118,7 +119,7 @@ public class Main extends Application {
 
         GridPane root = new GridPane();
 
-        ColumnConstraints col1 = new ColumnConstraints(350);
+        ColumnConstraints col1 = new ColumnConstraints(TOOLS_COLUMN_WIDTH);
         ColumnConstraints col2 = new ColumnConstraints(0, 700, Double.MAX_VALUE);
         col2.setHgrow(Priority.ALWAYS);
         root.getColumnConstraints().addAll(col1, col2);

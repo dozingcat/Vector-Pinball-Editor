@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javafx.geometry.Insets;
@@ -15,7 +16,7 @@ public abstract class ElementInspector {
 
     public static final int DEFAULT_HBOX_SPACING = 5;
     public static final Insets DEFAULT_HBOX_INSETS = new Insets(4, 5, 4, 10);
-    public static final int DEFAULT_LABEL_WIDTH = 90;
+    public static final int DEFAULT_LABEL_WIDTH = 95;
 
     PropertyContainer propertyContainer;
     Runnable changeCallback;
@@ -105,4 +106,12 @@ public abstract class ElementInspector {
         return createHBoxWithLabelAndEditor(propertyName, label, new ColorPropertyEditor());
     }
 
+    // For multiple rows, the editor manages the labels as well as the text fields.
+    Pane createMultiRowDecimalArrayFieldWithLabels(
+            String propertyName, List<String> rowLabels, int numFieldsPerRow, int numRows) {
+        MultiRowDecimalArrayEditor editor = new MultiRowDecimalArrayEditor(rowLabels, numFieldsPerRow, numRows);
+        editor.setOnChange(() -> setOrRemoveProperty(propertyName, editor.getValue()));
+        propertyToEditor.put(propertyName, editor);
+        return editor.getContainer();
+    }
 }
