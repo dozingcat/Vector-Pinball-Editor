@@ -1,5 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,10 +95,6 @@ public abstract class ElementInspector {
         return createHBoxWithLabelAndEditor(propertyName, label, new IntegerPropertyEditor());
     }
 
-    HBox createPositionStringFieldsWithLabel(String propertyName, String label) {
-        return createHBoxWithLabelAndEditor(propertyName, label, new PositionPropertyEditor());
-    }
-
     HBox createBooleanCheckBoxFieldWithLabel(String propertyName, String label) {
         return createHBoxWithLabelAndEditor(propertyName, label, new BooleanPropertyEditor());
     }
@@ -114,4 +111,10 @@ public abstract class ElementInspector {
         propertyToEditor.put(propertyName, editor);
         return editor.getContainer();
     }
+
+    // "Position" properties can be a special case of multirow fields, with just one row.
+    Pane createPositionStringFieldsWithLabel(String propertyName, String label) {
+        return createMultiRowDecimalArrayFieldWithLabels(propertyName, Collections.singletonList(label), 2, 1);
+    }
+
 }
