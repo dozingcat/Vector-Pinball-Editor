@@ -51,7 +51,6 @@ public class EditableRolloverGroupElement extends EditableFieldElement {
                 renderer.fillCircle(asDouble(pos.get(0)), asDouble(pos.get(1)), radius, colorWithAlpha);
             }
         }
-        // TODO: indicate selection
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
@@ -74,11 +73,12 @@ public class EditableRolloverGroupElement extends EditableFieldElement {
         List<Map<String, Object>> rolloverMaps = (List<Map<String, Object>>)getProperty(ROLLOVERS_PROPERTY);
         for (Map<String, Object> rmap : rolloverMaps) {
             List<Number> pos = (List<Number>)rmap.get(POSITION_PROPERTY);
-            // This won't set the dirty flag, but this class doesn't use it.
             rmap.put(POSITION_PROPERTY, Arrays.asList(
                     asDouble(pos.get(0)) + deltaFromPrevious.x,
                     asDouble(pos.get(1)) + deltaFromPrevious.y));
         }
+        // This is needed to signal the change handler.
+        setProperty(ROLLOVERS_PROPERTY, rolloverMaps);
     }
 
 }

@@ -161,8 +161,8 @@ public class DropTargetGroupElementInspector extends ElementInspector {
 
     void updatePositionsList() {
         List<List<String>> newPositions = new ArrayList<>();
-        for (int i=0; i<positionRows.size(); i++) {
-            List<TextField> fields = positionRows.get(i).textFields;
+        for (PositionRow row : positionRows) {
+            List<TextField> fields = row.textFields;
             newPositions.add(Arrays.asList(fields.get(0).getText(), fields.get(1).getText(),
                     fields.get(2).getText(), fields.get(3).getText()));
         }

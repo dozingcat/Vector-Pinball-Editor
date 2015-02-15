@@ -7,7 +7,12 @@ import java.util.stream.Collectors;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class MultiRowDecimalArrayEditor extends PropertyEditor<List<String>> {
+/**
+ * Editor with possibly multiple rows of text fields. Its value is an array of decimal strings.
+ * Unlike most editors, this handles adding the labels itself because its container spans
+ * multiple inspector rows.
+ */
+public class MultiRowDecimalArrayEditor extends PropertyEditor<List<Object>> {
 
     List<DecimalTextField> textFields;
 
@@ -28,12 +33,12 @@ public class MultiRowDecimalArrayEditor extends PropertyEditor<List<String>> {
         setContainer(vbox);
     }
 
-    @Override List<String> getValue() {
+    @Override List<Object> getValue() {
         // Should check for valid values.
         return textFields.stream().map(DecimalTextField::getText).collect(Collectors.toList());
     }
 
-    @Override void updateFromValue(List<String> value) {
+    @Override void updateFromValue(List<Object> value) {
         if (value == null) return;
         for (int i=0; i<value.size(); i++) {
             Object val = (value!=null && value.size()>i) ? value.get(i) : "";

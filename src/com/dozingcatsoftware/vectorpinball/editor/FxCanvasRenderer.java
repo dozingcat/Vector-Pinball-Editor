@@ -23,7 +23,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
     static final double DEFAULT_SCALE = 30;
     // Zoom levels greater than 2 result in poor performance using the simple
     // approach of creating a larger canvas.
-    static final double[] SCALE_RATIOS = {1.0/2, 2.0/3, 1.0, 3.0/2, 2.0};
+    static final double[] SCALE_RATIOS = {1.0/2, 3.0/4, 1.0, 3.0/2, 2.0};
 
     private Canvas canvas;
     private GraphicsContext context;
@@ -187,16 +187,31 @@ public class FxCanvasRenderer implements IFieldRenderer {
         return Point.fromXY(pixelToWorldX(event.getX()), pixelToWorldY(event.getY()));
     }
 
+    EditableFieldElement findClickTarget(Point worldPoint) {
+        // Give priority to already-selected elements.
+        if (editableField.hasSelection()) {
+            for (EditableFieldElement elem : editableField.getSelectedElements()) {
+                if (elem.isPointWithinDistance(worldPoint, 10.0/scale)) {
+                    return elem;
+                }
+            }
+        }
+        for (EditableFieldElement elem : editableField.getElements()) {
+            if (elem.isPointWithinDistance(worldPoint, 10.0/scale)) {
+                return elem;
+            }
+        }
+        return null;
+    }
+
     void handleEditorMouseDown(MouseEvent event) {
         Point worldPoint = worldPointFromEvent(event);
         List<EditableFieldElement> selected = new ArrayList<>();
         if (editableField == null) return;
-        for (EditableFieldElement elem : editableField.getElements()) {
-            if (elem.isPointWithinDistance(worldPoint, 10.0/scale)) {
-                selected.add(elem);
-                elem.startDrag(worldPoint);
-                break;
-            }
+        EditableFieldElement clickedElement = findClickTarget(worldPoint);
+        if (clickedElement != null) {
+            selected.add(clickedElement);
+            clickedElement.startDrag(worldPoint);
         }
         editableField.setSelectedElements(selected);
         dragStartPoint = (selected.isEmpty()) ? null : worldPoint;
