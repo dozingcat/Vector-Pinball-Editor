@@ -41,6 +41,7 @@ public class JSONUtils {
 	}
 
 	public static String jsonStringFromObject(Object obj) {
-	    return JSONValue.toJSONString(obj);
+	    //return JSONValue.toJSONString(obj);
+	    return JsonPrettyPrinter.prettyPrint(obj, 4);
 	}
 }

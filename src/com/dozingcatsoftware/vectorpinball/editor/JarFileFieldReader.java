@@ -6,11 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-import org.json.simple.JSONValue;
+import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
-/**
- * Depends on simplejson: https://code.google.com/p/json-simple/
- */
 public class JarFileFieldReader {
 
     private static final String FIELD_PATH = "/com/dozingcatsoftware/vectorpinball/tables/";
@@ -48,7 +45,7 @@ public class JarFileFieldReader {
             while ((line=br.readLine())!=null) {
                 buffer.append(line);
             }
-            return (Map)JSONValue.parse(buffer.toString());
+            return JSONUtils.mapFromJSONString(buffer.toString());
         }
         catch(IOException ex) {
             throw new RuntimeException(ex);

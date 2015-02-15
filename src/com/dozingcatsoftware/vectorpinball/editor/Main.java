@@ -125,9 +125,9 @@ public class Main extends Application {
         root.getColumnConstraints().addAll(col1, col2);
 
         RowConstraints row1 = new RowConstraints();
-        row1.setPercentHeight(50);
+        row1.setPercentHeight(35);
         RowConstraints row2 = new RowConstraints();
-        row2.setPercentHeight(50);
+        row2.setPercentHeight(65);
         root.getRowConstraints().addAll(row1, row2);
 
         palette.setBackground(new Background(new BackgroundFill(Color.RED, null, null)));
