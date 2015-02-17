@@ -7,6 +7,10 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFlipperElemen
 
 public class FlipperElementInspector extends ElementInspector {
 
+    @Override public String getLabel() {
+        return "Flipper";
+    }
+
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createStringFieldWithLabel(EditableFlipperElement.ID_PROPERTY, "ID"));

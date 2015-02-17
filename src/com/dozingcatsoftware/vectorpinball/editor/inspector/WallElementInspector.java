@@ -9,9 +9,12 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallElement;
 
 public class WallElementInspector extends ElementInspector {
 
+    @Override public String getLabel() {
+        return "Wall";
+    }
+
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
-        box.getChildren().add(createHBoxWithLabel("Wall"));
         box.getChildren().add(createStringFieldWithLabel(EditableWallElement.ID_PROPERTY, "ID"));
         box.getChildren().add(createColorSelectorWithLabel(EditableWallElement.COLOR_PROPERTY, "Color"));
         // For position, use 2x2 grid of text fields which produce a value of a 4-element list.

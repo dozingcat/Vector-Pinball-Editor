@@ -26,9 +26,12 @@ public class DropTargetGroupElementInspector extends ElementInspector {
     Pane positionRegion;
     List<PositionRow> positionRows = new ArrayList<>();
 
+    @Override public String getLabel() {
+        return "Drop targets";
+    }
+
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox(5);
-        box.getChildren().add(new Label("Drop targets"));
         box.getChildren().add(createStringFieldWithLabel(
                 EditableDropTargetGroupElement.ID_PROPERTY, "ID"));
         box.getChildren().add(createColorSelectorWithLabel(

@@ -7,6 +7,11 @@ import java.util.regex.Pattern;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -35,6 +40,8 @@ public class ColorPropertyEditor extends PropertyEditor<List<Number>> {
         colorBox.setPrefWidth(20);
         colorBox.setPrefHeight(20);
         colorBox.setMaxHeight(20);
+        colorBox.setBorder(new Border(
+                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(1))));
         colorBox.setVisible(false);
         box.getChildren().add(colorBox);
 

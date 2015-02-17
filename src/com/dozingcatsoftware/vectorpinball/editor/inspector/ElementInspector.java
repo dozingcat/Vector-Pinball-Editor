@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.PropertyContainer;
 
@@ -24,6 +25,9 @@ public abstract class ElementInspector {
     boolean updatingFromExternalChange = false;
 
     Map<String, PropertyEditor> propertyToEditor = new HashMap<>();
+
+    /** Returns the unlocalized title for the element. */
+    public abstract String getLabel();
 
     public void initialize(Pane pane, PropertyContainer propertyContainer, Runnable changeCallback) {
         this.propertyContainer = propertyContainer;
@@ -117,4 +121,9 @@ public abstract class ElementInspector {
         return createMultiRowDecimalArrayFieldWithLabels(propertyName, Collections.singletonList(label), 2, 1);
     }
 
+    static Region createVerticalSpacer(double height) {
+        Region reg = new Region();
+        reg.setMinHeight(height);
+        return reg;
+    }
 }

@@ -9,6 +9,10 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableSensorElement
 
 public class SensorElementInspector extends ElementInspector {
 
+    @Override public String getLabel() {
+        return "Sensor";
+    }
+
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createStringFieldWithLabel(EditableSensorElement.ID_PROPERTY, "ID"));

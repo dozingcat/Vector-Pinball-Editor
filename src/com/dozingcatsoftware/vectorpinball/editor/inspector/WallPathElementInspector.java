@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -26,14 +26,19 @@ public class WallPathElementInspector extends ElementInspector {
     Pane pointRegion;
     List<PointRow> pointRows = new ArrayList<>();
 
+    @Override public String getLabel() {
+        return "Wall path";
+    }
+
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createStringFieldWithLabel(EditableWallPathElement.ID_PROPERTY, "ID"));
         box.getChildren().add(createColorSelectorWithLabel(EditableWallPathElement.COLOR_PROPERTY, "Color"));
-        box.getChildren().add(new Label("Points"));
+        box.getChildren().add(createHBoxWithLabel("Points"));
 
         // Positions: array of 2-element decimal arrays
         pointRegion = new VBox(5);
+        pointRegion.setPadding(new Insets(0, 10, 0, 10));
         box.getChildren().add(pointRegion);
 
         pane.getChildren().add(box);
@@ -66,7 +71,7 @@ public class WallPathElementInspector extends ElementInspector {
         row.textFields = new ArrayList<>();
         for (int i=0; i<2; i++) {
             DecimalTextField field = new DecimalTextField();
-            field.setPrefWidth(60);
+            field.setPrefWidth(80);
             field.setChangeHandler(this::updatePointsList);
 
             row.region.getChildren().add(field);

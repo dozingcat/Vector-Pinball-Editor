@@ -13,6 +13,10 @@ public class GlobalPropertiesInspector extends ElementInspector {
 
     List<TextField> deadZoneTextFields;
 
+    @Override public String getLabel() {
+        return "Field properties";
+    }
+
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
 

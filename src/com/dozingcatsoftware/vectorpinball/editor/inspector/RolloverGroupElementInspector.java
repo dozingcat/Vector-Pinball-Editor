@@ -49,6 +49,10 @@ public class RolloverGroupElementInspector extends ElementInspector {
     Pane rolloverContainer;
     List<RolloverRegion> rolloverRegions = new ArrayList<>();
 
+    @Override public String getLabel() {
+        return "Rollovers";
+    }
+
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createStringFieldWithLabel(

@@ -7,6 +7,10 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallArcElemen
 
 public class WallArcElementInspector extends ElementInspector {
 
+    @Override public String getLabel() {
+        return "Wall arc";
+    }
+
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createStringFieldWithLabel(EditableWallArcElement.ID_PROPERTY, "ID"));
