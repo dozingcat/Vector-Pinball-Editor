@@ -77,10 +77,10 @@ public class Main extends Application {
 
     static String WINDOW_TITLE_PREFIX = localizedString("Vector Pinball: ");
 
-    static int WINDOW_WIDTH = 1100;
-    static int WINDOW_HEIGHT = 1100;
-    static int BASE_CANVAS_WIDTH = 700;
-    static int BASE_CANVAS_HEIGHT = 1000;
+    static int WINDOW_WIDTH = 1000;
+    static int WINDOW_HEIGHT = 850;
+    static int BASE_CANVAS_WIDTH = 583;
+    static int BASE_CANVAS_HEIGHT = 833;
     static int TOOLS_COLUMN_WIDTH = 360;
 
     Stage mainStage;
@@ -129,7 +129,6 @@ public class Main extends Application {
         root.getColumnConstraints().addAll(col1, col2);
 
         RowConstraints row1 = new RowConstraints();
-//        row1.setPercentHeight(35);
         RowConstraints row2 = new RowConstraints();
         row2.setVgrow(Priority.ALWAYS);
         root.getRowConstraints().addAll(row1, row2);
@@ -175,6 +174,8 @@ public class Main extends Application {
         root.getChildren().addAll(menuBar, topLeft, inspectorScroller, fieldBox);
 
         primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
+        primaryStage.setMinWidth(640);
+        primaryStage.setMinHeight(500);
         primaryStage.show();
 
         loadBuiltInLevel(1);
@@ -222,7 +223,6 @@ public class Main extends Application {
         MenuBar mbar = new MenuBar();
         mbar.getMenus().addAll(fileMenu, editMenu, viewMenu);
         mbar.setUseSystemMenuBar(true);
-        System.out.println(mbar.isUseSystemMenuBar());
         return mbar;
     }
 
@@ -258,7 +258,6 @@ public class Main extends Application {
     }
 
     void loadBuiltInLevel(int level) {
-        System.out.println("Reading table");
         JarFileFieldReader fieldReader = new JarFileFieldReader();
         loadFieldMap(fieldReader.layoutMapForLevel(level));
         mainStage.setTitle(WINDOW_TITLE_PREFIX + "Table Template " + level);

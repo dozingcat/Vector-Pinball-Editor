@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallPathElement;
+import com.dozingcatsoftware.vectorpinball.util.MathUtils;
 
 public class WallPathElementInspector extends ElementInspector {
 
@@ -57,8 +58,7 @@ public class WallPathElementInspector extends ElementInspector {
             List<Object> pos = positions.get(i);
             List<TextField> textFields = pointRows.get(i).textFields;
             for (int j=0; j<2; j++) {
-                Object value = pos.get(j);
-                textFields.get(j).setText(value!=null ? value.toString() : "");
+                textFields.get(j).setText(MathUtils.toFormattedNumber(pos.get(j)));
             }
         }
     }

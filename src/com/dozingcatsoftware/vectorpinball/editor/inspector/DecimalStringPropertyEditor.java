@@ -2,6 +2,8 @@ package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
 import javafx.scene.layout.HBox;
 
+import com.dozingcatsoftware.vectorpinball.util.MathUtils;
+
 /**
  * Editor for a floating point value which shows a text field. Accepts strings or numbers in
  * {@link updateFromValue}, but always returns strings in {@link getValue} to avoid
@@ -25,6 +27,6 @@ public class DecimalStringPropertyEditor extends PropertyEditor<Object> {
     }
 
     @Override void updateFromValue(Object value) {
-        textField.setText((value!=null) ? value.toString() : "");
+        textField.setText(MathUtils.toFormattedNumber(value));
     }
 }

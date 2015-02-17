@@ -20,7 +20,7 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class FxCanvasRenderer implements IFieldRenderer {
 
-    static final double DEFAULT_SCALE = 30;
+    static final double DEFAULT_SCALE = 25;
     // Zoom levels greater than 2 result in poor performance using the simple
     // approach of creating a larger canvas.
     static final double[] SCALE_RATIOS = {1.0/2, 3.0/4, 1.0, 3.0/2, 2.0};

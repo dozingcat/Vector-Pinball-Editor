@@ -1,11 +1,13 @@
 package com.dozingcatsoftware.vectorpinball.util;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MathUtils {
 
     public static final double TAU = 2 * Math.PI;
+    static DecimalFormat DEFAULT_DECIMAL_FORMATTER = new DecimalFormat("#.####");
 
 	public static float asFloat(Object obj, float defvalue) {
 		if (obj instanceof Number) return ((Number)obj).floatValue();
@@ -100,4 +102,15 @@ public class MathUtils {
     public static double toDegrees(double radians) {
         return (radians * 360/TAU);
     }
+
+    public static String toFormattedNumber(Object value) {
+        if (value == null) {
+            return "";
+        }
+        if (value instanceof Double || value instanceof Float) {
+            return DEFAULT_DECIMAL_FORMATTER.format(value);
+        }
+        return value.toString();
+    }
+
 }
