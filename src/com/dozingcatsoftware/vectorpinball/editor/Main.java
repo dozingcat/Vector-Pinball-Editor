@@ -1,5 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.editor;
 
+import static com.dozingcatsoftware.vectorpinball.util.Localization.localizedString;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +19,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -31,9 +34,11 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -70,7 +75,7 @@ public class Main extends Application {
         SAMPLE_GAME,
     }
 
-    static String WINDOW_TITLE_PREFIX = "Vector Pinball: ";
+    static String WINDOW_TITLE_PREFIX = localizedString("Vector Pinball: ");
 
     static int WINDOW_WIDTH = 1100;
     static int WINDOW_HEIGHT = 1100;
@@ -81,7 +86,6 @@ public class Main extends Application {
     Stage mainStage;
     ScrollPane fieldScroller;
     Canvas fieldCanvas;
-    PaletteView palette;
     ElementInspectorView inspector;
 
     Field field;
@@ -110,8 +114,6 @@ public class Main extends Application {
         renderer.setEditableField(editableField);
         renderer.setUndoStack(undoStack);
 
-        palette = new PaletteView(this::createElement);
-
         inspector = new ElementInspectorView();
         inspector.setChangeCallback(this::handleElementChangeFromInspector);
         inspector.setEditableField(editableField);
@@ -125,42 +127,37 @@ public class Main extends Application {
         root.getColumnConstraints().addAll(col1, col2);
 
         RowConstraints row1 = new RowConstraints();
-        row1.setPercentHeight(35);
+//        row1.setPercentHeight(35);
         RowConstraints row2 = new RowConstraints();
-        row2.setPercentHeight(65);
+        row2.setVgrow(Priority.ALWAYS);
         root.getRowConstraints().addAll(row1, row2);
 
-        palette.setBackground(new Background(new BackgroundFill(Color.RED, null, null)));
-        GridPane.setConstraints(palette, 0, 0);
+        VBox topLeft = new VBox(5);
+        topLeft.setPadding(new Insets(20, 20, 20, 20));
+        topLeft.getChildren().add(new ElementPaletteView(this::createElement));
+
+        Region spacer = new Region();
+        spacer.setMinHeight(15);
+        Label simLabel = new Label(localizedString("Simulation"));
+        simLabel.setFont(new Font(16));
+        HBox simButtonRow = new HBox(5);
+        Button launchBallButton = new Button(localizedString("Launch ball"));
+        launchBallButton.setOnAction((event) -> launchSingleBall());
+        Button endGameButton = new Button("Stop Game");
+        endGameButton.setOnAction((event) -> stopGame());
+        simButtonRow.getChildren().addAll(launchBallButton, endGameButton);
+        topLeft.getChildren().addAll(spacer, simLabel, simButtonRow);
+
+        topLeft.setBackground(new Background(new BackgroundFill(Color.rgb(240, 240, 240), null, null)));
+        GridPane.setConstraints(topLeft, 0, 0);
 
         ScrollPane inspectorScroller = new ScrollPane();
         inspectorScroller.setContent(inspector);
-        inspectorScroller.setStyle("-fx-background: lightblue;");
+        inspectorScroller.setStyle("-fx-background: #bdf;");
         inspectorScroller.setPadding(new Insets(10, 10, 10, 10));
-        inspector.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, null, null)));
         GridPane.setConstraints(inspectorScroller, 0, 1);
 
         VBox fieldBox = new VBox();
-        HBox fieldControls = new HBox(10);
-        fieldControls.setPrefHeight(60);
-        fieldControls.setBackground(new Background(new BackgroundFill(Color.GREEN, null, null)));
-
-        Button launchBallButton = new Button("Launch Ball");
-        launchBallButton.setOnAction((event) -> launchSingleBall());
-        fieldControls.getChildren().add(launchBallButton);
-
-        Button endGameButton = new Button("Stop Game");
-        endGameButton.setOnAction((event) -> stopGame());
-        fieldControls.getChildren().add(endGameButton);
-
-
-        Button zoomInButton = new Button("Zoom in");
-        zoomInButton.setOnAction((event) -> zoomIn());
-        fieldControls.getChildren().add(zoomInButton);
-
-        Button zoomOutButton = new Button("Zoom out");
-        zoomOutButton.setOnAction((event) -> zoomOut());
-        fieldControls.getChildren().add(zoomOutButton);
 
         fieldScroller = new ScrollPane();
         fieldScroller.setStyle("-fx-background: black;");
@@ -168,12 +165,12 @@ public class Main extends Application {
 
         createCanvas(BASE_CANVAS_WIDTH, BASE_CANVAS_HEIGHT);
 
-        fieldBox.getChildren().addAll(fieldControls, fieldScroller);
+        fieldBox.getChildren().addAll(fieldScroller);
 
         GridPane.setConstraints(fieldBox, 1, 0, 1, 2);
 
         MenuBar menuBar = buildMenuBar();
-        root.getChildren().addAll(menuBar, palette, inspectorScroller, fieldBox);
+        root.getChildren().addAll(menuBar, topLeft, inspectorScroller, fieldBox);
 
         primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
         primaryStage.show();
@@ -201,10 +198,6 @@ public class Main extends Application {
                 createMenuItem("Table 3", null, () -> loadBuiltInLevel(3))
         );
 
-        MenuItem openItem = new MenuItem("Open");
-        openItem.setAccelerator(new KeyCharacterCombination("O", KeyCombination.SHORTCUT_DOWN));
-        MenuItem saveItem = new MenuItem("Save");
-        saveItem.setAccelerator(new KeyCharacterCombination("S", KeyCombination.SHORTCUT_DOWN));
         fileMenu.getItems().addAll(
                 createMenuItem("New Table", "N", null),
                 newFromTemplateMenu,
@@ -219,8 +212,13 @@ public class Main extends Application {
         redoItem.setAccelerator(new KeyCharacterCombination("Z", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         editMenu.getItems().addAll(undoItem, redoItem);
 
+        Menu viewMenu = new Menu("View");
+        viewMenu.getItems().addAll(
+                createMenuItem("Zoom In", "+", this::zoomIn),
+                createMenuItem("Zoom Out", "-", this::zoomOut));
+
         MenuBar mbar = new MenuBar();
-        mbar.getMenus().addAll(fileMenu, editMenu);
+        mbar.getMenus().addAll(fileMenu, editMenu, viewMenu);
         mbar.setUseSystemMenuBar(true);
         System.out.println(mbar.isUseSystemMenuBar());
         return mbar;
