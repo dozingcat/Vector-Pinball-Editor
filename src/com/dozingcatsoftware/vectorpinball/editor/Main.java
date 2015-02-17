@@ -121,6 +121,8 @@ public class Main extends Application {
 
         GridPane root = new GridPane();
 
+        Insets leftColumnInsets = new Insets(20, 0, 20, 20);
+
         ColumnConstraints col1 = new ColumnConstraints(TOOLS_COLUMN_WIDTH);
         ColumnConstraints col2 = new ColumnConstraints(0, 700, Double.MAX_VALUE);
         col2.setHgrow(Priority.ALWAYS);
@@ -133,7 +135,7 @@ public class Main extends Application {
         root.getRowConstraints().addAll(row1, row2);
 
         VBox topLeft = new VBox(5);
-        topLeft.setPadding(new Insets(20, 20, 20, 20));
+        topLeft.setPadding(leftColumnInsets);
         topLeft.getChildren().add(new ElementPaletteView(this::createElement));
 
         Region spacer = new Region();
@@ -154,7 +156,7 @@ public class Main extends Application {
         ScrollPane inspectorScroller = new ScrollPane();
         inspectorScroller.setContent(inspector);
         inspectorScroller.setStyle("-fx-background: #bdf;");
-        inspectorScroller.setPadding(new Insets(10, 10, 10, 10));
+        inspectorScroller.setPadding(leftColumnInsets);
         GridPane.setConstraints(inspectorScroller, 0, 1);
 
         VBox fieldBox = new VBox();

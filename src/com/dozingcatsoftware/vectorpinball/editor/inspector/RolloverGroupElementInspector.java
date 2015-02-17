@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableRolloverGroupElement;
 
@@ -72,7 +73,11 @@ public class RolloverGroupElementInspector extends ElementInspector {
         box.getChildren().add(createDecimalStringFieldWithLabel(
                 EditableRolloverGroupElement.RESET_DELAY_PROPERTY, "Reset delay"));
 
-        box.getChildren().add(new Label("Rollovers"));
+        box.getChildren().add(createVerticalSpacer(10));
+
+        Label rolloversLabel = new Label("Rollovers");
+        rolloversLabel.setFont(new Font(14));
+        box.getChildren().add(rolloversLabel);
         rolloverContainer = new VBox();
         box.getChildren().add(rolloverContainer);
 
@@ -132,6 +137,9 @@ public class RolloverGroupElementInspector extends ElementInspector {
         VBox vbox = new VBox();
         region.container = vbox;
 
+        region.colorEditor = new ColorPropertyEditor();
+        vbox.getChildren().add(createRolloverHBoxWithLabelAndEditor("Color", region.colorEditor));
+
         region.positionEditor = new MultiRowDecimalArrayEditor(Arrays.asList("Position"), 2, 1);
         region.positionEditor.setOnChange(this::updateRolloversList);
         vbox.getChildren().add(region.positionEditor.getContainer());
@@ -139,15 +147,14 @@ public class RolloverGroupElementInspector extends ElementInspector {
         region.radiusEditor = new DecimalStringPropertyEditor();
         vbox.getChildren().add(createRolloverHBoxWithLabelAndEditor("Radius", region.radiusEditor));
 
-        region.colorEditor = new ColorPropertyEditor();
-        vbox.getChildren().add(createRolloverHBoxWithLabelAndEditor("Color", region.colorEditor));
-
         region.scoreEditor = new IntegerPropertyEditor();
         vbox.getChildren().add(createRolloverHBoxWithLabelAndEditor("Score", region.scoreEditor));
 
         Button removeButton = new Button("Remove");
         removeButton.setOnAction((event) -> removeRolloverRegion(region));
         vbox.getChildren().add(removeButton);
+
+        vbox.getChildren().add(createVerticalSpacer(20));
 
         rolloverContainer.getChildren().add(vbox);
         rolloverRegions.add(region);

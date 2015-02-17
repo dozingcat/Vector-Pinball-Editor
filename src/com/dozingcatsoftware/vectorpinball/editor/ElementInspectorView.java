@@ -36,7 +36,7 @@ public class ElementInspectorView extends VBox {
 
         selectionRow = new HBox(10);
         selectionRow.setAlignment(Pos.CENTER_LEFT);
-        selectionRow.setPadding(new Insets(10, 10, 10, 10));
+        selectionRow.setPadding(new Insets(0, 0, 10, 0));
         selectionRow.getChildren().add(selectionLabel);
         this.getChildren().add(selectionRow);
 

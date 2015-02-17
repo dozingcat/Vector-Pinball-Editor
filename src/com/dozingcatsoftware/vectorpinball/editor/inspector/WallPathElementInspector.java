@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -38,7 +37,6 @@ public class WallPathElementInspector extends ElementInspector {
 
         // Positions: array of 2-element decimal arrays
         pointRegion = new VBox(5);
-        pointRegion.setPadding(new Insets(0, 10, 0, 10));
         box.getChildren().add(pointRegion);
 
         pane.getChildren().add(box);

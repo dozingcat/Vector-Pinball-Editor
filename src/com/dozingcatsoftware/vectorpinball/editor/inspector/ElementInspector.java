@@ -17,7 +17,7 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.PropertyContainer;
 public abstract class ElementInspector {
 
     public static final int DEFAULT_HBOX_SPACING = 5;
-    public static final Insets DEFAULT_HBOX_INSETS = new Insets(4, 5, 4, 10);
+    public static final Insets DEFAULT_HBOX_INSETS = new Insets(4, 0, 4, 0);
     public static final int DEFAULT_LABEL_WIDTH = 95;
 
     PropertyContainer propertyContainer;
