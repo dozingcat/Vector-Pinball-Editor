@@ -9,9 +9,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,7 +47,6 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.model.GameMessage;
-import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 // Need to edit project as described in
@@ -58,19 +54,7 @@ import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 public class Main extends Application {
     public static void main(String[] args) {
-        //test();
         launch(args);
-    }
-
-    static void test() {
-        Map<String, Object> m = new HashMap<>();
-        m.put("foo", Arrays.asList(1, 2, 3));
-        System.out.println(m);
-        Map<String, Object> m2 = CollectionUtils.mutableDeepCopyOfMap(m);
-        ((List)m2.get("foo")).add(4);
-        System.out.println(m);
-        System.out.println(m2);
-        System.exit(0);
     }
 
     enum EditorState {
@@ -200,7 +184,7 @@ public class Main extends Application {
         primaryStage.setMinHeight(500);
         primaryStage.show();
 
-        loadBuiltInLevel(1);
+        loadStarterField();
     }
 
     void showScoreView() {
@@ -259,13 +243,13 @@ public class Main extends Application {
 
         Menu newFromTemplateMenu = new Menu("New From Template");
         newFromTemplateMenu.getItems().addAll(
-                createMenuItem("Table 1", null, () -> loadBuiltInLevel(1)),
-                createMenuItem("Table 2", null, () -> loadBuiltInLevel(2)),
-                createMenuItem("Table 3", null, () -> loadBuiltInLevel(3))
+                createMenuItem("Table 1", null, () -> loadBuiltInField(1)),
+                createMenuItem("Table 2", null, () -> loadBuiltInField(2)),
+                createMenuItem("Table 3", null, () -> loadBuiltInField(3))
                 );
 
         fileMenu.getItems().addAll(
-                createMenuItem("New Table", "N", null),
+                createMenuItem("New Table", "N", () -> loadStarterField()),
                 newFromTemplateMenu,
                 new SeparatorMenuItem(),
                 createMenuItem("Open", "O", this::openFile),
@@ -320,10 +304,18 @@ public class Main extends Application {
         savedFilePath = null;
     }
 
-    void loadBuiltInLevel(int level) {
+    void loadBuiltInField(int fieldNum) {
         JarFileFieldReader fieldReader = new JarFileFieldReader();
-        loadFieldMap(fieldReader.layoutMapForLevel(level));
-        mainStage.setTitle(WINDOW_TITLE_PREFIX + "Table Template " + level);
+        loadFieldMap(fieldReader.layoutMapForBuiltInField(fieldNum));
+        // TODO: localize
+        mainStage.setTitle(WINDOW_TITLE_PREFIX + "Table Template " + fieldNum);
+    }
+
+    void loadStarterField() {
+        JarFileFieldReader fieldReader = new JarFileFieldReader();
+        loadFieldMap(fieldReader.layoutMapForStarterField());
+        // TODO: localize
+        mainStage.setTitle(WINDOW_TITLE_PREFIX + "New Table");
     }
 
     void displayForEditing() {
@@ -370,6 +362,11 @@ public class Main extends Application {
     void handleCanvasMousePressed(MouseEvent event) {
         switch (editorState) {
         case SAMPLE_GAME:
+            if (!field.getGameState().isGameInProgress()) {
+                field.startGame();
+            }
+            field.removeDeadBalls();
+            if (field.getBalls().size()==0) field.launchBall();
             field.setAllFlippersEngaged(true);
             // TODO: Launch next ball if needed.
             break;

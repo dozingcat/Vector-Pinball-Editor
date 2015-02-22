@@ -12,31 +12,22 @@ public class JarFileFieldReader {
 
     private static final String FIELD_PATH = "/com/dozingcatsoftware/vectorpinball/tables/";
 
-    private int _numLevels = -1;
-
-    InputStream inputStreamForLevel(int level) {
-        return getClass().getResourceAsStream(FIELD_PATH + "table" + level + ".json");
+    String pathForBuiltInField(int level) {
+        return FIELD_PATH + "table" + level + ".json";
     }
 
-    public int numberOfLevels() {
-        if (_numLevels <= 0) {
-            int level = 0;
-            while (true) {
-                InputStream is = inputStreamForLevel(level + 1);
-                if (is==null) break;
-                level++;
-                try {is.close();}
-                catch(IOException ignored) {}
-            }
-            _numLevels = level;
-        }
-        return _numLevels;
+    String pathForStarterField() {
+        return FIELD_PATH + "starter.json";
     }
 
-    public Map<String, Object> layoutMapForLevel(int level) {
-        try(InputStream fin = inputStreamForLevel(level)) {
+    InputStream inputStreamForStarterField(int level) {
+        return getClass().getResourceAsStream(FIELD_PATH + "starter.json");
+    }
+
+    public Map<String, Object> layoutMapForLevel(String resourcePath) {
+        try(InputStream fin = getClass().getResourceAsStream(resourcePath)) {
             if (fin==null) {
-                throw new IllegalArgumentException("Table " + level + " not found");
+                throw new IllegalArgumentException("Field at " + resourcePath + " not found");
             }
             BufferedReader br = new BufferedReader(new InputStreamReader(fin));
 
@@ -50,5 +41,13 @@ public class JarFileFieldReader {
         catch(IOException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public Map<String, Object> layoutMapForBuiltInField(int fieldNum) {
+        return layoutMapForLevel(pathForBuiltInField(fieldNum));
+    }
+
+    public Map<String, Object> layoutMapForStarterField() {
+        return layoutMapForLevel(pathForStarterField());
     }
 }
