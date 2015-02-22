@@ -17,7 +17,6 @@ public class EditableField implements PropertyContainer {
     public static final String NAME_PROPERTY = "name";
     public static final String WIDTH_PROPERTY = "width";
     public static final String HEIGHT_PROPERTY = "height";
-    public static final String DELEGATE_PROPERTY = "delegate";
     public static final String TARGET_TIME_RATIO_PROPERTY = "targetTimeRatio";
     public static final String GRAVITY_PROPERTY = "gravity";
     public static final String NUM_BALLS_PROPERTY = "numballs";
@@ -28,6 +27,8 @@ public class EditableField implements PropertyContainer {
     public static final String LAUNCH_VELOCITY_PROPERTY = "launchVelocity";
     public static final String LAUNCH_RANDOM_VELOCITY_PROPERTY = "launchVelocityRandomDelta";
     public static final String LAUNCH_DEAD_ZONE_PROPERTY = "launchDeadZone";
+    public static final String DELEGATE_PROPERTY = "delegate";
+    public static final String SCRIPT_PROPERTY = "script";
 
     public static final String ELEMENTS_PROPERTY = "elements";
 

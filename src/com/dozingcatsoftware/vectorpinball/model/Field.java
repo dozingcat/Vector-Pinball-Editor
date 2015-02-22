@@ -25,6 +25,7 @@ import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
+import com.dozingcatsoftware.vectorpinball.groovy.GroovyFieldDelegateBuilder;
 
 public class Field implements ContactListener {
 
@@ -96,6 +97,29 @@ public class Field implements ContactListener {
         return newWorld;
 	}
 
+	Delegate createDelegate() {
+	    String script = layout.getScriptText();
+	    if (script != null && script.trim().length() > 0) {
+	        return GroovyFieldDelegateBuilder.createFromScript(script, getClass().getClassLoader());
+	    }
+		String delegateClass = layout.getDelegateClassName();
+		if (delegateClass!=null) {
+			if (delegateClass.indexOf('.')==-1) {
+			    delegateClass = "com.dozingcatsoftware.vectorpinball.tables." + delegateClass;
+			}
+			try {
+				return (Delegate)Class.forName(delegateClass).newInstance();
+			}
+			catch(Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+		else {
+			// use no-op delegate if no class specified, so that field.getDelegate() is always non-null
+			return BaseFieldDelegate.INSTANCE;
+		}
+	}
+
 	/** Creates Box2D world, reads layout definitions for the given level (currently only one), and initializes the game
 	 * to the starting state.
 	 * @param context
@@ -118,8 +142,8 @@ public class Field implements ContactListener {
 		List<FieldElement> tickElements = new ArrayList<FieldElement>();
 
 		for(FieldElement element : layout.getFieldElements()) {
-			if (element.getElementID()!=null) {
-				fieldElementsByID.put(element.getElementID(), element);
+			if (element.getElementId()!=null) {
+				fieldElementsByID.put(element.getElementId(), element);
 			}
 			for(Body body : element.getBodies()) {
 				bodyToFieldElement.put(body, element);
@@ -131,23 +155,7 @@ public class Field implements ContactListener {
 		fieldElementsToTick = tickElements.toArray(new FieldElement[0]);
 		fieldElementsArray = layout.getFieldElements().toArray(new FieldElement[0]);
 
-		delegate = null;
-		String delegateClass = layout.getDelegateClassName();
-		if (delegateClass!=null) {
-			if (delegateClass.indexOf('.')==-1) {
-			    delegateClass = "com.dozingcatsoftware.vectorpinball.tables." + delegateClass;
-			}
-			try {
-				delegate = (Delegate)Class.forName(delegateClass).newInstance();
-			}
-			catch(Exception ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-		else {
-			// use no-op delegate if no class specified, so that field.getDelegate() is always non-null
-			delegate = new BaseFieldDelegate();
-		}
+		delegate = createDelegate();
 	}
 
 	public void startGame() {
@@ -158,7 +166,7 @@ public class Field implements ContactListener {
 
 	/** Returns the FieldElement with the given value for its "id" attribute, or null if there is no such element.
 	 */
-	public FieldElement getFieldElementByID(String elementID) {
+	public FieldElement getFieldElementById(String elementID) {
 		return fieldElementsByID.get(elementID);
 	}
 
@@ -167,7 +175,7 @@ public class Field implements ContactListener {
 	 * collisions, calls tick() on every FieldElement, and performs scheduled actions.
 	 */
     void tick(long nanos, int iters) {
-    	float dt = (float)((nanos/1e9) / iters);
+    	float dt = ((nanos/1e9f) / iters);
 
     	for(int i=0; i<iters; i++) {
         	clearBallContacts();
@@ -400,7 +408,7 @@ public class Field implements ContactListener {
 	}
 
 	// contact support
-	Map<Body, List<Fixture>> ballContacts = new HashMap();
+	Map<Body, List<Fixture>> ballContacts = new HashMap<Body, List<Fixture>>();
 
 	void clearBallContacts() {
 		ballContacts.clear();
@@ -431,13 +439,11 @@ public class Field implements ContactListener {
 
 
 	// ContactListener methods
-	@Override
-	public void beginContact(Contact contact) {
+	@Override public void beginContact(Contact contact) {
 		// nothing here, contact is recorded in endContact()
 	}
 
-	@Override
-	public void endContact(Contact contact) {
+	@Override public void endContact(Contact contact) {
 		// A ball can have multiple contacts (e.g. against two walls), so store list of contacted fixtures
 		Body ball = null;
 		Fixture fixture = null;

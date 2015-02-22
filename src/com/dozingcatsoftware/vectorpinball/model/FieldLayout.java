@@ -193,6 +193,10 @@ public class FieldLayout {
 	public String getDelegateClassName() {
 		return (String)allParameters.get("delegate");
 	}
+	
+	public String getScriptText() {
+	    return (String)allParameters.get("script");
+	}
 
 	/** Returns a value from the "values" map, used to store information independent of the FieldElements.
 	 */

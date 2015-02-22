@@ -33,8 +33,8 @@ public class FxCanvasRenderer implements IFieldRenderer {
 
     private double scale = DEFAULT_SCALE;
     private int scaleRatioIndex = 2;
-    private double xOffset = -2;
-    private double yOffset = -2;
+    private double xOffset = -1.5;
+    private double yOffset = -1.5;
 
     Point dragStartPoint;
     Point lastDragPoint;

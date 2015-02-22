@@ -115,11 +115,19 @@ public abstract class EditableFieldElement implements PropertyContainer {
 
     /**
      * Gets the current color by using the defined color if set and the default color if not.
-     * Subclasses can override.
      */
     protected Color currentColor(Color defaultColor) {
-        return properties.containsKey(COLOR_PROPERTY) ?
+        Color color = properties.containsKey(COLOR_PROPERTY) ?
                 Color.fromList((List<Number>)properties.get(COLOR_PROPERTY)) : defaultColor;
+                
+        // If very dark, make brighter for display.
+        int rgbSum = color.red + color.green + color.blue;
+        if (rgbSum < 192 || color.alpha < 64) {
+            int extra = (192 - rgbSum) / 3;
+            color = Color.fromRGB(
+                    color.red + extra, color.blue + extra, color.green + extra, Math.max(color.alpha, 128));
+        }
+        return color;
     }
 
     /**

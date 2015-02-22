@@ -16,45 +16,28 @@ import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
  * @author brian
  */
 public class BaseFieldDelegate implements Field.Delegate {
+	
+	public final static BaseFieldDelegate INSTANCE = new BaseFieldDelegate();
 
-	@Override
-	public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
-	}
+	@Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {}
 
-	@Override
-	public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
-	}
+	@Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {}
 
-	@Override
-	public void flippersActivated(Field field, List<FlipperElement> flippers) {
-	}
+	@Override public void flippersActivated(Field field, List<FlipperElement> flippers) {}
 
-	@Override
-	public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
-	}
+	@Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {}
 
-	@Override
-	public void gameStarted(Field field) {
-	}
+	@Override public void gameStarted(Field field) {}
 
-	@Override
-	public void ballLost(Field field) {
-	}
+	@Override public void ballLost(Field field) {}
 
-	@Override
-	public void gameEnded(Field field) {
-	}
+	@Override public void gameEnded(Field field) {}
 
-	@Override
-	public void tick(Field field, long nanos) {
-	}
+	@Override public void tick(Field field, long nanos) {}
 
-	@Override
-	public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
-	}
+	@Override public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {}
 
-	@Override
-	public boolean isFieldActive(Field field) {
+	@Override public boolean isFieldActive(Field field) {
 		return false;
 	}
 }

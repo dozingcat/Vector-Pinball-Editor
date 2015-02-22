@@ -13,8 +13,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -46,6 +49,7 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
+import com.dozingcatsoftware.vectorpinball.model.GameMessage;
 import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
@@ -71,7 +75,6 @@ public class Main extends Application {
 
     enum EditorState {
         EDITING,
-        SAMPLE_BALL,
         SAMPLE_GAME,
     }
 
@@ -79,14 +82,23 @@ public class Main extends Application {
 
     static int WINDOW_WIDTH = 1000;
     static int WINDOW_HEIGHT = 850;
-    static int BASE_CANVAS_WIDTH = 583;
-    static int BASE_CANVAS_HEIGHT = 833;
+    static int BASE_CANVAS_WIDTH = 560;
+    static int BASE_CANVAS_HEIGHT = 810;
+
     static int TOOLS_COLUMN_WIDTH = 360;
+    static int SCRIPT_COLUMN_WIDTH = 450;
 
     Stage mainStage;
+    VBox fieldBox;
     ScrollPane fieldScroller;
     Canvas fieldCanvas;
-    ElementInspectorView inspector;
+    ElementInspectorView inspectorView;
+    ScoreView scoreView;
+    Timer scoreViewTimer;
+
+    ColumnConstraints scriptColumnConstraints;
+    ScriptEditorView scriptView;
+    Button showScriptButton;
 
     Field field;
     EditableField editableField;
@@ -114,19 +126,21 @@ public class Main extends Application {
         renderer.setEditableField(editableField);
         renderer.setUndoStack(undoStack);
 
-        inspector = new ElementInspectorView();
-        inspector.setChangeCallback(this::handleElementChangeFromInspector);
-        inspector.setEditableField(editableField);
-        inspector.setUndoStack(undoStack);
+        inspectorView = new ElementInspectorView();
+        inspectorView.setChangeCallback(this::handleElementChangeFromInspector);
+        inspectorView.setEditableField(editableField);
+        inspectorView.setUndoStack(undoStack);
 
         GridPane root = new GridPane();
 
         Insets leftColumnInsets = new Insets(20, 0, 20, 20);
 
-        ColumnConstraints col1 = new ColumnConstraints(TOOLS_COLUMN_WIDTH);
-        ColumnConstraints col2 = new ColumnConstraints(0, 700, Double.MAX_VALUE);
-        col2.setHgrow(Priority.ALWAYS);
-        root.getColumnConstraints().addAll(col1, col2);
+        ColumnConstraints toolsCol = new ColumnConstraints(TOOLS_COLUMN_WIDTH);
+        scriptColumnConstraints = new ColumnConstraints(0);
+        scriptColumnConstraints.setHgrow(Priority.ALWAYS);
+        ColumnConstraints fieldCol = new ColumnConstraints(0, 700, Double.MAX_VALUE);
+        fieldCol.setHgrow(Priority.ALWAYS);
+        root.getColumnConstraints().addAll(toolsCol, scriptColumnConstraints, fieldCol);
 
         RowConstraints row1 = new RowConstraints();
         RowConstraints row2 = new RowConstraints();
@@ -142,23 +156,31 @@ public class Main extends Application {
         Label simLabel = new Label(localizedString("Simulation"));
         simLabel.setFont(new Font(16));
         HBox simButtonRow = new HBox(5);
-        Button launchBallButton = new Button(localizedString("Launch ball"));
-        launchBallButton.setOnAction((event) -> launchSingleBall());
-        Button endGameButton = new Button("Stop Game");
+        Button startGameButton = new Button(localizedString("Start Game"));
+        startGameButton.setOnAction((event) -> startGame());
+        Button endGameButton = new Button(localizedString("Stop Game"));
         endGameButton.setOnAction((event) -> stopGame());
-        simButtonRow.getChildren().addAll(launchBallButton, endGameButton);
+        this.showScriptButton = new Button(localizedString("Show Script"));
+        showScriptButton.setOnAction((event) -> showScriptView());
+        simButtonRow.getChildren().addAll(startGameButton, endGameButton, showScriptButton);
         topLeft.getChildren().addAll(spacer, simLabel, simButtonRow);
 
         topLeft.setBackground(new Background(new BackgroundFill(Color.rgb(240, 240, 240), null, null)));
         GridPane.setConstraints(topLeft, 0, 0);
 
         ScrollPane inspectorScroller = new ScrollPane();
-        inspectorScroller.setContent(inspector);
+        inspectorScroller.setContent(inspectorView);
         inspectorScroller.setStyle("-fx-background: #bdf;");
         inspectorScroller.setPadding(leftColumnInsets);
         GridPane.setConstraints(inspectorScroller, 0, 1);
 
-        VBox fieldBox = new VBox();
+        scriptView = new ScriptEditorView();
+        scriptView.setEditableField(editableField);
+        scriptView.setChangeHandler(this::handleScriptChange);
+        GridPane.setConstraints(scriptView, 1, 0, 1, 2);
+
+        fieldBox = new VBox();
+        scoreView = new ScoreView();
 
         fieldScroller = new ScrollPane();
         fieldScroller.setStyle("-fx-background: black;");
@@ -168,10 +190,10 @@ public class Main extends Application {
 
         fieldBox.getChildren().addAll(fieldScroller);
 
-        GridPane.setConstraints(fieldBox, 1, 0, 1, 2);
+        GridPane.setConstraints(fieldBox, 2, 0, 1, 2);
 
         MenuBar menuBar = buildMenuBar();
-        root.getChildren().addAll(menuBar, topLeft, inspectorScroller, fieldBox);
+        root.getChildren().addAll(menuBar, topLeft, inspectorScroller, scriptView, fieldBox);
 
         primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
         primaryStage.setMinWidth(640);
@@ -179,6 +201,46 @@ public class Main extends Application {
         primaryStage.show();
 
         loadBuiltInLevel(1);
+    }
+
+    void showScoreView() {
+        fieldBox.getChildren().add(0, scoreView);
+        if (scoreViewTimer == null) {
+            scoreViewTimer = new Timer(true); // Set daemon to not stop quitting the app.
+            scoreViewTimer.schedule(new TimerTask() {
+                @Override public void run() {
+                    updateScoreView();
+                }
+            }, 0, 100);
+        }
+    }
+
+    void hideScoreView() {
+        if (scoreViewTimer != null) {
+            scoreViewTimer.cancel();
+            scoreViewTimer = null;
+        }
+        fieldBox.getChildren().remove(scoreView);
+    }
+
+    void updateScoreView() {
+        Field f = this.field;
+        if (f == null) return;
+        GameMessage gameMessage = f.getGameMessage();
+        String msg = (gameMessage != null) ? gameMessage.text : String.valueOf(f.getGameState().getScore());
+        Platform.runLater(() -> scoreView.setMessage(msg));
+    }
+
+    void showScriptView() {
+        scriptColumnConstraints.setPrefWidth(SCRIPT_COLUMN_WIDTH);
+        showScriptButton.setText(localizedString("Hide Script"));
+        showScriptButton.setOnAction((event) -> hideScriptView());
+    }
+
+    void hideScriptView() {
+        scriptColumnConstraints.setPrefWidth(0);
+        showScriptButton.setText(localizedString("Show Script"));
+        showScriptButton.setOnAction((event) -> showScriptView());
     }
 
     MenuItem createMenuItem(String label, String shortcutChar, Runnable onAction) {
@@ -191,6 +253,7 @@ public class Main extends Application {
         }
         return item;
     }
+
     MenuBar buildMenuBar() {
         Menu fileMenu = new Menu("File");
 
@@ -199,7 +262,7 @@ public class Main extends Application {
                 createMenuItem("Table 1", null, () -> loadBuiltInLevel(1)),
                 createMenuItem("Table 2", null, () -> loadBuiltInLevel(2)),
                 createMenuItem("Table 3", null, () -> loadBuiltInLevel(3))
-        );
+                );
 
         fileMenu.getItems().addAll(
                 createMenuItem("New Table", "N", null),
@@ -207,7 +270,7 @@ public class Main extends Application {
                 new SeparatorMenuItem(),
                 createMenuItem("Open", "O", this::openFile),
                 createMenuItem("Save", "S", this::saveFile)
-        );
+                );
 
         Menu editMenu = new Menu("Edit");
         MenuItem undoItem = createMenuItem("Undo", "Z", this::undoEdit);
@@ -267,11 +330,12 @@ public class Main extends Application {
         renderer.setCanvas(fieldCanvas);
         editableField.initFromProperties(fieldMap);
         renderer.doDraw();
-        inspector.updateInspectorValues();
+        inspectorView.updateInspectorValues();
+        scriptView.updateScriptText();
         editorState = EditorState.EDITING;
     }
 
-    void launchSingleBall() {
+    void startGame() {
         if (fieldDriver==null) {
             field = new Field();
             field.resetForLevel(editableField.getPropertyMapSnapshot());
@@ -281,11 +345,12 @@ public class Main extends Application {
             fieldDriver.setFieldRenderer(renderer);
             fieldDriver.setField(field);
             fieldDriver.start();
+            showScoreView();
         }
-        field.getDelegate().gameStarted(field);
+        field.startGame();
         field.removeDeadBalls();
         field.launchBall();
-        editorState = EditorState.SAMPLE_BALL;
+        editorState = EditorState.SAMPLE_GAME;
 
         // Start polling every second to detect lost ball?
     }
@@ -299,52 +364,56 @@ public class Main extends Application {
         renderer.setEditableField(editableField);
         renderer.doDraw();
         editorState = EditorState.EDITING;
+        hideScoreView();
     }
 
     void handleCanvasMousePressed(MouseEvent event) {
         switch (editorState) {
-            case SAMPLE_GAME:
-            case SAMPLE_BALL:
-                field.setAllFlippersEngaged(true);
-                break;
-            case EDITING:
-                renderer.handleEditorMouseDown(event);
-                break;
+        case SAMPLE_GAME:
+            field.setAllFlippersEngaged(true);
+            // TODO: Launch next ball if needed.
+            break;
+        case EDITING:
+            renderer.handleEditorMouseDown(event);
+            break;
         }
     }
 
     void handleCanvasMouseReleased(MouseEvent event) {
         switch (editorState) {
-            case SAMPLE_GAME:
-            case SAMPLE_BALL:
-                field.setAllFlippersEngaged(false);
-                break;
-            case EDITING:
-                renderer.handleEditorMouseUp(event);
-                break;
+        case SAMPLE_GAME:
+            field.setAllFlippersEngaged(false);
+            break;
+        case EDITING:
+            renderer.handleEditorMouseUp(event);
+            break;
         }
     }
 
     void handleCanvasMouseDragged(MouseEvent event) {
         switch (editorState) {
-            case EDITING:
-                renderer.handleEditorMouseDrag(event);
-                break;
-            default:
-                break;
+        case EDITING:
+            renderer.handleEditorMouseDrag(event);
+            break;
+        default:
+            break;
         }
     }
 
     void handleSelectionChange() {
-        inspector.update();
+        inspectorView.update();
     }
 
     void handleElementChangeFromField() {
-        inspector.updateInspectorValues();
+        inspectorView.updateInspectorValues();
     }
 
     void handleElementChangeFromInspector() {
         renderer.doDraw();
+        undoStack.pushSnapshot();
+    }
+
+    void handleScriptChange() {
         undoStack.pushSnapshot();
     }
 
@@ -363,7 +432,7 @@ public class Main extends Application {
         if (undoStack.canUndo()) {
             undoStack.undo();
             renderer.doDraw();
-            inspector.updateInspectorValues();
+            inspectorView.updateInspectorValues();
         }
     }
 
@@ -371,7 +440,7 @@ public class Main extends Application {
         if (undoStack.canRedo()) {
             undoStack.redo();
             renderer.doDraw();
-            inspector.updateInspectorValues();
+            inspectorView.updateInspectorValues();
         }
     }
 

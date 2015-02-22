@@ -28,6 +28,8 @@ public class WallElementInspector extends ElementInspector {
 
         box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
                 EditableWallElement.RETRACT_WHEN_HIT_PROPERTY, "Retract when hit"));
+        box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
+                EditableWallElement.KILL_PROPERTY, "Kill ball"));
 
         pane.getChildren().add(box);
     }
