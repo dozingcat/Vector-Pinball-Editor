@@ -81,7 +81,7 @@ public class Main extends Application {
     static String WINDOW_TITLE_PREFIX = localizedString("Vector Pinball: ");
 
     static int WINDOW_WIDTH = 1000;
-    static int WINDOW_HEIGHT = 850;
+    static int WINDOW_HEIGHT = 860;
     static int BASE_CANVAS_WIDTH = 560;
     static int BASE_CANVAS_HEIGHT = 810;
 
