@@ -41,14 +41,14 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
 
     @Override public void refreshInternalValues() {
         // Individual targets can be specified in "positions" list.
+        List<List<Object>> positionList = (List) getProperty(POSITIONS_PROPERTY);
         usesDirectPositions = hasProperty(POSITIONS_PROPERTY);
-        if (usesDirectPositions) {
-            List<List<Object>> positionList = (List) getProperty(POSITIONS_PROPERTY);
+        if (positionList!=null && !positionList.isEmpty()) {
             positions = new double[positionList.size()][];
             for (int i = 0; i < positionList.size(); i++) {
                 List<Object> coords = positionList.get(i);
                 positions[i] = new double[] {asDouble(coords.get(0)), asDouble(coords.get(1)),
-                                             asDouble(coords.get(2)), asDouble(coords.get(3))};
+                        asDouble(coords.get(2)), asDouble(coords.get(3))};
             }
         }
         else {
@@ -68,13 +68,13 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
                 double alongWallStart = startDistanceAlongWall + i * (targetWidth + gapBetweenTargets);
                 double alongWallEnd = alongWallStart + targetWidth;
                 double x1 = (wallStart[0] + (alongWallStart * Math.cos(wallAngle)) +
-                                            (gapFromWall * Math.cos(perpToWallAngle)));
+                        (gapFromWall * Math.cos(perpToWallAngle)));
                 double y1 = (wallStart[1] + (alongWallStart * Math.sin(wallAngle)) +
-                                            (gapFromWall * Math.sin(perpToWallAngle)));
+                        (gapFromWall * Math.sin(perpToWallAngle)));
                 double x2 = (wallStart[0] + (alongWallEnd * Math.cos(wallAngle)) +
-                                            (gapFromWall * Math.cos(perpToWallAngle)));
+                        (gapFromWall * Math.cos(perpToWallAngle)));
                 double y2 = (wallStart[1] + (alongWallEnd * Math.sin(wallAngle)) +
-                                            (gapFromWall * Math.sin(perpToWallAngle)));
+                        (gapFromWall * Math.sin(perpToWallAngle)));
                 positions[i] = new double[] {x1, y1, x2, y2};
             }
         }
@@ -85,7 +85,7 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
                 Arrays.asList(-0.5, 0.0, -0.5, 0.8),
                 Arrays.asList(-0.5, 1.0, -0.5, 1.8),
                 Arrays.asList(-0.5, 2.0, -0.5, 2.8)
-        ));
+                ));
         props.put(RESET_DELAY_PROPERTY, "2");
     }
 

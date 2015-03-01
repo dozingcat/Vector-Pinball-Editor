@@ -1,5 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
+import static com.dozingcatsoftware.vectorpinball.util.Localization.localizedString;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 
 import java.util.ArrayList;
@@ -32,9 +33,14 @@ public class WallPathElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
-        box.getChildren().add(createStringFieldWithLabel(EditableWallPathElement.ID_PROPERTY, "ID"));
-        box.getChildren().add(createColorSelectorWithLabel(EditableWallPathElement.COLOR_PROPERTY, "Color"));
-        box.getChildren().add(createHBoxWithLabel("Points"));
+        box.getChildren().add(createStringFieldWithLabel(
+                EditableWallPathElement.ID_PROPERTY, localizedString("ID")));
+        box.getChildren().add(createColorSelectorWithLabel(
+                EditableWallPathElement.COLOR_PROPERTY, localizedString("Color")));
+        box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
+                EditableWallPathElement.IGNORE_BALL_PROPERTY, localizedString("Ignore ball")));
+
+        box.getChildren().add(createHBoxWithLabel(localizedString("Points")));
 
         // Positions: array of 2-element decimal arrays
         pointRegion = new VBox(5);
@@ -75,11 +81,11 @@ public class WallPathElementInspector extends ElementInspector {
             row.region.getChildren().add(field);
             row.textFields.add(field);
         }
-        Button insertButton = new Button("Insert");
+        Button insertButton = new Button(localizedString("Insert"));
         insertButton.setOnAction((event) -> insertPointRowBelow(row));
         row.region.getChildren().add(insertButton);
 
-        Button removeButton = new Button("Remove");
+        Button removeButton = new Button(localizedString("Remove"));
         removeButton.setOnAction((event) -> removePointRow(row));
         row.region.getChildren().add(removeButton);
 

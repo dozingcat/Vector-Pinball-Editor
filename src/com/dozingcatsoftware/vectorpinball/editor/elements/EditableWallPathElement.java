@@ -14,6 +14,7 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 public class EditableWallPathElement extends EditableFieldElement {
 
     public static final String POSITIONS_PROPERTY = "positions";
+    public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
     static final double POINT_DRAG_MAX_DISTANCE_SQUARED = 0.3 * 0.3;
 
@@ -24,7 +25,7 @@ public class EditableWallPathElement extends EditableFieldElement {
                 Arrays.asList("-0.5", "0"),
                 Arrays.asList("-0.5", "2"),
                 Arrays.asList("-0.5", "4")
-        ));
+                ));
     }
 
     double getSegmentX(int index) {
@@ -46,7 +47,7 @@ public class EditableWallPathElement extends EditableFieldElement {
         int size = numPoints();
         for (int i=1; i<size; i++) {
             renderer.drawLine(getSegmentX(i-1), getSegmentY(i-1),
-                              getSegmentX(i), getSegmentY(i), color);
+                    getSegmentX(i), getSegmentY(i), color);
         }
         if (isSelected) {
             for (int i=0; i<size; i++) {

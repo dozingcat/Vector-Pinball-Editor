@@ -1,5 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.editor.elements;
 
+import static com.dozingcatsoftware.vectorpinball.util.MathUtils.TAU;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
 
@@ -27,7 +28,7 @@ public class EditableFlipperElement extends EditableFieldElement {
     double cx, cy;
 
     @Override protected void refreshInternalValues() {
-        List pos = (List)getProperty(POSITION_PROPERTY);
+        List<?> pos = (List<?>)getProperty(POSITION_PROPERTY);
 
         this.cx = asDouble(pos.get(0));
         this.cy = asDouble(pos.get(1));
@@ -46,13 +47,21 @@ public class EditableFlipperElement extends EditableFieldElement {
     }
 
     double endX() {
-        double angle = (flipperLength > 0) ? minangle : maxangle;
-        return cx + flipperLength*Math.cos(angle);
+        if (flipperLength > 0) {
+            return cx + flipperLength*Math.cos(minangle);
+        }
+        else {
+            return cx - flipperLength*Math.cos(TAU/2 - minangle);
+        }
     }
 
     double endY() {
-        double angle = (flipperLength > 0) ? minangle : maxangle;
-        return cy + flipperLength*Math.sin(angle);
+        if (flipperLength > 0) {
+            return cy + flipperLength*Math.sin(minangle);
+        }
+        else {
+            return cy - flipperLength*Math.sin(TAU/2 - minangle);
+        }
     }
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
@@ -71,7 +80,7 @@ public class EditableFlipperElement extends EditableFieldElement {
     }
 
     @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
-        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
+        List<?> pos = (List<?>)getProperty(POSITION_PROPERTY);
         setProperty(POSITION_PROPERTY, Arrays.asList(
                 asDouble(pos.get(0)) + deltaFromPrevious.x,
                 asDouble(pos.get(1)) + deltaFromPrevious.y));

@@ -23,7 +23,8 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  *     "minangle": 45, // starting angle in degrees, 0 is to the right of the center, 90 is up.
  *     "maxangle": 135, // ending angle in degrees
  *     "segments": 10, // number of straight wall segments to use to approximate the arc.
- *     "color": [255,0,0] // optional RGB values for the arc's color
+ *     "color": [255,0,0], // optional RGB values for the arc's color
+ *     "ignoreBall": false // if true, balls will not interact with this wall.
  * }
  *
  * For circular walls, the "radius" attribute can be used instead of xradius and yradius.
@@ -40,11 +41,12 @@ public class WallArcElement extends FieldElement {
     public static final String NUM_SEGMENTS_PROPERTY = "segments";
     public static final String MIN_ANGLE_PROPERTY = "minangle";
     public static final String MAX_ANGLE_PROPERTY = "maxangle";
+    public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
-	public List wallBodies = new ArrayList();
-	float[][] lineSegments;
+    public List<Body> wallBodies = new ArrayList<Body>();
+    float[][] lineSegments;
 
-	@Override public void finishCreateElement(Map params, FieldElementCollection collection) {
+    @Override public void finishCreateElement(Map<String, Object> params, FieldElementCollection collection) {
         List centerPos = (List)params.get(CENTER_PROPERTY);
         float cx = asFloat(centerPos.get(0));
         float cy = asFloat(centerPos.get(1));
@@ -75,23 +77,25 @@ public class WallArcElement extends FieldElement {
             float y2 = cy + yradius * (float)Math.sin(angle2);
             lineSegments[i] = (new float[] {x1, y1, x2, y2});
         }
-	}
+    }
 
-	@Override public void createBodies(World world) {
+    @Override public void createBodies(World world) {
+        if (getBooleanParameterValueForKey(IGNORE_BALL_PROPERTY)) return;
+
         for (float[] segment : this.lineSegments) {
             Body wall = Box2DFactory.createThinWall(world, segment[0], segment[1], segment[2], segment[3], 0f);
             this.wallBodies.add(wall);
         }
-	}
+    }
 
-	@Override public List<Body> getBodies() {
-		return wallBodies;
-	}
+    @Override public List<Body> getBodies() {
+        return wallBodies;
+    }
 
-	@Override public void draw(IFieldRenderer renderer) {
-	    Color color = currentColor(DEFAULT_WALL_COLOR);
-		for (float[] segment : this.lineSegments) {
-			renderer.drawLine(segment[0], segment[1], segment[2], segment[3], color);
-		}
-	}
+    @Override public void draw(IFieldRenderer renderer) {
+        Color color = currentColor(DEFAULT_WALL_COLOR);
+        for (float[] segment : this.lineSegments) {
+            renderer.drawLine(segment[0], segment[1], segment[2], segment[3], color);
+        }
+    }
 }

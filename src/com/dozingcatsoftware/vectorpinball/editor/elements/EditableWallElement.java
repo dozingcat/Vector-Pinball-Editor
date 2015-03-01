@@ -19,6 +19,7 @@ public class EditableWallElement extends EditableFieldElement {
     public static final String KILL_PROPERTY = "kill";
     public static final String RETRACT_WHEN_HIT_PROPERTY = "retractWhenHit";
     public static final String DISABLED_PROPERTY = "disabled";
+    public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
     enum DragType {
         START, END, ALL,
@@ -70,22 +71,22 @@ public class EditableWallElement extends EditableFieldElement {
         List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
         List<Object> newPos = new ArrayList<>(pos);
         switch (dragType) {
-            case START:
-                newPos.set(0, asDouble(pos.get(0)) + deltaFromPrevious.x);
-                newPos.set(1, asDouble(pos.get(1)) + deltaFromPrevious.y);
-                break;
-            case END:
-                newPos.set(2, asDouble(pos.get(2)) + deltaFromPrevious.x);
-                newPos.set(3, asDouble(pos.get(3)) + deltaFromPrevious.y);
-                break;
-            case ALL:
-                newPos.set(0, asDouble(pos.get(0)) + deltaFromPrevious.x);
-                newPos.set(1, asDouble(pos.get(1)) + deltaFromPrevious.y);
-                newPos.set(2, asDouble(pos.get(2)) + deltaFromPrevious.x);
-                newPos.set(3, asDouble(pos.get(3)) + deltaFromPrevious.y);
-                break;
-            default:
-                throw new AssertionError("Unknown drag type: " + dragType);
+        case START:
+            newPos.set(0, asDouble(pos.get(0)) + deltaFromPrevious.x);
+            newPos.set(1, asDouble(pos.get(1)) + deltaFromPrevious.y);
+            break;
+        case END:
+            newPos.set(2, asDouble(pos.get(2)) + deltaFromPrevious.x);
+            newPos.set(3, asDouble(pos.get(3)) + deltaFromPrevious.y);
+            break;
+        case ALL:
+            newPos.set(0, asDouble(pos.get(0)) + deltaFromPrevious.x);
+            newPos.set(1, asDouble(pos.get(1)) + deltaFromPrevious.y);
+            newPos.set(2, asDouble(pos.get(2)) + deltaFromPrevious.x);
+            newPos.set(3, asDouble(pos.get(3)) + deltaFromPrevious.y);
+            break;
+        default:
+            throw new AssertionError("Unknown drag type: " + dragType);
         }
         setProperty(POSITION_PROPERTY, newPos);
     }

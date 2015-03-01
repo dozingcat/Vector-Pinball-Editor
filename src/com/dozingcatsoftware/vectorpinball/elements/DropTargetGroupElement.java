@@ -61,19 +61,19 @@ public class DropTargetGroupElement extends FieldElement {
 
     static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
-	// store all bodies and positions, use Body's active flag to determine which targets have been hit
-	List<Body> allBodies = new ArrayList<Body>();
+    // store all bodies and positions, use Body's active flag to determine which targets have been hit
+    List<Body> allBodies = new ArrayList<Body>();
     float[][] positions;
 
     @Override public void finishCreateElement(Map params, FieldElementCollection collection) {
         // Individual targets can be specified in "positions" list.
-        if (hasParameterKey(POSITIONS_PROPERTY)) {
-            List<List<Object>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
+        List<List<Object>> positionList = (List) getRawParameterValueForKey(POSITIONS_PROPERTY);
+        if (positionList!=null && !positionList.isEmpty()) {
             positions = new float[positionList.size()][];
             for (int i = 0; i < positionList.size(); i++) {
                 List<Object> coords = positionList.get(i);
                 positions[i] = new float[] {asFloat(coords.get(0)), asFloat(coords.get(1)),
-                                            asFloat(coords.get(2)), asFloat(coords.get(3))};
+                        asFloat(coords.get(2)), asFloat(coords.get(3))};
             }
         }
         else {
@@ -92,13 +92,13 @@ public class DropTargetGroupElement extends FieldElement {
                 double alongWallStart = startDistanceAlongWall + i * (targetWidth + gapBetweenTargets);
                 double alongWallEnd = alongWallStart + targetWidth;
                 float x1 = (float) (wallStart[0] + (alongWallStart * Math.cos(wallAngle)) +
-                                                   (gapFromWall * Math.cos(perpToWallAngle)));
+                        (gapFromWall * Math.cos(perpToWallAngle)));
                 float y1 = (float) (wallStart[1] + (alongWallStart * Math.sin(wallAngle)) +
-                                                   (gapFromWall * Math.sin(perpToWallAngle)));
+                        (gapFromWall * Math.sin(perpToWallAngle)));
                 float x2 = (float) (wallStart[0] + (alongWallEnd * Math.cos(wallAngle)) +
-                                                   (gapFromWall * Math.cos(perpToWallAngle)));
+                        (gapFromWall * Math.cos(perpToWallAngle)));
                 float y2 = (float) (wallStart[1] + (alongWallEnd * Math.sin(wallAngle)) +
-                                                   (gapFromWall * Math.sin(perpToWallAngle)));
+                        (gapFromWall * Math.sin(perpToWallAngle)));
                 positions[i] = new float[] {x1, y1, x2, y2};
             }
         }
@@ -143,24 +143,24 @@ public class DropTargetGroupElement extends FieldElement {
         }
     }
 
-	/** Makes all targets visible by calling Body.setActive(true) on each target body */
-	public void makeAllTargetsVisible() {
-		int bsize = allBodies.size();
-		for(int i=0; i<bsize; i++) {
-			allBodies.get(i).setActive(true);
-		}
-	}
+    /** Makes all targets visible by calling Body.setActive(true) on each target body */
+    public void makeAllTargetsVisible() {
+        int bsize = allBodies.size();
+        for(int i=0; i<bsize; i++) {
+            allBodies.get(i).setActive(true);
+        }
+    }
 
-	@Override public void draw(IFieldRenderer renderer) {
-		// draw line for each target
-	    Color color = currentColor(DEFAULT_COLOR);
-		int bsize = allBodies.size();
-		for(int i=0; i<bsize; i++) {
-			Body body = allBodies.get(i);
-			if (body.isActive()) {
-				float[] parray = positions[i];
-				renderer.drawLine(parray[0], parray[1], parray[2], parray[3], color);
-			}
-		}
-	}
+    @Override public void draw(IFieldRenderer renderer) {
+        // draw line for each target
+        Color color = currentColor(DEFAULT_COLOR);
+        int bsize = allBodies.size();
+        for(int i=0; i<bsize; i++) {
+            Body body = allBodies.get(i);
+            if (body.isActive()) {
+                float[] parray = positions[i];
+                renderer.drawLine(parray[0], parray[1], parray[2], parray[3], color);
+            }
+        }
+    }
 }

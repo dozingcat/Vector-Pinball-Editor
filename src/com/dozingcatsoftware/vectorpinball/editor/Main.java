@@ -26,7 +26,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCharacterCombination;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -167,7 +169,7 @@ public class Main extends Application {
         scoreView = new ScoreView();
 
         fieldScroller = new ScrollPane();
-        fieldScroller.setStyle("-fx-background: black;");
+        fieldScroller.setStyle("-fx-background: #222;");
         VBox.setVgrow(fieldScroller, Priority.ALWAYS);
 
         createCanvas(BASE_CANVAS_WIDTH, BASE_CANVAS_HEIGHT);
@@ -275,10 +277,12 @@ public class Main extends Application {
 
     void createCanvas(double width, double height) {
         fieldCanvas = new Canvas(width, height);
+        fieldCanvas.addEventFilter(MouseEvent.ANY, (e) -> fieldCanvas.requestFocus()); // To handle key events.
         fieldScroller.setContent(fieldCanvas);
         fieldCanvas.setOnMousePressed(this::handleCanvasMousePressed);
         fieldCanvas.setOnMouseReleased(this::handleCanvasMouseReleased);
         fieldCanvas.setOnMouseDragged(this::handleCanvasMouseDragged);
+        fieldCanvas.setOnKeyPressed(this::handleCanvasKeyPressed);
     }
 
     void zoomIn() {
@@ -395,6 +399,17 @@ public class Main extends Application {
         default:
             break;
         }
+    }
+
+    void handleCanvasKeyPressed(KeyEvent event) {
+        System.out.println("key pressed: " + event.getCode());
+        KeyCode code = event.getCode();
+        if (KeyCode.DELETE.equals(code) || KeyCode.BACK_SPACE.equals(code)) {
+            // Possibly cheating, but the logic is already there.
+            inspectorView.deleteSelectedElements();
+        }
+        // For up/down/left/right, add methods to Editable*FieldElements,
+        // and call event.consume() so it won't scroll.
     }
 
     void handleSelectionChange() {

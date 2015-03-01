@@ -21,6 +21,7 @@ public class EditableWallArcElement extends EditableFieldElement {
     public static final String NUM_SEGMENTS_PROPERTY = "segments";
     public static final String MIN_ANGLE_PROPERTY = "minangle";
     public static final String MAX_ANGLE_PROPERTY = "maxangle";
+    public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
     double[][] lineSegments;
 
