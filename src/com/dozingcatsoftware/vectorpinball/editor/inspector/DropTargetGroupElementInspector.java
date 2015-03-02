@@ -36,6 +36,8 @@ public class DropTargetGroupElementInspector extends ElementInspector {
                 EditableDropTargetGroupElement.ID_PROPERTY, "ID"));
         box.getChildren().add(createColorSelectorWithLabel(
                 EditableDropTargetGroupElement.COLOR_PROPERTY, "Color"));
+        box.getChildren().add(createIntegerFieldWithLabel(
+                EditableDropTargetGroupElement.SCORE_PROPERTY, "Score"));
 
         box.getChildren().add(createDecimalStringFieldWithLabel(
                 EditableDropTargetGroupElement.RESET_DELAY_PROPERTY, "Reset delay"));

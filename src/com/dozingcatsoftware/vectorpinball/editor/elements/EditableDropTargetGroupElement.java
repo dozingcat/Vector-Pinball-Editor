@@ -42,8 +42,8 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
     @Override public void refreshInternalValues() {
         // Individual targets can be specified in "positions" list.
         List<List<Object>> positionList = (List) getProperty(POSITIONS_PROPERTY);
-        usesDirectPositions = hasProperty(POSITIONS_PROPERTY);
-        if (positionList!=null && !positionList.isEmpty()) {
+        usesDirectPositions = positionList!=null && !positionList.isEmpty();
+        if (usesDirectPositions) {
             positions = new double[positionList.size()][];
             for (int i = 0; i < positionList.size(); i++) {
                 List<Object> coords = positionList.get(i);

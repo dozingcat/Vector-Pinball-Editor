@@ -26,7 +26,7 @@ public class EditableWallArcElement extends EditableFieldElement {
     double[][] lineSegments;
 
     @Override protected void refreshInternalValues() {
-        List<Object> centerPos = (List<Object>)getProperty(CENTER_PROPERTY);
+        List<?> centerPos = (List<?>)getProperty(CENTER_PROPERTY);
         double centerX = asDouble(centerPos.get(0));
         double centerY = asDouble(centerPos.get(1));
         double minAngle = toRadians(asDouble(getProperty(MIN_ANGLE_PROPERTY)));
@@ -76,7 +76,7 @@ public class EditableWallArcElement extends EditableFieldElement {
             renderer.fillCircle(last[2], last[3], endpointRadius, color);
 
             Color colorWithAlpha = Color.fromRGB(color.red, color.green, color.blue, color.alpha/2);
-            List<Object> centerPos = (List<Object>)getProperty(CENTER_PROPERTY);
+            List<?> centerPos = (List<?>)getProperty(CENTER_PROPERTY);
             double cx = asDouble(centerPos.get(0));
             double cy = asDouble(centerPos.get(1));
             renderer.fillCircle(cx, cy, endpointRadius, colorWithAlpha);
@@ -96,7 +96,7 @@ public class EditableWallArcElement extends EditableFieldElement {
     }
 
     @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
-        List<Number> cpos = (List<Number>)getProperty(CENTER_PROPERTY);
+        List<?> cpos = (List<?>)getProperty(CENTER_PROPERTY);
         setProperty(CENTER_PROPERTY, Arrays.asList(
                 asDouble(cpos.get(0)) + deltaFromPrevious.x,
                 asDouble(cpos.get(1)) + deltaFromPrevious.y));

@@ -29,7 +29,7 @@ public class EditableWallElement extends EditableFieldElement {
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         Color color = currentColor(DEFAULT_WALL_COLOR);
         double selectionCircleRadius = 0.25 / renderer.getRelativeScale();
-        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
+        List<?> pos = (List<?>)getProperty(POSITION_PROPERTY);
         double x1 = asDouble(pos.get(0));
         double y1 = asDouble(pos.get(1));
         double x2 = asDouble(pos.get(2));
@@ -47,14 +47,14 @@ public class EditableWallElement extends EditableFieldElement {
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
-        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
+        List<?> pos = (List<?>)getProperty(POSITION_PROPERTY);
         Point start = Point.fromXY(asDouble(pos.get(0)), asDouble(pos.get(1)));
         Point end = Point.fromXY(asDouble(pos.get(2)), asDouble(pos.get(3)));
         return point.distanceToLineSegment(start, end) <= distance;
     }
 
     @Override public void startDrag(Point point) {
-        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
+        List<?> pos = (List<?>)getProperty(POSITION_PROPERTY);
         double toStart = point.distanceTo(asDouble(pos.get(0)), asDouble(pos.get(1)));
         double toEnd = point.distanceTo(asDouble(pos.get(2)), asDouble(pos.get(3)));
         if (5*toStart < toEnd) {
@@ -68,7 +68,7 @@ public class EditableWallElement extends EditableFieldElement {
         }
     }
     @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
-        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
+        List<?> pos = (List<?>)getProperty(POSITION_PROPERTY);
         List<Object> newPos = new ArrayList<>(pos);
         switch (dragType) {
         case START:
