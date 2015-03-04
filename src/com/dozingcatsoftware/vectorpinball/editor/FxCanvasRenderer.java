@@ -24,6 +24,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
     // Zoom levels greater than 2 result in poor performance using the simple
     // approach of creating a larger canvas.
     static final double[] SCALE_RATIOS = {1.0/2, 3.0/4, 1.0, 3.0/2, 2.0};
+    static final int DEFAULT_SCALE_RATIO_INDEX = 2;
 
     private Canvas canvas;
     private GraphicsContext context;
@@ -32,7 +33,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private UndoStack undoStack;
 
     private double scale = DEFAULT_SCALE;
-    private int scaleRatioIndex = 2;
+    private int scaleRatioIndex = DEFAULT_SCALE_RATIO_INDEX;
     private double xOffset = -1.5;
     private double yOffset = -1.5;
 
@@ -181,6 +182,11 @@ public class FxCanvasRenderer implements IFieldRenderer {
             scaleRatioIndex--;
             scale = SCALE_RATIOS[scaleRatioIndex] * DEFAULT_SCALE;
         }
+    }
+
+    public void zoomDefault() {
+        scaleRatioIndex = DEFAULT_SCALE_RATIO_INDEX;
+        scale = SCALE_RATIOS[scaleRatioIndex] * DEFAULT_SCALE;
     }
 
     Point worldPointFromEvent(MouseEvent event) {

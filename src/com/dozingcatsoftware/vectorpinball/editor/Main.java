@@ -267,7 +267,8 @@ public class Main extends Application {
         Menu viewMenu = new Menu("View");
         viewMenu.getItems().addAll(
                 createMenuItem("Zoom In", "+", this::zoomIn),
-                createMenuItem("Zoom Out", "-", this::zoomOut));
+                createMenuItem("Zoom Out", "-", this::zoomOut),
+                createMenuItem("Default Zoom", "0", this::zoomDefault));
 
         MenuBar mbar = new MenuBar();
         mbar.getMenus().addAll(fileMenu, editMenu, viewMenu);
@@ -287,13 +288,20 @@ public class Main extends Application {
 
     void zoomIn() {
         renderer.zoomIn();
-        createCanvas(BASE_CANVAS_WIDTH * renderer.getRelativeScale(), BASE_CANVAS_HEIGHT * renderer.getRelativeScale());
-        renderer.setCanvas(fieldCanvas);
-        renderer.doDraw();
+        recreateCanvasAfterZoom();
     }
 
     void zoomOut() {
         renderer.zoomOut();
+        recreateCanvasAfterZoom();
+    }
+
+    void zoomDefault() {
+        renderer.zoomDefault();
+        recreateCanvasAfterZoom();
+    }
+
+    private void recreateCanvasAfterZoom() {
         createCanvas(BASE_CANVAS_WIDTH * renderer.getRelativeScale(), BASE_CANVAS_HEIGHT * renderer.getRelativeScale());
         renderer.setCanvas(fieldCanvas);
         renderer.doDraw();
