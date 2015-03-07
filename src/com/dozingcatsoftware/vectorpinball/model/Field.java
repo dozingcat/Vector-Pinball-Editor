@@ -503,7 +503,11 @@ public class Field implements ContactListener {
         gameState.incrementScoreMultiplier();
     }
 
-    public int getScoreMultiplier() {
+    public void setScoreMultiplier(double value) {
+        gameState.setScoreMultiplier(value);
+    }
+
+    public double getScoreMultiplier() {
         return gameState.getScoreMultiplier();
     }
 

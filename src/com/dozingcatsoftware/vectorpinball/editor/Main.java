@@ -72,7 +72,7 @@ public class Main extends Application {
     static int BASE_CANVAS_HEIGHT = 810;
 
     static int TOOLS_COLUMN_WIDTH = 360;
-    static int SCRIPT_COLUMN_WIDTH = 450;
+    static int SCRIPT_COLUMN_WIDTH = 550;
 
     Stage mainStage;
     VBox fieldBox;
@@ -214,7 +214,13 @@ public class Main extends Application {
         if (f == null) return;
         GameMessage gameMessage = f.getGameMessage();
         String msg = (gameMessage != null) ? gameMessage.text : String.valueOf(f.getGameState().getScore());
-        Platform.runLater(() -> scoreView.setMessage(msg));
+        double multiplier = f.getScoreMultiplier();
+        int ballNumber = f.getGameState().getBallNumber();
+        Platform.runLater(() -> {
+            scoreView.setMessage(msg);
+            scoreView.setMultiplier(multiplier);
+            scoreView.setBallNumber(ballNumber);
+        });
     }
 
     void showScriptView() {

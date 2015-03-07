@@ -25,6 +25,7 @@ public class WallElementInspector extends ElementInspector {
                 Arrays.asList(localizedString("Start"), localizedString("End")),
                 2, 2));
 
+        box.getChildren().add(createIntegerFieldWithLabel(EditableWallElement.SCORE_PROPERTY, "Score"));
         box.getChildren().add(createDecimalStringFieldWithLabel(
                 EditableWallElement.KICK_PROPERTY, localizedString("Kick")));
 
