@@ -253,7 +253,8 @@ public class Main extends Application {
         newFromTemplateMenu.getItems().addAll(
                 createMenuItem("Table 1", null, () -> loadBuiltInField(1)),
                 createMenuItem("Table 2", null, () -> loadBuiltInField(2)),
-                createMenuItem("Table 3", null, () -> loadBuiltInField(3))
+                createMenuItem("Table 3", null, () -> loadBuiltInField(3)),
+                createMenuItem("Table 4", null, () -> loadBuiltInField(4))
                 );
 
         fileMenu.getItems().addAll(
