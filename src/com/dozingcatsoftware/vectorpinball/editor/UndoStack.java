@@ -42,7 +42,6 @@ public class UndoStack {
             }
             entries.add(entry);
             currentEntryIndex += 1;
-            System.out.println("Pushed undo snapshot, size="+entries.size());
         }
     }
 

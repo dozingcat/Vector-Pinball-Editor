@@ -47,10 +47,14 @@ public class ElementPaletteView extends VBox {
         elementRow1.getChildren().addAll(bumperButton, wallButton, wallPathButton, wallArcButton);
 
         HBox elementRow2 = new HBox(5);
-        Button rolloverButton = createNewElementButton("rollovers.png", "Rollovers", EditableRolloverGroupElement.class);
-        Button dropTargetsButton = createNewElementButton("droptargets.png", "Targets", EditableDropTargetGroupElement.class);
-        Button sensorButton = createNewElementButton("sensor.png", "Sensor", EditableSensorElement.class);
-        Button flipperButton = createNewElementButton("flipper.png", "Flipper", EditableFlipperElement.class);
+        Button rolloverButton = createNewElementButton(
+                "rollovers.png", "Rollovers", EditableRolloverGroupElement.class);
+        Button dropTargetsButton = createNewElementButton(
+                "droptargets.png", "Targets", EditableDropTargetGroupElement.class);
+        Button sensorButton = createNewElementButton(
+                "sensor.png", "Sensor", EditableSensorElement.class);
+        Button flipperButton = createNewElementButton(
+                "flipper.png", "Flipper", EditableFlipperElement.class);
         elementRow2.getChildren().addAll(rolloverButton, dropTargetsButton, sensorButton, flipperButton);
 
         vbox.getChildren().addAll(elementRow1, elementRow2);

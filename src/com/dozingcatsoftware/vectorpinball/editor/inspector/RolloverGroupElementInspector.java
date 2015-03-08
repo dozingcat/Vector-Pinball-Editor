@@ -26,6 +26,7 @@ public class RolloverGroupElementInspector extends ElementInspector {
         ColorPropertyEditor colorEditor;
         IntegerPropertyEditor scoreEditor;
 
+        @SuppressWarnings("unchecked")
         void updateFromRollover(Map<String, Object> rollover) {
             positionEditor.updateFromValue((List<Object>) rollover.get(EditableRolloverGroupElement.POSITION_PROPERTY));
             radiusEditor.updateFromValue(rollover.get(EditableRolloverGroupElement.RADIUS_PROPERTY));
@@ -88,8 +89,9 @@ public class RolloverGroupElementInspector extends ElementInspector {
     }
 
     @Override protected void updateCustomControlValues() {
+        @SuppressWarnings("unchecked")
         List<Map<String, Object>> rollovers =
-                (List) this.getPropertyContainer().getProperty(EditableRolloverGroupElement.ROLLOVERS_PROPERTY);
+        (List<Map<String, Object>>) this.getPropertyContainer().getProperty(EditableRolloverGroupElement.ROLLOVERS_PROPERTY);
         if (rollovers == null) rollovers = Collections.emptyList();
 
         while (rollovers.size() > rolloverRegions.size()) {
@@ -105,8 +107,9 @@ public class RolloverGroupElementInspector extends ElementInspector {
     }
 
     void addNewRollover() {
+        @SuppressWarnings("unchecked")
         List<Map<String, Object>> rollovers =
-                (List) this.getPropertyContainer().getProperty(EditableRolloverGroupElement.ROLLOVERS_PROPERTY);
+        (List<Map<String, Object>>) this.getPropertyContainer().getProperty(EditableRolloverGroupElement.ROLLOVERS_PROPERTY);
         List<Map<String, Object>> newRollovers = new ArrayList<>();
         if (rollovers != null) {
             newRollovers.addAll(rollovers);
@@ -125,7 +128,7 @@ public class RolloverGroupElementInspector extends ElementInspector {
         updateRolloversList();
     }
 
-    HBox createRolloverHBoxWithLabelAndEditor(String label, PropertyEditor editor) {
+    HBox createRolloverHBoxWithLabelAndEditor(String label, PropertyEditor<?> editor) {
         HBox box = createHBoxWithLabel(label);
         editor.setOnChange(this::updateRolloversList);
         box.getChildren().add(editor.getContainer());

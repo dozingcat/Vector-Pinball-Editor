@@ -15,11 +15,11 @@ import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 /**
- * This class represents a collection of rollover elements, such as the rollovers in the top lanes. They are activated
- * (and optionally deactivated) when a ball passes over them. Individual rollovers in the group are represented by
- * instances of the Rollover nested class, which specify center, radius, and color. Parameters at the collection level
- * control whether the rollovers should cycle when flippers are activated, and whether rollovers can toggle from on to off.
- * @author brian
+ * This class represents a collection of rollover elements. They are activated (and optionally
+ * deactivated) when a ball passes over them. Individual rollovers in the group are represented by
+ * instances of the Rollover nested class, which specify center, radius, and color. Parameters at
+ * the collection level control whether the rollovers should cycle when flippers are activated,
+ * and whether rollovers can toggle from on to off.
  */
 
 public class RolloverGroupElement extends FieldElement {
@@ -38,7 +38,7 @@ public class RolloverGroupElement extends FieldElement {
     static class Rollover {
         float cx, cy;
         float radius;
-        float radiusSquared; // optimization when computing whether ball is in range
+        float radiusSquared; // Optimization when computing whether ball is in range.
         Color color;
         long score;
         float resetDelay;
@@ -56,7 +56,8 @@ public class RolloverGroupElement extends FieldElement {
     List<Rollover> rolloversHitOnPreviousTick = new ArrayList<Rollover>();
     boolean isVisible = true;
 
-    @Override public void finishCreateElement(Map params, FieldElementCollection collection) {
+    @SuppressWarnings("unchecked")
+    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
         this.canToggleOff = Boolean.TRUE.equals(params.get(TOGGLE_OFF_PROPERTY));
         this.cycleOnFlipper = Boolean.TRUE.equals(params.get(CYCLE_ON_FLIPPER_PROPERTY));
         this.ignoreBall = Boolean.TRUE.equals(params.get(IGNORE_BALL_PROPERTY));
@@ -71,17 +72,14 @@ public class RolloverGroupElement extends FieldElement {
             List<?> pos = (List<?>)rmap.get(POSITION_PROPERTY);
             rollover.cx = asFloat(pos.get(0));
             rollover.cy = asFloat(pos.get(1));
-            // radius, color, score, and reset delay can be specified for each rollover, if not present use default from group
-            rollover.radius = (rmap.containsKey(RADIUS_PROPERTY)) ?
-                    asFloat(rmap.get(RADIUS_PROPERTY)) : this.defaultRadius;
-                    rollover.color = (rmap.containsKey(COLOR_PROPERTY)) ?
-                            Color.fromList((List<Number>)rmap.get(COLOR_PROPERTY)) : null;
-                            rollover.score = (rmap.containsKey(SCORE_PROPERTY)) ?
-                                    ((Number)rmap.get(SCORE_PROPERTY)).longValue() : this.score;
-                                    rollover.resetDelay = (rmap.containsKey(RESET_DELAY_PROPERTY)) ?
-                                            asFloat(rmap.get(RESET_DELAY_PROPERTY)) : this.defaultResetDelay;
+            // radius, color, score, and reset delay can be specified for each rollover.
+            // If not present use default from group.
+            rollover.radius = (rmap.containsKey(RADIUS_PROPERTY)) ? asFloat(rmap.get(RADIUS_PROPERTY)) : this.defaultRadius;
+            rollover.color = (rmap.containsKey(COLOR_PROPERTY)) ? Color.fromList((List<Number>)rmap.get(COLOR_PROPERTY)) : null;
+            rollover.score = (rmap.containsKey(SCORE_PROPERTY)) ? ((Number)rmap.get(SCORE_PROPERTY)).longValue() : this.score;
+            rollover.resetDelay = (rmap.containsKey(RESET_DELAY_PROPERTY)) ? asFloat(rmap.get(RESET_DELAY_PROPERTY)) : this.defaultResetDelay;
 
-                                            rollover.radiusSquared = rollover.radius * rollover.radius;
+            rollover.radiusSquared = rollover.radius * rollover.radius;
         }
     }
 
@@ -93,7 +91,8 @@ public class RolloverGroupElement extends FieldElement {
         return Collections.emptyList();
     }
 
-    List<Rollover> hitRollovers = new ArrayList<Rollover>(); // avoid object allocation in rolloversHitByBalls
+    // Avoid object allocation in rolloversHitByBalls.
+    List<Rollover> hitRollovers = new ArrayList<Rollover>();
 
     /** Returns a set of all rollovers which have balls within their specified radius. */
     protected List<Rollover> rolloversHitByBalls(List<Body> balls) {
@@ -176,8 +175,8 @@ public class RolloverGroupElement extends FieldElement {
                 activeRollovers.add(rollover);
                 field.addScore(rollover.score);
                 // TODO: Abstract sound capabilities.
-                //VPSoundpool.playRollover();
-                // set timer to clear rollover if reset parameter is present and >0
+                // VPSoundpool.playRollover();
+                // Set timer to clear rollover if reset parameter is present and >0.
                 if (rollover.resetDelay > 0) {
                     field.scheduleAction((long)(rollover.resetDelay*1000), new Runnable() {
                         @Override
@@ -190,7 +189,7 @@ public class RolloverGroupElement extends FieldElement {
             else if (this.canToggleOff) {
                 activeRollovers.remove(rollover);
                 field.addScore(rollover.score);
-                //VPSoundpool.playRollover();
+                // VPSoundpool.playRollover();
             }
         }
 
@@ -199,7 +198,7 @@ public class RolloverGroupElement extends FieldElement {
             rolloversHitOnPreviousTick.add(hitRollovers.get(i));
         }
 
-        // notify delegate if all rollovers are now active and they weren't previously
+        // Notify delegate if all rollovers are now active and they weren't previously.
         if (!allActivePrevious && allRolloversActive()) {
             field.getDelegate().allRolloversInGroupActivated(field, this);
         }
@@ -207,7 +206,7 @@ public class RolloverGroupElement extends FieldElement {
 
     @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {
         if (this.cycleOnFlipper) {
-            // cycle to right if any right flipper is activated
+            // Cycle to right if any right flipper is activated.
             boolean hasRightFlipper = false;
             for(int i=0; !hasRightFlipper && i<flippers.size(); i++) {
                 hasRightFlipper = flippers.get(i).isRightFlipper();
@@ -217,9 +216,11 @@ public class RolloverGroupElement extends FieldElement {
     }
 
     List<Rollover> newActiveRollovers = new ArrayList<Rollover>();
-    /** Cycles the states of all rollover elements by "rotating" left or right. For example, if this group has three rollovers
-     * whose states are (on, on, off), after calling this method with toRight=true the states will be (off, on, on).
-     * The state of the last rollover wraps around to the first, so (off, off, on) -> (on, off, off).
+    /**
+     * Cycles the states of all rollover elements by "rotating" left or right. For example, if this
+     * group has three rollovers whose states are (on, on, off), after calling this method with
+     * toRight=true the states will be (off, on, on). The state of the last rollover wraps around
+     * to the first, so (off, off, on) -> (on, off, off).
      */
     public void cycleRollovers(boolean toRight) {
         newActiveRollovers.clear();
@@ -237,8 +238,7 @@ public class RolloverGroupElement extends FieldElement {
         }
     }
 
-    /** Sets all rollovers to be active or inactive according to the boolean argument.
-     */
+    /** Sets all rollovers to be active or inactive according to the boolean argument. */
     public void setAllRolloversActivated(boolean active) {
         activeRollovers.clear();
         if (active) {

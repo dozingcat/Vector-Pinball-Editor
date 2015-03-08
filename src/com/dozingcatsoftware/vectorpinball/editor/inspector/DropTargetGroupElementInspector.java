@@ -102,8 +102,9 @@ public class DropTargetGroupElementInspector extends ElementInspector {
     void addNewTargetWithPosition() {
         List<List<Object>> newPositions = null;
 
+        @SuppressWarnings("unchecked")
         List<List<Object>> positions =
-                (List)this.getPropertyContainer().getProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY);
+        (List<List<Object>>)this.getPropertyContainer().getProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY);
         if (positions==null || positions.size()==0) {
             newPositions = Arrays.asList(Arrays.asList("-0.5", "-0.5", "-0.5", "0.5"));
         }
@@ -144,8 +145,9 @@ public class DropTargetGroupElementInspector extends ElementInspector {
     }
 
     @Override protected void updateCustomControlValues() {
+        @SuppressWarnings("unchecked")
         List<List<Object>> positions =
-                (List)this.getPropertyContainer().getProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY);
+        (List<List<Object>>)this.getPropertyContainer().getProperty(EditableDropTargetGroupElement.POSITIONS_PROPERTY);
         if (positions == null) positions = Collections.emptyList();
 
         while (positionRows.size() < positions.size()) {

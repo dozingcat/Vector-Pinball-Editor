@@ -14,22 +14,19 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 /**
  * This FieldElement subclass approximates a circular wall with a series of straight wall segments
- * whose endpoints lie on a circle or ellipse. These elements are defined in the layout JSON as follows:
+ * whose endpoints lie on a circle or ellipse. It is defined in the layout JSON as follows:
  * {
  *     "class": "WallArcElement",
- *     "center": [5.5, 10], // center of circle or ellipse
- *     "xradius": 2.5, // radius in the horizontal direction
- *     "yradius": 2, // radius in the y direction
- *     "minangle": 45, // starting angle in degrees, 0 is to the right of the center, 90 is up.
- *     "maxangle": 135, // ending angle in degrees
- *     "segments": 10, // number of straight wall segments to use to approximate the arc.
- *     "color": [255,0,0], // optional RGB values for the arc's color
- *     "ignoreBall": false // if true, balls will not interact with this wall.
+ *     "center": [5.5, 10], // Center of circle or ellipse.
+ *     "xradius": 2.5, // Radius in the horizontal direction.
+ *     "yradius": 2, // Radius in the y direction.
+ *     "minangle": 45, // Starting angle in degrees, 0 is to the right of the center, 90 is up.
+ *     "maxangle": 135, // Ending angle in degrees.
+ *     "segments": 10, // Number of straight wall segments to use to approximate the arc.
+ *     "color": [255,0,0] // Optional RGB values for the arc's color.
  * }
  *
  * For circular walls, the "radius" attribute can be used instead of xradius and yradius.
- *
- * @author brian
  */
 
 public class WallArcElement extends FieldElement {
@@ -46,12 +43,12 @@ public class WallArcElement extends FieldElement {
     public List<Body> wallBodies = new ArrayList<Body>();
     float[][] lineSegments;
 
-    @Override public void finishCreateElement(Map<String, Object> params, FieldElementCollection collection) {
-        List centerPos = (List)params.get(CENTER_PROPERTY);
+    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
+        List<?> centerPos = (List<?>)params.get(CENTER_PROPERTY);
         float cx = asFloat(centerPos.get(0));
         float cy = asFloat(centerPos.get(1));
 
-        // can specify "radius" for circle, or "xradius" and "yradius" for ellipse
+        // Can specify "radius" for circle, or "xradius" and "yradius" for ellipse.
         float xradius, yradius;
         if (params.containsKey(RADIUS_PROPERTY)) {
             xradius = yradius = asFloat(params.get(RADIUS_PROPERTY));
@@ -66,7 +63,7 @@ public class WallArcElement extends FieldElement {
         float minangle = toRadians(asFloat(params.get(MIN_ANGLE_PROPERTY)));
         float maxangle = toRadians(asFloat(params.get(MAX_ANGLE_PROPERTY)));
         float diff = maxangle - minangle;
-        // create numsegments line segments to approximate circular arc
+        // Create numsegments line segments to approximate circular arc.
         lineSegments = new float[numsegments][];
         for(int i=0; i<numsegments; i++) {
             float angle1 = minangle + i * diff / numsegments;
@@ -83,7 +80,8 @@ public class WallArcElement extends FieldElement {
         if (getBooleanParameterValueForKey(IGNORE_BALL_PROPERTY)) return;
 
         for (float[] segment : this.lineSegments) {
-            Body wall = Box2DFactory.createThinWall(world, segment[0], segment[1], segment[2], segment[3], 0f);
+            Body wall = Box2DFactory.createThinWall(
+                    world, segment[0], segment[1], segment[2], segment[3], 0f);
             this.wallBodies.add(wall);
         }
     }

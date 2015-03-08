@@ -36,15 +36,15 @@ public class FieldLayout {
     static final String VARIABLES_PROPERTY = "variables";
     static final String ELEMENTS_PROPERTY = "elements";
 
-	Random RAND = new Random();
+    Random RAND = new Random();
 
-	private FieldLayout() {}
+    private FieldLayout() {}
 
-	public static FieldLayout layoutForLevel(Map<String, Object> levelMap, World world) {
-		FieldLayout layout = new FieldLayout();
-		layout.initFromLevel(levelMap, world);
-		return layout;
-	}
+    public static FieldLayout layoutForLevel(Map<String, Object> levelMap, World world) {
+        FieldLayout layout = new FieldLayout();
+        layout.initFromLevel(levelMap, world);
+        return layout;
+    }
 
     Map<String, Object> allParameters;
     FieldElementCollection fieldElements;
@@ -61,53 +61,51 @@ public class FieldLayout {
     List<Float> launchVelocityRandomDelta;
     List<Float> launchDeadZoneRect;
 
-	static final Color DEFAULT_BALL_COLOR = Color.fromRGB(255, 0, 0);
-	static final Color DEFAULT_SECONDARY_BALL_COLOR = Color.fromRGB(176, 176, 176);
+    static final Color DEFAULT_BALL_COLOR = Color.fromRGB(255, 0, 0);
+    static final Color DEFAULT_SECONDARY_BALL_COLOR = Color.fromRGB(176, 176, 176);
 
-	static List<?> listForKey(Map<?, ?> map, Object key) {
-		if (map.containsKey(key)) return (List<?>) map.get(key);
-		return Collections.EMPTY_LIST;
-	}
+    static List<?> listForKey(Map<?, ?> map, Object key) {
+        if (map.containsKey(key)) return (List<?>) map.get(key);
+        return Collections.EMPTY_LIST;
+    }
 
-	private FieldElementCollection createFieldElements(Map<String, Object> layoutMap, World world) {
-	    FieldElementCollection elements = new FieldElementCollection();
+    @SuppressWarnings("unchecked")
+    private FieldElementCollection createFieldElements(Map<String, Object> layoutMap, World world) {
+        FieldElementCollection elements = new FieldElementCollection();
 
-	    Map<String, Object> variables = (Map<String, Object>) layoutMap.get(VARIABLES_PROPERTY);
-	    if (variables != null) {
-	        for (String varname : variables.keySet()) {
-	            elements.setVariable(varname, variables.get(varname));
-	        }
-	    }
+        Map<String, Object> variables = (Map<String, Object>) layoutMap.get(VARIABLES_PROPERTY);
+        if (variables != null) {
+            for (String varname : variables.keySet()) {
+                elements.setVariable(varname, variables.get(varname));
+            }
+        }
 
-	    Set<Map<String, Object>> unresolvedElements = new HashSet<Map<String, Object>>();
-	    // Initial pass
-	    for (Object obj : listForKey(layoutMap, ELEMENTS_PROPERTY)) {
-	        if (!(obj instanceof Map)) continue;
+        Set<Map<String, Object>> unresolvedElements = new HashSet<Map<String, Object>>();
+        // Initial pass
+        for (Object obj : listForKey(layoutMap, ELEMENTS_PROPERTY)) {
+            if (!(obj instanceof Map)) continue;
             Map<String, Object> params = (Map<String, Object>) obj;
-	        try {
-	            elements.addElement(FieldElement.createFromParameters(params, elements, world));
-	        }
-	        catch (FieldElement.DependencyNotAvailableException ex) {
-	            unresolvedElements.add(params);
-	        }
-	    }
+            try {
+                elements.addElement(FieldElement.createFromParameters(params, elements, world));
+            }
+            catch (FieldElement.DependencyNotAvailableException ex) {
+                unresolvedElements.add(params);
+            }
+        }
 
-	    return elements;
-	}
+        return elements;
+    }
 
-	void initFromLevel(Map<String, Object> layoutMap, World world) {
+    void initFromLevel(Map<String, Object> layoutMap, World world) {
         this.width = asFloat(layoutMap.get(WIDTH_PROPERTY), 20.0f);
         this.height = asFloat(layoutMap.get(HEIGHT_PROPERTY), 30.0f);
         this.gravity = asFloat(layoutMap.get(GRAVITY_PROPERTY), 4.0f);
         this.targetTimeRatio = asFloat(layoutMap.get(TARGET_TIME_RATIO_PROPERTY));
         this.numberOfBalls = asInt(layoutMap.get(NUM_BALLS_PROPERTY), 3);
         this.ballRadius = asFloat(layoutMap.get(BALL_RADIUS_PROPERTY), 0.5f);
-        this.ballColor = (layoutMap.containsKey(BALL_COLOR_PROPERTY))
-                ? Color.fromList((List<Number>)layoutMap.get(BALL_COLOR_PROPERTY))
-                : DEFAULT_BALL_COLOR;
-        this.secondaryBallColor = (layoutMap.containsKey(SECONDARY_BALL_COLOR_PROPERTY))
-                ? Color.fromList((List<Number>)layoutMap.get(SECONDARY_BALL_COLOR_PROPERTY))
-                : DEFAULT_SECONDARY_BALL_COLOR;
+        this.ballColor = colorFromMap(layoutMap, BALL_COLOR_PROPERTY, DEFAULT_BALL_COLOR);
+        this.secondaryBallColor = colorFromMap(
+                layoutMap, SECONDARY_BALL_COLOR_PROPERTY, DEFAULT_SECONDARY_BALL_COLOR);
         this.launchPosition = asFloatList(listForKey(layoutMap, LAUNCH_POSITION_PROPERTY));
         this.launchVelocity = asFloatList(listForKey(layoutMap, LAUNCH_VELOCITY_PROPERTY));
         this.launchVelocityRandomDelta = asFloatList(listForKey(layoutMap, LAUNCH_RANDOM_VELOCITY_PROPERTY));
@@ -115,21 +113,27 @@ public class FieldLayout {
 
         this.allParameters = layoutMap;
         this.fieldElements = createFieldElements(layoutMap, world);
-	}
+    }
 
-	public List<FieldElement> getFieldElements() {
-		return fieldElements.getAllElements();
-	}
+    private Color colorFromMap(Map<String, ?> map, String key, Color defaultColor) {
+        @SuppressWarnings("unchecked")
+        List<Number> value = (List<Number>) map.get(key);
+        return (value != null) ? Color.fromList(value) : defaultColor;
+    }
 
-	public List<FlipperElement> getFlipperElements() {
-		return fieldElements.getFlipperElements();
-	}
-	public List<FlipperElement> getLeftFlipperElements() {
-		return fieldElements.getLeftFlipperElements();
-	}
-	public List<FlipperElement> getRightFlipperElements() {
-	    return fieldElements.getRightFlipperElements();
-	}
+    public List<FieldElement> getFieldElements() {
+        return fieldElements.getAllElements();
+    }
+
+    public List<FlipperElement> getFlipperElements() {
+        return fieldElements.getFlipperElements();
+    }
+    public List<FlipperElement> getLeftFlipperElements() {
+        return fieldElements.getLeftFlipperElements();
+    }
+    public List<FlipperElement> getRightFlipperElements() {
+        return fieldElements.getRightFlipperElements();
+    }
 
     public float getBallRadius() {
         return ballRadius;
@@ -155,7 +159,7 @@ public class FieldLayout {
         return launchDeadZoneRect;
     }
 
-    // can apply random velocity increment if specified by "random_velocity" key
+    // Can apply random velocity increment if specified by "launchVelocityRandomDelta" key.
     public List<Float> getLaunchVelocity() {
         float vx = launchVelocity.get(0).floatValue();
         float vy = launchVelocity.get(1).floatValue();
@@ -171,36 +175,36 @@ public class FieldLayout {
         return Arrays.asList(vx, vy);
     }
 
-	public float getWidth() {
-		return width;
-	}
-	public float getHeight() {
-		return height;
-	}
+    public float getWidth() {
+        return width;
+    }
+    public float getHeight() {
+        return height;
+    }
 
-	/** Returns the desired ratio between real world time and simulation time. The application should adjust the frame rate and/or
-	 * time interval passed to Field.tick() to keep the ratio as close to this value as possible.
-	 */
-	public float getTargetTimeRatio() {
-		return targetTimeRatio;
-	}
+    /**
+     * Returns the desired ratio between real world time and simulation time. The application
+     * should adjust the frame rate and/or time interval passed to Field.tick() to keep the
+     * ratio as close to this value as possible.
+     */
+    public float getTargetTimeRatio() {
+        return targetTimeRatio;
+    }
 
-	/** Returns the magnitude of the gravity vector. */
-	public float getGravity() {
-		return asFloat(allParameters.get("gravity"), 4.0f);
-	}
+    /** Returns the magnitude of the gravity vector. */
+    public float getGravity() {
+        return asFloat(allParameters.get("gravity"), 4.0f);
+    }
 
-	public String getDelegateClassName() {
-		return (String)allParameters.get("delegate");
-	}
-	
-	public String getScriptText() {
-	    return (String)allParameters.get("script");
-	}
+    public String getDelegateClassName() {
+        return (String)allParameters.get("delegate");
+    }
 
-	/** Returns a value from the "values" map, used to store information independent of the FieldElements.
-	 */
-	public Object getValueWithKey(String key) {
-	    return fieldElements.getVariable(key);
-	}
+    public String getScriptText() {
+        return (String)allParameters.get("script");
+    }
+
+    public Object getValueWithKey(String key) {
+        return fieldElements.getVariable(key);
+    }
 }

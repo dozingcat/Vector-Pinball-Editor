@@ -51,7 +51,7 @@ import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.model.GameMessage;
 import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
-// Need to edit project as described in
+// May need to edit project as described in
 // http://stackoverflow.com/questions/24467931/using-javafx-jdk-1-8-0-05-in-eclipse-luna-does-not-work
 
 public class Main extends Application {
@@ -268,7 +268,8 @@ public class Main extends Application {
         Menu editMenu = new Menu("Edit");
         MenuItem undoItem = createMenuItem("Undo", "Z", this::undoEdit);
         MenuItem redoItem = createMenuItem("Redo", null, this::redoEdit);
-        redoItem.setAccelerator(new KeyCharacterCombination("Z", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
+        redoItem.setAccelerator(new KeyCharacterCombination(
+                "Z", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         editMenu.getItems().addAll(undoItem, redoItem);
 
         Menu viewMenu = new Menu("View");
@@ -285,7 +286,8 @@ public class Main extends Application {
 
     void createCanvas(double width, double height) {
         fieldCanvas = new Canvas(width, height);
-        fieldCanvas.addEventFilter(MouseEvent.ANY, (e) -> fieldCanvas.requestFocus()); // To handle key events.
+        // Assign focus so that canvas will receive key events.
+        fieldCanvas.addEventFilter(MouseEvent.ANY, (e) -> fieldCanvas.requestFocus());
         fieldScroller.setContent(fieldCanvas);
         fieldCanvas.setOnMousePressed(this::handleCanvasMousePressed);
         fieldCanvas.setOnMouseReleased(this::handleCanvasMouseReleased);
@@ -309,7 +311,8 @@ public class Main extends Application {
     }
 
     private void recreateCanvasAfterZoom() {
-        createCanvas(BASE_CANVAS_WIDTH * renderer.getRelativeScale(), BASE_CANVAS_HEIGHT * renderer.getRelativeScale());
+        createCanvas(BASE_CANVAS_WIDTH * renderer.getRelativeScale(),
+                BASE_CANVAS_HEIGHT * renderer.getRelativeScale());
         renderer.setCanvas(fieldCanvas);
         renderer.doDraw();
     }
@@ -387,7 +390,6 @@ public class Main extends Application {
             field.removeDeadBalls();
             if (field.getBalls().size()==0) field.launchBall();
             field.setAllFlippersEngaged(true);
-            // TODO: Launch next ball if needed.
             break;
         case EDITING:
             renderer.handleEditorMouseDown(event);
@@ -423,7 +425,7 @@ public class Main extends Application {
             // Possibly cheating, but the logic is already there.
             inspectorView.deleteSelectedElements();
         }
-        // For up/down/left/right, add methods to Editable*FieldElements,
+        // TODO: For up/down/left/right, add methods to Editable*FieldElements,
         // and call event.consume() so it won't scroll.
     }
 
@@ -521,7 +523,6 @@ public class Main extends Application {
             Files.write(savedFilePath, fileText.getBytes(StandardCharsets.UTF_8));
         }
         catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
