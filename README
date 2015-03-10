@@ -9,3 +9,4 @@ Currently exporting tables to the Vector Pinball app is a manual process. Vector
 Vector Pinball includes the following components used under the terms of Version 2.0 of the Apache License, available at http://www.apache.org/licenses/LICENSE-2.0:
 - libgdx by Bad Logic Games: http://libgdx.badlogicgames.com/
 - Groovy by the Groovy Project: http://groovy-lang.org/
+- JSON.simple: https://code.google.com/p/json-simple/
