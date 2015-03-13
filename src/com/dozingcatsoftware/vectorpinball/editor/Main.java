@@ -119,6 +119,13 @@ public class Main extends Application {
 
         GridPane root = new GridPane();
 
+        // Put the menu bar at the top of the window using grid constraints. For platforms that
+        // support it (Mac at least), setUseSystemMenuBar(true) will use a native menu bar and
+        // not show it in the window.
+        MenuBar menuBar = buildMenuBar();
+        menuBar.setUseSystemMenuBar(true);
+        GridPane.setConstraints(menuBar, 0, 0, 3, 1);
+
         Insets leftColumnInsets = new Insets(20, 0, 20, 20);
 
         ColumnConstraints toolsCol = new ColumnConstraints(TOOLS_COLUMN_WIDTH);
@@ -130,8 +137,9 @@ public class Main extends Application {
 
         RowConstraints row1 = new RowConstraints();
         RowConstraints row2 = new RowConstraints();
-        row2.setVgrow(Priority.ALWAYS);
-        root.getRowConstraints().addAll(row1, row2);
+        RowConstraints row3 = new RowConstraints();
+        row3.setVgrow(Priority.ALWAYS);
+        root.getRowConstraints().addAll(row1, row2, row3);
 
         VBox topLeft = new VBox(5);
         topLeft.setPadding(leftColumnInsets);
@@ -152,18 +160,18 @@ public class Main extends Application {
         topLeft.getChildren().addAll(spacer, simLabel, simButtonRow);
 
         topLeft.setBackground(new Background(new BackgroundFill(Color.rgb(240, 240, 240), null, null)));
-        GridPane.setConstraints(topLeft, 0, 0);
+        GridPane.setConstraints(topLeft, 0, 1);
 
         ScrollPane inspectorScroller = new ScrollPane();
         inspectorScroller.setContent(inspectorView);
         inspectorScroller.setStyle("-fx-background: #bdf;");
         inspectorScroller.setPadding(leftColumnInsets);
-        GridPane.setConstraints(inspectorScroller, 0, 1);
+        GridPane.setConstraints(inspectorScroller, 0, 2);
 
         scriptView = new ScriptEditorView();
         scriptView.setEditableField(editableField);
         scriptView.setChangeHandler(this::handleScriptChange);
-        GridPane.setConstraints(scriptView, 1, 0, 1, 2);
+        GridPane.setConstraints(scriptView, 1, 1, 1, 2);
 
         fieldBox = new VBox();
         scoreView = new ScoreView();
@@ -176,9 +184,8 @@ public class Main extends Application {
 
         fieldBox.getChildren().addAll(fieldScroller);
 
-        GridPane.setConstraints(fieldBox, 2, 0, 1, 2);
+        GridPane.setConstraints(fieldBox, 2, 1, 1, 2);
 
-        MenuBar menuBar = buildMenuBar();
         root.getChildren().addAll(menuBar, topLeft, inspectorScroller, scriptView, fieldBox);
 
         primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -280,7 +287,6 @@ public class Main extends Application {
 
         MenuBar mbar = new MenuBar();
         mbar.getMenus().addAll(fileMenu, editMenu, viewMenu);
-        mbar.setUseSystemMenuBar(true);
         return mbar;
     }
 
@@ -383,43 +389,42 @@ public class Main extends Application {
 
     void handleCanvasMousePressed(MouseEvent event) {
         switch (editorState) {
-        case SAMPLE_GAME:
-            if (!field.getGameState().isGameInProgress()) {
-                field.startGame();
-            }
-            field.removeDeadBalls();
-            if (field.getBalls().size()==0) field.launchBall();
-            field.setAllFlippersEngaged(true);
-            break;
-        case EDITING:
-            renderer.handleEditorMouseDown(event);
-            break;
+            case SAMPLE_GAME:
+                if (!field.getGameState().isGameInProgress()) {
+                    field.startGame();
+                }
+                field.removeDeadBalls();
+                if (field.getBalls().size()==0) field.launchBall();
+                field.setAllFlippersEngaged(true);
+                break;
+            case EDITING:
+                renderer.handleEditorMouseDown(event);
+                break;
         }
     }
 
     void handleCanvasMouseReleased(MouseEvent event) {
         switch (editorState) {
-        case SAMPLE_GAME:
-            field.setAllFlippersEngaged(false);
-            break;
-        case EDITING:
-            renderer.handleEditorMouseUp(event);
-            break;
+            case SAMPLE_GAME:
+                field.setAllFlippersEngaged(false);
+                break;
+            case EDITING:
+                renderer.handleEditorMouseUp(event);
+                break;
         }
     }
 
     void handleCanvasMouseDragged(MouseEvent event) {
         switch (editorState) {
-        case EDITING:
-            renderer.handleEditorMouseDrag(event);
-            break;
-        default:
-            break;
+            case EDITING:
+                renderer.handleEditorMouseDrag(event);
+                break;
+            default:
+                break;
         }
     }
 
     void handleCanvasKeyPressed(KeyEvent event) {
-        System.out.println("key pressed: " + event.getCode());
         KeyCode code = event.getCode();
         if (KeyCode.DELETE.equals(code) || KeyCode.BACK_SPACE.equals(code)) {
             // Possibly cheating, but the logic is already there.
