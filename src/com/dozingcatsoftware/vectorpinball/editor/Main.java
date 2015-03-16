@@ -9,7 +9,10 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,7 +21,10 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -49,6 +55,7 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.model.GameMessage;
+import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 // May need to edit project as described in
@@ -93,10 +100,10 @@ public class Main extends Application {
 
     FieldDriver fieldDriver;
     EditorState editorState = EditorState.EDITING;
-    Map<String, Object> fieldMap = null;
 
     FileSystem fileSystem = FileSystems.getDefault();
     Path savedFilePath;
+    Map<String, Object> lastSavedFieldMap;
 
     @Override public void start(Stage primaryStage) {
         this.mainStage = primaryStage;
@@ -191,6 +198,11 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
         primaryStage.setMinWidth(640);
         primaryStage.setMinHeight(500);
+        primaryStage.setOnCloseRequest((event) -> {
+            if (!confirmCloseCurrentField()) {
+                event.consume();  // Prevents exit.
+            }
+        });
         primaryStage.show();
 
         loadStarterField();
@@ -324,15 +336,17 @@ public class Main extends Application {
     }
 
     void loadFieldMap(Map<String, Object> map) {
-        fieldMap = map;
-        displayForEditing();
-
+        displayForEditing(map);
         undoStack.clearStack();
         undoStack.pushSnapshot();
         savedFilePath = null;
+        // Keep snapshot so we know if it's changed.
+        lastSavedFieldMap = CollectionUtils.mutableDeepCopyOfMap(map);
     }
 
     void loadBuiltInField(int fieldNum) {
+        if (!confirmCloseCurrentField()) return;
+
         JarFileFieldReader fieldReader = new JarFileFieldReader();
         loadFieldMap(fieldReader.layoutMapForBuiltInField(fieldNum));
         // TODO: localize
@@ -340,13 +354,15 @@ public class Main extends Application {
     }
 
     void loadStarterField() {
+        if (!confirmCloseCurrentField()) return;
+
         JarFileFieldReader fieldReader = new JarFileFieldReader();
         loadFieldMap(fieldReader.layoutMapForStarterField());
         // TODO: localize
         mainStage.setTitle(WINDOW_TITLE_PREFIX + "New Table");
     }
 
-    void displayForEditing() {
+    void displayForEditing(Map<String, Object> fieldMap) {
         renderer.setCanvas(fieldCanvas);
         editableField.initFromProperties(fieldMap);
         renderer.doDraw();
@@ -479,6 +495,8 @@ public class Main extends Application {
     }
 
     void openFile() {
+        if (!confirmCloseCurrentField()) return;
+
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open Table");
         File selectedFile = chooser.showOpenDialog(mainStage);
@@ -523,12 +541,49 @@ public class Main extends Application {
     }
 
     void writeToSavedFilePath() {
-        String fileText = JSONUtils.jsonStringFromObject(editableField.getPropertyMapSnapshot());
+        Map<String, Object> fieldMap = editableField.getPropertyMapSnapshot();
+        String fileText = JSONUtils.jsonStringFromObject(fieldMap);
         try {
             Files.write(savedFilePath, fileText.getBytes(StandardCharsets.UTF_8));
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+        lastSavedFieldMap = fieldMap;
+    }
+
+    /**
+     * Called when the user has requested an action which may close a field that has unsaved
+     * changes. Returns true if the action should proceed, false if not. This method may
+     * save the current field.
+     */
+    boolean confirmCloseCurrentField() {
+        // Continue if no previously saved field, or if current field has no changes.
+        if (lastSavedFieldMap == null) return true;
+        if (lastSavedFieldMap.equals(editableField.getPropertyMapSnapshot())) return true;
+
+        List<ButtonType> buttons = new ArrayList<>();
+        buttons.add(new ButtonType(localizedString("Save"), ButtonBar.ButtonData.YES));
+        buttons.add(new ButtonType(localizedString("Don't Save"), ButtonBar.ButtonData.NO));
+        buttons.add(new ButtonType(localizedString("Cancel"), ButtonBar.ButtonData.CANCEL_CLOSE));
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                localizedString("The current table has unsaved changes."));
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().addAll(buttons);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent()) {
+            if (result.get() == buttons.get(0)) {
+                // Save, don't continue.
+                saveFile();
+                return false;
+            }
+            if (result.get() == buttons.get(1)) {
+                // Continue without saving.
+                return true;
+            }
+        }
+        // Dialog canceled.
+        return false;
     }
 }

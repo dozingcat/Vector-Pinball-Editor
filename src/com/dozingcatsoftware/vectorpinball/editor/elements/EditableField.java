@@ -110,6 +110,10 @@ public class EditableField implements PropertyContainer {
         this.elements.removeAll(elements);
     }
 
+    /**
+     * Returns a copy of the current field map. Any subsequent changes to the field will not be
+     * reflected in the returned map.
+     */
     public Map<String, Object> getPropertyMapSnapshot() {
         List<Map<String, Object>> elementMaps = new ArrayList<>();
         for (EditableFieldElement elem : elements) {
