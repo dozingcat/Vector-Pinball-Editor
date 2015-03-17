@@ -297,8 +297,12 @@ public class Main extends Application {
                 createMenuItem("Zoom Out", "-", this::zoomOut),
                 createMenuItem("Default Zoom", "0", this::zoomDefault));
 
+        Menu helpMenu = new Menu("Help");
+        helpMenu.getItems().addAll(
+                createMenuItem("About...", null, this::showAboutDialog));
+
         MenuBar mbar = new MenuBar();
-        mbar.getMenus().addAll(fileMenu, editMenu, viewMenu);
+        mbar.getMenus().addAll(fileMenu, editMenu, viewMenu, helpMenu);
         return mbar;
     }
 
@@ -562,13 +566,17 @@ public class Main extends Application {
         if (lastSavedFieldMap == null) return true;
         if (lastSavedFieldMap.equals(editableField.getPropertyMapSnapshot())) return true;
 
+        String title = localizedString("Discard changes?");
+        String header = localizedString("The current table has unsaved changes.");
+
         List<ButtonType> buttons = new ArrayList<>();
         buttons.add(new ButtonType(localizedString("Save"), ButtonBar.ButtonData.YES));
         buttons.add(new ButtonType(localizedString("Don't Save"), ButtonBar.ButtonData.NO));
         buttons.add(new ButtonType(localizedString("Cancel"), ButtonBar.ButtonData.CANCEL_CLOSE));
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                localizedString("The current table has unsaved changes."));
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
         alert.getButtonTypes().clear();
         alert.getButtonTypes().addAll(buttons);
         Optional<ButtonType> result = alert.showAndWait();
@@ -585,5 +593,18 @@ public class Main extends Application {
         }
         // Dialog canceled.
         return false;
+    }
+
+    void showAboutDialog() {
+        String title = localizedString("About Vector Pinball Editor");
+        String header = localizedString("Vector Pinball Editor 0.1");
+        String message = localizedString(
+                "© 2015 Brian Nenninger\n" +
+                "More info: www.vectorpinball.com\n" +
+                "Email: brian@vectorpinball.com");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.showAndWait();
     }
 }
