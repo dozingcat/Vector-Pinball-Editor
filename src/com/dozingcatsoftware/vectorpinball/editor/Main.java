@@ -55,7 +55,6 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.model.GameMessage;
-import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 // May need to edit project as described in
@@ -345,7 +344,7 @@ public class Main extends Application {
         undoStack.pushSnapshot();
         savedFilePath = null;
         // Keep snapshot so we know if it's changed.
-        lastSavedFieldMap = CollectionUtils.mutableDeepCopyOfMap(map);
+        lastSavedFieldMap = editableField.getPropertyMapSnapshot();
     }
 
     void loadBuiltInField(int fieldNum) {
