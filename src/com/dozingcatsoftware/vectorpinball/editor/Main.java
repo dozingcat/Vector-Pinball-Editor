@@ -9,7 +9,9 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -227,11 +229,15 @@ public class Main extends Application {
         fieldBox.getChildren().remove(scoreView);
     }
 
+    static NumberFormat SCORE_FORMAT = NumberFormat.getInstance();
+
     void updateScoreView() {
         Field f = this.field;
         if (f == null) return;
         GameMessage gameMessage = f.getGameMessage();
-        String msg = (gameMessage != null) ? gameMessage.text : String.valueOf(f.getGameState().getScore());
+        String msg = (gameMessage != null) ?
+                gameMessage.text :
+                SCORE_FORMAT.format(f.getGameState().getScore());
         double multiplier = f.getScoreMultiplier();
         int ballNumber = f.getGameState().getBallNumber();
         Platform.runLater(() -> {
@@ -314,6 +320,7 @@ public class Main extends Application {
         fieldCanvas.setOnMouseReleased(this::handleCanvasMouseReleased);
         fieldCanvas.setOnMouseDragged(this::handleCanvasMouseDragged);
         fieldCanvas.setOnKeyPressed(this::handleCanvasKeyPressed);
+        fieldCanvas.setOnKeyReleased(this::handleCanvasKeyReleased);
     }
 
     void zoomIn() {
@@ -390,6 +397,7 @@ public class Main extends Application {
         field.removeDeadBalls();
         field.launchBall();
         editorState = EditorState.SAMPLE_GAME;
+        fieldCanvas.requestFocus();
 
         // Start polling every second to detect lost ball?
     }
@@ -409,11 +417,7 @@ public class Main extends Application {
     void handleCanvasMousePressed(MouseEvent event) {
         switch (editorState) {
             case SAMPLE_GAME:
-                if (!field.getGameState().isGameInProgress()) {
-                    field.startGame();
-                }
-                field.removeDeadBalls();
-                if (field.getBalls().size()==0) field.launchBall();
+                launchBallIfNeeded();
                 field.setAllFlippersEngaged(true);
                 break;
             case EDITING:
@@ -445,12 +449,58 @@ public class Main extends Application {
 
     void handleCanvasKeyPressed(KeyEvent event) {
         KeyCode code = event.getCode();
-        if (KeyCode.DELETE.equals(code) || KeyCode.BACK_SPACE.equals(code)) {
-            // Possibly cheating, but the logic is already there.
-            inspectorView.deleteSelectedElements();
+        switch (editorState) {
+            case SAMPLE_GAME:
+                boolean isActionKey = updateFlippersFromKey(code, true);
+                if (isActionKey) launchBallIfNeeded();
+                break;
+            case EDITING:
+                if (KeyCode.DELETE.equals(code) || KeyCode.BACK_SPACE.equals(code)) {
+                    // Possibly cheating, but the logic is already there.
+                    inspectorView.deleteSelectedElements();
+                }
+                // TODO: For up/down/left/right, add methods to Editable*FieldElements,
+                // and call event.consume() so it won't scroll.
+                break;
         }
-        // TODO: For up/down/left/right, add methods to Editable*FieldElements,
-        // and call event.consume() so it won't scroll.
+    }
+
+    void handleCanvasKeyReleased(KeyEvent event) {
+        switch (editorState) {
+            case SAMPLE_GAME:
+                updateFlippersFromKey(event.getCode(), false);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private static EnumSet<KeyCode> LEFT_FLIPPER_KEYS = EnumSet.of(KeyCode.Z, KeyCode.LEFT);
+    private static EnumSet<KeyCode> RIGHT_FLIPPER_KEYS = EnumSet.of(KeyCode.SLASH, KeyCode.RIGHT);
+    private static EnumSet<KeyCode> ALL_FLIPPER_KEYS = EnumSet.of(KeyCode.SPACE, KeyCode.ENTER);
+
+    private boolean updateFlippersFromKey(KeyCode code, boolean pressed) {
+        if (LEFT_FLIPPER_KEYS.contains(code)) {
+            field.setLeftFlippersEngaged(pressed);
+            return true;
+        }
+        else if (RIGHT_FLIPPER_KEYS.contains(code)) {
+            field.setRightFlippersEngaged(pressed);
+            return true;
+        }
+        else if (ALL_FLIPPER_KEYS.contains(code)) {
+            field.setAllFlippersEngaged(pressed);
+            return true;
+        }
+        return false;
+    }
+
+    private void launchBallIfNeeded() {
+        if (!field.getGameState().isGameInProgress()) {
+            field.startGame();
+        }
+        field.removeDeadBalls();
+        if (field.getBalls().isEmpty()) field.launchBall();
     }
 
     void handleSelectionChange() {
