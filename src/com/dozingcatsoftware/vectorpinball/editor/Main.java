@@ -52,6 +52,7 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import com.dozingcatsoftware.vectorpinball.ai.BasicFlipperAI;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Field;
@@ -352,6 +353,9 @@ public class Main extends Application {
         savedFilePath = null;
         // Keep snapshot so we know if it's changed.
         lastSavedFieldMap = editableField.getPropertyMapSnapshot();
+        if (fieldDriver != null) {
+            stopGame();
+        }
     }
 
     void loadBuiltInField(int fieldNum) {
@@ -382,7 +386,8 @@ public class Main extends Application {
     }
 
     void startGame() {
-        if (fieldDriver==null) {
+        stopGame();
+        //if (fieldDriver==null) {
             field = new Field();
             field.resetForLevel(editableField.getPropertyMapSnapshot());
             renderer.setField(field);
@@ -390,9 +395,10 @@ public class Main extends Application {
             fieldDriver = new FieldDriver();
             fieldDriver.setFieldRenderer(renderer);
             fieldDriver.setField(field);
+            fieldDriver.setFlipperAI(new BasicFlipperAI(1.7));
             fieldDriver.start();
             showScoreView();
-        }
+        //}
         field.startGame();
         field.removeDeadBalls();
         field.launchBall();

@@ -1,5 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.model;
 
+import com.dozingcatsoftware.vectorpinball.ai.FlipperAI;
 import com.dozingcatsoftware.vectorpinball.util.FrameRateManager;
 
 /** Class to manage the game thread which updates the game's internal state and draws to the FieldView. Controls the
@@ -12,6 +13,7 @@ public class FieldDriver {
 
 	IFieldRenderer fieldRenderer;
 	Field field;
+	FlipperAI flipperAI = null;
 
 	boolean running;
 	Thread gameThread;
@@ -30,6 +32,10 @@ public class FieldDriver {
 
 	public void setField(Field value) {
 		this.field = value;
+	}
+
+	public void setFlipperAI(FlipperAI ai) {
+	    flipperAI = ai;
 	}
 
 	/** Starts the game thread running. Does not actually start a new game.
@@ -76,6 +82,13 @@ public class FieldDriver {
 							fieldTickNanos = (long)(INACTIVE_FRAME_MSECS*1000000*field.getTargetTimeRatio());
 						}
 						field.tick(fieldTickNanos, 4);
+						if (flipperAI != null) {
+						    flipperAI.updateFlippers(field);
+						    if (field.getBalls().isEmpty() && field.getGameState().getBallNumber()>1 &&
+						            field.getGameState().isGameInProgress()) {
+						        field.launchBall();
+						    }
+						}
 					}
 					drawField();
 				}
@@ -95,7 +108,9 @@ public class FieldDriver {
 				continue;
 			}
 
-			frameRateManager.sleepUntilNextFrame();
+			//if (flipperAI == null) {
+	            frameRateManager.sleepUntilNextFrame();
+			//}
 
 			// for debugging, show frames per second and other info
 			if (frameRateManager.getTotalFrames() % 100 == 0) {
