@@ -91,11 +91,17 @@ public class EditableField implements PropertyContainer {
     @Override public void setProperty(String propertyName, Object value) {
         if (properties == null) return;
         properties.put(propertyName, value);
+        if (elementChangedCallback != null) {
+            elementChangedCallback.run();
+        }
     }
 
     @Override public void removeProperty(String propertyName) {
         if (properties == null) return;
         properties.remove(propertyName);
+        if (elementChangedCallback != null) {
+            elementChangedCallback.run();
+        }
     }
 
     public List<EditableFieldElement> getElements() {
