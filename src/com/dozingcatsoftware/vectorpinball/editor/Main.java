@@ -393,6 +393,9 @@ public class Main extends Application {
             fieldDriver.start();
             showScoreView();
         }
+        else {
+            field.resetForLevel(editableField.getPropertyMapSnapshot());
+        }
         field.startGame();
         field.removeDeadBalls();
         field.launchBall();
@@ -497,7 +500,7 @@ public class Main extends Application {
 
     private void launchBallIfNeeded() {
         if (!field.getGameState().isGameInProgress()) {
-            field.startGame();
+            startGame();
         }
         field.removeDeadBalls();
         if (field.getBalls().isEmpty()) field.launchBall();
