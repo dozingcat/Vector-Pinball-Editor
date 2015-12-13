@@ -31,7 +31,7 @@ public class EditableWallArcElement extends EditableFieldElement {
         double centerY = asDouble(centerPos.get(1));
         double minAngle = toRadians(asDouble(getProperty(MIN_ANGLE_PROPERTY)));
         double maxAngle = toRadians(asDouble(getProperty(MAX_ANGLE_PROPERTY)));
-        int numSegments = asInt(getProperty(NUM_SEGMENTS_PROPERTY), 10);
+        int numSegments = asInt(getProperty(NUM_SEGMENTS_PROPERTY), 5);
 
         double xRadius, yRadius;
         if (hasProperty(RADIUS_PROPERTY)) {
