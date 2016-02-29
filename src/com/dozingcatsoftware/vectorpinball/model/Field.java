@@ -255,6 +255,12 @@ public class Field implements ContactListener {
                 world, position.get(0), position.get(1), radius, false);
         ball.setBullet(true);
         ball.setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
+        // Default is radius of 0.5, if different we want the mass to be the same (could be
+        // configurable if needed), so adjust density proportional to square of the radius.
+        if (radius != 0.5f) {
+            ball.getFixtureList().get(0).setDensity((0.5f*0.5f) / (radius*radius));
+            ball.resetMassData();
+        }
         this.balls.add(ball);
         audioPlayer.playBall();
 
