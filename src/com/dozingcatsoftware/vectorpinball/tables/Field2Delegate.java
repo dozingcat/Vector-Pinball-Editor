@@ -7,6 +7,7 @@ import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
 import com.dozingcatsoftware.vectorpinball.elements.WallElement;
+import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.BaseFieldDelegate;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 
@@ -120,7 +121,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 	}
 
 	@Override
-	public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
+	public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
 		// when center red bumper is hit, start multiball if all center rollovers are lit, otherwise retract left barrier
 		String elementID = element.getElementId();
 		if ("CenterBumper1".equals(elementID)) {
@@ -188,7 +189,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 	}
 
 	@Override
-	public void ballInSensorRange(final Field field, SensorElement sensor, Body ball) {
+	public void ballInSensorRange(final Field field, SensorElement sensor, Ball ball) {
 		String sensorID = sensor.getElementId();
 		// enable launch barrier
 		if ("LaunchBarrierSensor".equals(sensorID)) {
@@ -198,7 +199,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 			setLaunchBarrierEnabled(field, false);
 		}
 		else if ("LeftTubeSensor".equals(sensorID)) {
-			if (ball.getLinearVelocity().y > 0) {
+			if (ball.getBody().getLinearVelocity().y > 0) {
 				// ball going up, retract barrier after delay
 				field.scheduleAction(1000, new Runnable() {
 					@Override

@@ -12,6 +12,7 @@ import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
 import com.dozingcatsoftware.vectorpinball.elements.WallElement;
+import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.BaseFieldDelegate;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
@@ -240,7 +241,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         }
     }
 
-    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
+    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
         // Add bumper bonus if active.
         if (element instanceof BumperElement) {
             double extraEnergy = 0;
@@ -265,7 +266,7 @@ public class Field3Delegate extends BaseFieldDelegate {
     }
 
     @Override
-    public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
+    public void ballInSensorRange(Field field, SensorElement sensor, Ball ball) {
         // enable launch barrier
         if ("LaunchBarrierSensor".equals(sensor.getElementId())) {
             setLaunchBarrierEnabled(field, true);

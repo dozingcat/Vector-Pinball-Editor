@@ -9,17 +9,14 @@ import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
-import com.dozingcatsoftware.vectorpinball.elements.Box2DFactory;
 import com.dozingcatsoftware.vectorpinball.elements.DropTargetGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
@@ -33,7 +30,7 @@ public class Field implements ContactListener {
     World world;
 
     Set<Body> layoutBodies;
-    List<Body> balls;
+    List<Ball> balls;
     Set<Body> ballsAtTargets;
 
     // Allow access to model objects from Box2d bodies.
@@ -76,7 +73,7 @@ public class Field implements ContactListener {
 
         public void tick(Field field, long nanos);
 
-        public void processCollision(Field field, FieldElement element, Body hitBody, Body ball);
+        public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball);
 
         public void flippersActivated(Field field, List<FlipperElement> flippers);
 
@@ -84,7 +81,7 @@ public class Field implements ContactListener {
 
         public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup);
 
-        public void ballInSensorRange(Field field, SensorElement sensor, Body ball);
+        public void ballInSensorRange(Field field, SensorElement sensor, Ball ball);
 
         public boolean isFieldActive(Field field);
     }
@@ -140,7 +137,7 @@ public class Field implements ContactListener {
 
         this.layout = FieldLayout.layoutForLevel(layoutMap, world);
         world.setGravity(new Vector2(0.0f, -layout.getGravity()));
-        balls = new ArrayList<Body>();
+        balls = new ArrayList<Ball>();
         ballsAtTargets = new HashSet<Body>();
 
         scheduledActions = new PriorityQueue<ScheduledAction>();
@@ -246,30 +243,22 @@ public class Field implements ContactListener {
      * Launches a new ball. The position and velocity of the ball are controlled by the parameters
      * in the field layout JSON.
      */
-    public Body launchBall() {
+    public Ball launchBall() {
         List<Float> position = layout.getLaunchPosition();
         List<Float> velocity = layout.getLaunchVelocity();
         float radius = layout.getBallRadius();
 
-        Body ball = Box2DFactory.createCircle(
-                world, position.get(0), position.get(1), radius, false);
-        ball.setBullet(true);
-        ball.setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
-        // Default is radius of 0.5, if different we want the mass to be the same (could be
-        // configurable if needed), so adjust density proportional to square of the radius.
-        if (radius != 0.5f) {
-            ball.getFixtureList().get(0).setDensity((0.5f*0.5f) / (radius*radius));
-            ball.resetMassData();
-        }
+        Ball ball = Ball.create(world, position.get(0), position.get(1), radius,
+                layout.getBallColor(), layout.getSecondaryBallColor());
+        ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
         this.balls.add(ball);
         audioPlayer.playBall();
-
         return ball;
     }
 
     /** Removes a ball from play. If there are no other balls on the field, calls doBallLost. */
-    public void removeBall(Body ball) {
-        world.destroyBody(ball);
+    public void removeBall(Ball ball) {
+        world.destroyBody(ball.getBody());
         this.balls.remove(ball);
         if (this.balls.size()==0) {
             this.doBallLost();
@@ -280,8 +269,8 @@ public class Field implements ContactListener {
      * Removes a ball from play, but does not call doBallLost for end-of-ball processing even if
      * no balls remain.
      */
-    public void removeBallWithoutBallLoss(Body ball) {
-        world.destroyBody(ball);
+    public void removeBallWithoutBallLoss(Ball ball) {
+        world.destroyBody(ball.getBody());
         this.balls.remove(ball);
     }
 
@@ -328,7 +317,7 @@ public class Field implements ContactListener {
     }
 
 
-    ArrayList<Body> deadBalls = new ArrayList<Body>(); // avoid allocation every time
+    ArrayList<Ball> deadBalls = new ArrayList<Ball>(); // avoid allocation every time
     /**
      * Removes balls that are not in play, as determined by optional "deadzone" property of
      * launch parameters in field layout.
@@ -338,12 +327,12 @@ public class Field implements ContactListener {
         if (deadRect==null) return;
 
         for(int i=0; i<this.balls.size(); i++) {
-            Body ball = this.balls.get(i);
-            Vector2 bpos = ball.getPosition();
+            Ball ball = this.balls.get(i);
+            Vector2 bpos = ball.getBody().getPosition();
             if (bpos.x > deadRect.get(0) && bpos.y > deadRect.get(1) &&
                     bpos.x < deadRect.get(2) && bpos.y < deadRect.get(3)) {
                 deadBalls.add(ball);
-                world.destroyBody(ball);
+                world.destroyBody(ball.getBody());
             }
         }
 
@@ -355,20 +344,8 @@ public class Field implements ContactListener {
 
     /** Called by FieldView to draw the balls currently in play. */
     public void drawBalls(IFieldRenderer renderer) {
-        Color color = layout.getBallColor();
-        Color secondaryColor = layout.getSecondaryBallColor();
         for(int i=0; i<this.balls.size(); i++) {
-            Body ball = this.balls.get(i);
-            CircleShape shape = (CircleShape)ball.getFixtureList().get(0).getShape();
-            Vector2 center = ball.getPosition();
-            float radius = shape.getRadius();
-            renderer.fillCircle(center.x, center.y, radius, color);
-
-            // Draw a smaller circle to show the ball's rotation.
-            float angle = ball.getAngle();
-            float smallCenterX = center.x + (radius / 2) * MathUtils.cos(angle);
-            float smallCenterY = center.y + (radius / 2) * MathUtils.sin(angle);
-            renderer.fillCircle(smallCenterX, smallCenterY, radius / 4, secondaryColor);
+            this.balls.get(i).draw(renderer);
         }
     }
 
@@ -419,8 +396,8 @@ public class Field implements ContactListener {
      */
     public void endGame() {
         audioPlayer.playStart(); // play startup sound at end of game
-        for(Body ball : this.getBalls()) {
-            world.destroyBody(ball);
+        for(Ball ball : this.getBalls()) {
+            world.destroyBody(ball.getBody());
         }
         this.balls.clear();
         this.getGameState().setGameInProgress(false);
@@ -439,7 +416,7 @@ public class Field implements ContactListener {
 
     // Contact support. Keep parallel lists of balls and the fixtures they contact.
     // A ball can have multiple contacts in the same tick, e.g. against two walls.
-    ArrayList<Body> contactedBalls = new ArrayList<Body>();
+    ArrayList<Ball> contactedBalls = new ArrayList<Ball>();
     ArrayList<Fixture> contactedFixtures = new ArrayList<Fixture>();
 
     void clearBallContacts() {
@@ -452,7 +429,7 @@ public class Field implements ContactListener {
      */
     void processBallContacts() {
         for(int i=0; i<contactedBalls.size(); i++) {
-            Body ball = contactedBalls.get(i);
+            Ball ball = contactedBalls.get(i);
             Fixture f = contactedFixtures.get(i);
             FieldElement element = bodyToFieldElement.get(f.getBody());
             if (element!=null) {
@@ -468,6 +445,15 @@ public class Field implements ContactListener {
         }
     }
 
+    private Ball ballWithBody(Body body) {
+        for (int i=0; i<this.balls.size(); i++) {
+            Ball ball = this.balls.get(i);
+            if (ball.getBody() == body) {
+                return ball;
+            }
+        }
+        return null;
+    }
 
     // Box2D ContactListener methods.
     @Override public void beginContact(Contact contact) {
@@ -475,18 +461,19 @@ public class Field implements ContactListener {
     }
 
     @Override public void endContact(Contact contact) {
-        Body ball = null;
         Fixture fixture = null;
-        if (balls.contains(contact.getFixtureA().getBody())) {
-            ball = contact.getFixtureA().getBody();
+        Ball ball = ballWithBody(contact.getFixtureA().getBody());
+        if (ball != null) {
             fixture = contact.getFixtureB();
         }
-        else if (balls.contains(contact.getFixtureB().getBody())) {
-            ball = contact.getFixtureB().getBody();
-            fixture = contact.getFixtureA();
+        else {
+            ball = ballWithBody(contact.getFixtureB().getBody());
+            if (ball != null) {
+                fixture = contact.getFixtureA();
+            }
         }
 
-        if (ball!=null) {
+        if (ball != null) {
             contactedBalls.add(ball);
             contactedFixtures.add(fixture);
         }
@@ -536,8 +523,8 @@ public class Field implements ContactListener {
             nanosSinceBallMoved = -1;
             return;
         }
-        Body ball = this.getBalls().get(0);
-        Vector2 pos = ball.getPosition();
+        Body ballBody = this.getBalls().get(0).getBody();
+        Vector2 pos = ballBody.getPosition();
         if (nanosSinceBallMoved < 0) {
             // New ball.
             lastBallPositionX = pos.x;
@@ -545,7 +532,7 @@ public class Field implements ContactListener {
             nanosSinceBallMoved = 0;
             return;
         }
-        if (ball.getLinearVelocity().len2() > 0.01f ||
+        if (ballBody.getLinearVelocity().len2() > 0.01f ||
                 pos.dst2(lastBallPositionX, lastBallPositionY) > 0.01f) {
             // Ball has moved since last time; reset counter.
             lastBallPositionX = pos.x;
@@ -564,7 +551,7 @@ public class Field implements ContactListener {
             showGameMessage("Bump!", 1000);
             // Could make the bump impulse table-specific if needed.
             Vector2 impulse = new Vector2(RAND.nextBoolean() ? 1f : -1f, 1.5f);
-            ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
+            ballBody.applyLinearImpulse(impulse, ballBody.getWorldCenter(), true);
             nanosSinceBallMoved = 0;
         }
     }
@@ -603,7 +590,7 @@ public class Field implements ContactListener {
     public Set<Body> getLayoutBodies() {
         return layoutBodies;
     }
-    public List<Body> getBalls() {
+    public List<Ball> getBalls() {
         return balls;
     }
     public FieldLayout getFieldLayout() {

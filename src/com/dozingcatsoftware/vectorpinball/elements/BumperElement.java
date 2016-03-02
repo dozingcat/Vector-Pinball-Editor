@@ -9,6 +9,7 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -68,10 +69,11 @@ public class BumperElement extends FieldElement {
         return new Vector2(ix*scale, iy*scale);
     }
 
-    @Override public void handleCollision(Body ball, Body bodyHit, Field field) {
-        Vector2 impulse = this.impulseForBall(ball);
+    @Override public void handleCollision(Ball ball, Body bodyHit, Field field) {
+        Body ballBody = ball.getBody();
+        Vector2 impulse = this.impulseForBall(ballBody);
         if (impulse!=null) {
-            ball.applyLinearImpulse(impulse, ball.getWorldCenter(), true);
+            ballBody.applyLinearImpulse(impulse, ballBody.getWorldCenter(), true);
             flashForFrames(3);
         }
     }

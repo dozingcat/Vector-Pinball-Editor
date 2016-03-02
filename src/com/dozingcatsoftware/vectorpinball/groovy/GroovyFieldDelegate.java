@@ -1,8 +1,5 @@
 package com.dozingcatsoftware.vectorpinball.groovy;
 
-import groovy.lang.Closure;
-import groovy.lang.Script;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +10,11 @@ import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
+import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Field;
+
+import groovy.lang.Closure;
+import groovy.lang.Script;
 
 public class GroovyFieldDelegate implements Field.Delegate {
 
@@ -28,13 +29,13 @@ public class GroovyFieldDelegate implements Field.Delegate {
 	Closure<Object> allRolloversInGroupActivated;
 	Closure<Object> ballInSensorRange;
 	Closure<Object> isFieldActive;
-	
+
 	public GroovyFieldDelegate initWithScript(Script groovyScript) {
 		this.groovyScript = groovyScript;
-		Object result = groovyScript.run();		
+		Object result = groovyScript.run();
 		@SuppressWarnings("rawtypes")
         Map<?, ?> methodMap = (result instanceof Map) ? ((Map) result) : Collections.emptyMap();
-		
+
 		gameStarted = getClosure(methodMap, "gameStarted");
 		ballLost = getClosure(methodMap, "ballLost");
 		gameEnded = getClosure(methodMap, "gameEnded");
@@ -45,15 +46,15 @@ public class GroovyFieldDelegate implements Field.Delegate {
 		allRolloversInGroupActivated = getClosure(methodMap, "allRolloversInGroupActivated");
 		ballInSensorRange = getClosure(methodMap, "ballInSensorRange");
 		isFieldActive = getClosure(methodMap, "isFieldActive");
-		
+
 		return this;
 	}
-	
+
 	Map<?, ?> getDelegateMethodMap() {
 		Object methodMap = groovyScript.getProperty("delegate");
 		return (methodMap instanceof Map) ? ((Map<?, ?>) methodMap) : Collections.emptyMap();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	static Closure<Object> getClosure(Map<?, ?> methodMap, String methodName) {
 		Object value = methodMap.get(methodName);
@@ -76,7 +77,7 @@ public class GroovyFieldDelegate implements Field.Delegate {
 		if (gameEnded != null) {
 			gameEnded.call(field);
 		}
-		
+
 	}
 
 	@Override public void tick(Field field, long nanos) {
@@ -85,7 +86,7 @@ public class GroovyFieldDelegate implements Field.Delegate {
 		}
 	}
 
-	@Override public void processCollision(Field field, FieldElement element, Body hitBody, Body ball) {
+	@Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {
 		if (processCollision != null) {
 			processCollision.call(field, element, hitBody, ball);
 		}
@@ -109,11 +110,11 @@ public class GroovyFieldDelegate implements Field.Delegate {
 		}
 	}
 
-	@Override public void ballInSensorRange(Field field, SensorElement sensor, Body ball) {
+	@Override public void ballInSensorRange(Field field, SensorElement sensor, Ball ball) {
 		if (ballInSensorRange != null) {
 			ballInSensorRange.call(field, sensor, ball);
 		}
-		
+
 	}
 
 	@Override public boolean isFieldActive(Field field) {

@@ -9,6 +9,7 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
@@ -52,10 +53,10 @@ public class SensorElement extends FieldElement {
     }
 
     @Override public void tick(Field field) {
-        List<Body> balls = field.getBalls();
+        List<Ball> balls = field.getBalls();
         for(int i=0; i<balls.size(); i++) {
-            Body ball = balls.get(i);
-            if (ballInRange(ball)) {
+            Ball ball = balls.get(i);
+            if (ballInRange(ball.getBody())) {
                 field.getDelegate().ballInSensorRange(field, this, ball);
                 return;
             }

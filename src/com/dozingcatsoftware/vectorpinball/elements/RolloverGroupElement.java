@@ -10,6 +10,7 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -95,7 +96,7 @@ public class RolloverGroupElement extends FieldElement {
     List<Rollover> hitRollovers = new ArrayList<Rollover>();
 
     /** Returns a set of all rollovers which have balls within their specified radius. */
-    protected List<Rollover> rolloversHitByBalls(List<Body> balls) {
+    protected List<Rollover> rolloversHitByBalls(List<Ball> balls) {
         hitRollovers.clear();
 
         int rsize = this.rollovers.size();
@@ -103,8 +104,8 @@ public class RolloverGroupElement extends FieldElement {
             Rollover rollover = this.rollovers.get(i);
             boolean hit = false;
             for(int j=0; j<balls.size(); j++) {
-                Body ball = balls.get(j);
-                Vector2 position = ball.getPosition();
+                Body ballBody = balls.get(j).getBody();
+                Vector2 position = ballBody.getPosition();
                 float xdiff = position.x - rollover.cx;
                 float ydiff = position.y - rollover.cy;
                 float distanceSquared = xdiff*xdiff + ydiff*ydiff;
