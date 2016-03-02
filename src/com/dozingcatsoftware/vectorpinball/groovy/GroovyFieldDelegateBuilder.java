@@ -1,13 +1,14 @@
 package com.dozingcatsoftware.vectorpinball.groovy;
 
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.Script;
-
 import java.io.IOException;
 import java.util.Arrays;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer;
+
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.Script;
 
 public class GroovyFieldDelegateBuilder {
 
@@ -20,7 +21,10 @@ public class GroovyFieldDelegateBuilder {
         secureAst.setImportsBlacklist(Arrays.asList("java.lang.Process"));
         secureAst.setReceiversClassesBlackList(Arrays.asList(String.class));
 
-        config.addCompilationCustomizers(secureAst);
+        ImportCustomizer imports = new ImportCustomizer();
+        imports.addImport("Color", "com.dozingcatsoftware.vectorpinball.model.Color");
+
+        config.addCompilationCustomizers(secureAst, imports);
 
         try (GroovyClassLoader gcl = new GroovyClassLoader(classLoader, config)) {
             @SuppressWarnings("unchecked")
