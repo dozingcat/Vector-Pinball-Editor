@@ -104,8 +104,8 @@ public class RolloverGroupElement extends FieldElement {
             Rollover rollover = this.rollovers.get(i);
             boolean hit = false;
             for(int j=0; j<balls.size(); j++) {
-                Body ballBody = balls.get(j).getBody();
-                Vector2 position = ballBody.getPosition();
+                Ball ball = balls.get(j);
+                Vector2 position = ball.getPosition();
                 float xdiff = position.x - rollover.cx;
                 float ydiff = position.y - rollover.cy;
                 float distanceSquared = xdiff*xdiff + ydiff*ydiff;

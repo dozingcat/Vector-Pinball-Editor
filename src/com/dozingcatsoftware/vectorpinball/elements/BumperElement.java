@@ -57,23 +57,22 @@ public class BumperElement extends FieldElement {
     }
 
 
-    Vector2 impulseForBall(Body ball) {
+    Vector2 impulseForBall(Ball ball) {
         if (this.kick <= 0.01f) return null;
         // Compute unit vector from center of bumper to ball, and scale by kick value to get impulse.
-        Vector2 ballpos = ball.getWorldCenter();
+        Vector2 ballpos = ball.getPosition();
         Vector2 thisPos = bumperBody.getPosition();
         float ix = ballpos.x - thisPos.x;
         float iy = ballpos.y - thisPos.y;
-        float mag = (float)Math.sqrt(ix*ix + iy*iy);
+        float mag = (float)Math.hypot(ix, iy);
         float scale = this.kick / mag;
         return new Vector2(ix*scale, iy*scale);
     }
 
     @Override public void handleCollision(Ball ball, Body bodyHit, Field field) {
-        Body ballBody = ball.getBody();
-        Vector2 impulse = this.impulseForBall(ballBody);
+        Vector2 impulse = this.impulseForBall(ball);
         if (impulse!=null) {
-            ballBody.applyLinearImpulse(impulse, ballBody.getWorldCenter(), true);
+            ball.applyLinearImpulse(impulse);
             flashForFrames(3);
         }
     }

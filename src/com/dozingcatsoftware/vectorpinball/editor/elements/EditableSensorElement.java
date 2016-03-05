@@ -21,10 +21,10 @@ public class EditableSensorElement extends EditableFieldElement {
 
     @Override protected void refreshInternalValues() {
         List<Object> rect = (List<Object>)getProperty(RECT_PROPERTY);
-        xmin = asDouble(rect.get(0));
-        ymin = asDouble(rect.get(1));
-        xmax = asDouble(rect.get(2));
-        ymax = asDouble(rect.get(3));
+        xmin = Math.min(asDouble(rect.get(0)), asDouble(rect.get(2)));
+        xmax = Math.max(asDouble(rect.get(0)), asDouble(rect.get(2)));
+        ymin = Math.min(asDouble(rect.get(1)), asDouble(rect.get(3)));
+        ymax = Math.max(asDouble(rect.get(1)), asDouble(rect.get(3)));
     }
 
     @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {

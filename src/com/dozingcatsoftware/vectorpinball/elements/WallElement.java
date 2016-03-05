@@ -102,7 +102,7 @@ public class WallElement extends FieldElement {
         return (this.kick > 0.01f);
     }
 
-    Vector2 impulseForBall(Body ball) {
+    Vector2 impulseForBall(Ball ball) {
         if (this.kick <= 0.01f) return null;
         // Rotate wall direction 90 degrees for normal, choose direction toward ball.
         float ix = this.y2 - this.y1;
@@ -114,8 +114,10 @@ public class WallElement extends FieldElement {
 
         // Dot product of (ball center - wall center) and impulse direction should be positive,
         // if not flip impulse.
-        Vector2 balldiff = ball.getWorldCenter().cpy().sub(this.x1, this.y1);
-        float dotprod = balldiff.x*ix + balldiff.y*iy;
+        Vector2 ballpos = ball.getPosition();
+        float diffx = ballpos.x - this.x1;
+        float diffy = ballpos.y - this.y1;
+        float dotprod = diffx*ix + diffy*iy;
         if (dotprod < 0) {
             ix = -ix;
             iy = -iy;
@@ -133,10 +135,9 @@ public class WallElement extends FieldElement {
             field.removeBall(ball);
         }
         else {
-            Body ballBody = ball.getBody();
-            Vector2 impulse = this.impulseForBall(ballBody);
+            Vector2 impulse = this.impulseForBall(ball);
             if (impulse!=null) {
-                ballBody.applyLinearImpulse(impulse, ballBody.getWorldCenter(), true);
+                ball.applyLinearImpulse(impulse);
                 flashForFrames(3);
             }
         }

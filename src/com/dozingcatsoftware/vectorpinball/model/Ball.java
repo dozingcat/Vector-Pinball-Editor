@@ -48,6 +48,18 @@ public class Ball {
         renderer.fillCircle(smallCenterX, smallCenterY, radius / 4, secondaryColor);
     }
 
+    public Vector2 getPosition() {
+        return body.getPosition();
+    }
+
+    public Vector2 getLinearVelocity() {
+        return body.getLinearVelocity();
+    }
+
+    public void applyLinearImpulse(Vector2 impulse) {
+        body.applyLinearImpulse(impulse, body.getWorldCenter(), true);
+    }
+
     public Body getBody() {
         return body;
     }

@@ -199,7 +199,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 			setLaunchBarrierEnabled(field, false);
 		}
 		else if ("LeftTubeSensor".equals(sensorID)) {
-			if (ball.getBody().getLinearVelocity().y > 0) {
+			if (ball.getLinearVelocity().y > 0) {
 				// ball going up, retract barrier after delay
 				field.scheduleAction(1000, new Runnable() {
 					@Override

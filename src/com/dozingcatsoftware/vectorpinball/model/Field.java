@@ -328,7 +328,7 @@ public class Field implements ContactListener {
 
         for(int i=0; i<this.balls.size(); i++) {
             Ball ball = this.balls.get(i);
-            Vector2 bpos = ball.getBody().getPosition();
+            Vector2 bpos = ball.getPosition();
             if (bpos.x > deadRect.get(0) && bpos.y > deadRect.get(1) &&
                     bpos.x < deadRect.get(2) && bpos.y < deadRect.get(3)) {
                 deadBalls.add(ball);
@@ -523,8 +523,8 @@ public class Field implements ContactListener {
             nanosSinceBallMoved = -1;
             return;
         }
-        Body ballBody = this.getBalls().get(0).getBody();
-        Vector2 pos = ballBody.getPosition();
+        Ball ball = this.getBalls().get(0);
+        Vector2 pos = ball.getPosition();
         if (nanosSinceBallMoved < 0) {
             // New ball.
             lastBallPositionX = pos.x;
@@ -532,7 +532,7 @@ public class Field implements ContactListener {
             nanosSinceBallMoved = 0;
             return;
         }
-        if (ballBody.getLinearVelocity().len2() > 0.01f ||
+        if (ball.getLinearVelocity().len2() > 0.01f ||
                 pos.dst2(lastBallPositionX, lastBallPositionY) > 0.01f) {
             // Ball has moved since last time; reset counter.
             lastBallPositionX = pos.x;
@@ -551,7 +551,7 @@ public class Field implements ContactListener {
             showGameMessage("Bump!", 1000);
             // Could make the bump impulse table-specific if needed.
             Vector2 impulse = new Vector2(RAND.nextBoolean() ? 1f : -1f, 1.5f);
-            ballBody.applyLinearImpulse(impulse, ballBody.getWorldCenter(), true);
+            ball.applyLinearImpulse(impulse);
             nanosSinceBallMoved = 0;
         }
     }
