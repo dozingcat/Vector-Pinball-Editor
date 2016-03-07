@@ -556,6 +556,10 @@ public class Field implements ContactListener {
         }
     }
 
+    public void addExtraBall() {
+        gameState.setExtraBalls(gameState.getExtraBalls() + 1);
+    }
+
     /**
      * Adds the given value to the game score. The value is multiplied by the current multiplier.
      */

@@ -53,6 +53,7 @@ public class WallElement extends FieldElement {
     float restitution;
     boolean disabled;
     boolean ignoreBall;
+    boolean visible = true;
 
     @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
         List<?> pos = (List<?>)params.get(POSITION_PROPERTY);
@@ -91,6 +92,13 @@ public class WallElement extends FieldElement {
         if (retracted!=this.isRetracted()) {
             wallBody.setActive(!retracted);
         }
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     @Override public List<Body> getBodies() {
@@ -161,7 +169,7 @@ public class WallElement extends FieldElement {
     }
 
     @Override public void draw(IFieldRenderer renderer) {
-        if (isRetracted()) return;
+        if (!visible || isRetracted()) return;
         renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
     }
 }
