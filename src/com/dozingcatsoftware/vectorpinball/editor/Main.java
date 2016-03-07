@@ -18,6 +18,13 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
+import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
+import com.dozingcatsoftware.vectorpinball.model.GameMessage;
+import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -51,13 +58,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
-import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
-import com.dozingcatsoftware.vectorpinball.model.Field;
-import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
-import com.dozingcatsoftware.vectorpinball.model.GameMessage;
-import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 // May need to edit project as described in
 // http://stackoverflow.com/questions/24467931/using-javafx-jdk-1-8-0-05-in-eclipse-luna-does-not-work
@@ -278,7 +278,8 @@ public class Main extends Application {
                 createMenuItem("Table 1", null, () -> loadBuiltInField(1)),
                 createMenuItem("Table 2", null, () -> loadBuiltInField(2)),
                 createMenuItem("Table 3", null, () -> loadBuiltInField(3)),
-                createMenuItem("Table 4", null, () -> loadBuiltInField(4))
+                createMenuItem("Table 4", null, () -> loadBuiltInField(4)),
+                createMenuItem("Table 5", null, () -> loadBuiltInField(5))
                 );
 
         fileMenu.getItems().addAll(
