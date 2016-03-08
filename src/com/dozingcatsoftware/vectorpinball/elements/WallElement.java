@@ -45,8 +45,8 @@ public class WallElement extends FieldElement {
     Body wallBody;
     List<Body> bodySet;
     float x1, y1, x2, y2;
-    float length;
     float kick;
+    float length;
 
     boolean killBall;
     boolean retractWhenHit;
@@ -133,7 +133,6 @@ public class WallElement extends FieldElement {
         return new Vector2(ix, iy);
     }
 
-
     @Override public void handleCollision(Ball ball, Body bodyHit, Field field) {
         if (retractWhenHit) {
             this.setRetracted(true);
@@ -156,7 +155,6 @@ public class WallElement extends FieldElement {
     public void setStartAndDirection(float x1, float y1, float x2, float y2) {
         setStartAndAngle(x1, y1, (float)Math.atan2(y2-y1, x2-x1));
     }
-
 
     public void setStartAndAngle(float x1, float y1, float angle) {
         this.x1 = x1;
