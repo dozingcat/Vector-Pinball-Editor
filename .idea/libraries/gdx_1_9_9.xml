@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="gdx-1.9.9">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/gdx-1.9.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
