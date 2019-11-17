@@ -16,6 +16,7 @@ public abstract class EditableFieldElement implements PropertyContainer {
     public static final String ID_PROPERTY = "id";
     public static final String COLOR_PROPERTY = "color";
     public static final String SCORE_PROPERTY = "score";
+    public static final String LAYER_PROPERTY = "layer";
 
     static final Color DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
     static final String CLASS_PREFIX = "com.dozingcatsoftware.vectorpinball.editor.elements.Editable";
@@ -95,9 +96,9 @@ public abstract class EditableFieldElement implements PropertyContainer {
                 className = CLASS_PREFIX + className;
             }
             Class elementClass = Class.forName(className);
-            self = (EditableFieldElement) elementClass.newInstance();
+            self = (EditableFieldElement) elementClass.getDeclaredConstructor().newInstance();
         }
-        catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
         self.initFromPropertyMap(params);

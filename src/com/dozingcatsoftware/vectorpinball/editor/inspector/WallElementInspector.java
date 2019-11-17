@@ -4,6 +4,7 @@ import static com.dozingcatsoftware.vectorpinball.util.Localization.localizedStr
 
 import java.util.Arrays;
 
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -17,8 +18,10 @@ public class WallElementInspector extends ElementInspector {
 
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
-        box.getChildren().add(createStringFieldWithLabel(EditableWallElement.ID_PROPERTY, "ID"));
-        box.getChildren().add(createColorSelectorWithLabel(EditableWallElement.COLOR_PROPERTY, "Color"));
+        box.getChildren().add(createStringFieldWithLabel(EditableFieldElement.ID_PROPERTY, "ID"));
+        box.getChildren().add(createColorSelectorWithLabel(EditableFieldElement.COLOR_PROPERTY, "Color"));
+        box.getChildren().add(createIntegerFieldWithLabel(
+                EditableFieldElement.LAYER_PROPERTY, "Layer"));
         // For position, use 2x2 grid of text fields which produce a value of a 4-element list.
         box.getChildren().add(createMultiRowDecimalArrayFieldWithLabels(
                 EditableWallElement.POSITION_PROPERTY,

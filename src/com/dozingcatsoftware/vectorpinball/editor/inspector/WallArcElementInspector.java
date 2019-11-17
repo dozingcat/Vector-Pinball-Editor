@@ -1,6 +1,8 @@
 package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
 import static com.dozingcatsoftware.vectorpinball.util.Localization.localizedString;
+
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -15,9 +17,11 @@ public class WallArcElementInspector extends ElementInspector {
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createStringFieldWithLabel(
-                EditableWallArcElement.ID_PROPERTY, localizedString("ID")));
+                EditableFieldElement.ID_PROPERTY, localizedString("ID")));
+        box.getChildren().add(createIntegerFieldWithLabel(
+                EditableFieldElement.LAYER_PROPERTY, "Layer"));
         box.getChildren().add(createColorSelectorWithLabel(
-                EditableWallArcElement.COLOR_PROPERTY, localizedString("Color")));
+                EditableFieldElement.COLOR_PROPERTY, localizedString("Color")));
         box.getChildren().add(createPositionStringFieldsWithLabel(
                 EditableWallArcElement.CENTER_PROPERTY, localizedString("Center")));
         box.getChildren().add(createDecimalStringFieldWithLabel(

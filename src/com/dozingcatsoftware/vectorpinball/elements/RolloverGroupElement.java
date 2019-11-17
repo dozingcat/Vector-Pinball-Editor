@@ -36,8 +36,8 @@ public class RolloverGroupElement extends FieldElement {
     public static final String COLOR_PROPERTY = "color";
     public static final String SCORE_PROPERTY = "score";
 
-    static class Rollover {
-        float cx, cy;
+    private static class Rollover {
+        Vector2 position;
         float radius;
         float radiusSquared; // Optimization when computing whether ball is in range.
         Color color;
@@ -71,8 +71,7 @@ public class RolloverGroupElement extends FieldElement {
             rollovers.add(rollover);
 
             List<?> pos = (List<?>)rmap.get(POSITION_PROPERTY);
-            rollover.cx = asFloat(pos.get(0));
-            rollover.cy = asFloat(pos.get(1));
+            rollover.position = new Vector2(asFloat(pos.get(0)), asFloat(pos.get(1)));
             // radius, color, score, and reset delay can be specified for each rollover.
             // If not present use default from group.
             rollover.radius = (rmap.containsKey(RADIUS_PROPERTY)) ? asFloat(rmap.get(RADIUS_PROPERTY)) : this.defaultRadius;
@@ -106,8 +105,8 @@ public class RolloverGroupElement extends FieldElement {
             for(int j=0; j<balls.size(); j++) {
                 Ball ball = balls.get(j);
                 Vector2 position = ball.getPosition();
-                float xdiff = position.x - rollover.cx;
-                float ydiff = position.y - rollover.cy;
+                float xdiff = position.x - rollover.position.x;
+                float ydiff = position.y - rollover.position.y;
                 float distanceSquared = xdiff*xdiff + ydiff*ydiff;
                 if (distanceSquared <= rollover.radiusSquared) {
                     hit = true;
@@ -155,6 +154,24 @@ public class RolloverGroupElement extends FieldElement {
         else {
             activeRollovers.remove(r);
         }
+    }
+
+    public Vector2 getRolloverCenterAtIndex(int index) {
+        return rollovers.get(index).position;
+    }
+
+    public void setRolloverCenterAtIndex(int index, double x, double y) {
+        Rollover r = rollovers.get(index);
+        r.position.x = (float) x;
+        r.position.y = (float) y;
+    }
+
+    public float getRolloverRadiusAtIndex(int index) {
+        return rollovers.get(index).radius;
+    }
+
+    public void setRolloverRadiusAtIndex(int index, float radius) {
+        rollovers.get(index).radius = radius;
     }
 
     @Override
@@ -276,10 +293,10 @@ public class RolloverGroupElement extends FieldElement {
             Color color = (rollover.color != null) ? rollover.color : groupColor;
 
             if (activeRollovers.contains(rollover)) {
-                renderer.fillCircle(rollover.cx, rollover.cy, rollover.radius, color);
+                renderer.fillCircle(rollover.position.x, rollover.position.y, rollover.radius, color);
             }
             else {
-                renderer.frameCircle(rollover.cx, rollover.cy, rollover.radius, color);
+                renderer.frameCircle(rollover.position.x, rollover.position.y, rollover.radius, color);
             }
         }
     }

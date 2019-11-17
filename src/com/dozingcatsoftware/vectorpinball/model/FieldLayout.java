@@ -40,9 +40,9 @@ public class FieldLayout {
 
     private FieldLayout() {}
 
-    public static FieldLayout layoutForLevel(Map<String, Object> levelMap, World world) {
+    public static FieldLayout layoutForLevel(Map<String, Object> levelMap, WorldLayers worlds) {
         FieldLayout layout = new FieldLayout();
-        layout.initFromLevel(levelMap, world);
+        layout.initFromLevel(levelMap, worlds);
         return layout;
     }
 
@@ -70,7 +70,8 @@ public class FieldLayout {
     }
 
     @SuppressWarnings("unchecked")
-    private FieldElementCollection createFieldElements(Map<String, Object> layoutMap, World world) {
+    private FieldElementCollection createFieldElements(
+            Map<String, Object> layoutMap, WorldLayers worlds) {
         FieldElementCollection elements = new FieldElementCollection();
 
         Map<String, Object> variables = (Map<String, Object>) layoutMap.get(VARIABLES_PROPERTY);
@@ -86,7 +87,7 @@ public class FieldLayout {
             if (!(obj instanceof Map)) continue;
             Map<String, Object> params = (Map<String, Object>) obj;
             try {
-                elements.addElement(FieldElement.createFromParameters(params, elements, world));
+                elements.addElement(FieldElement.createFromParameters(params, elements, worlds));
             }
             catch (FieldElement.DependencyNotAvailableException ex) {
                 unresolvedElements.add(params);
@@ -96,7 +97,7 @@ public class FieldLayout {
         return elements;
     }
 
-    void initFromLevel(Map<String, Object> layoutMap, World world) {
+    void initFromLevel(Map<String, Object> layoutMap, WorldLayers worlds) {
         this.width = asFloat(layoutMap.get(WIDTH_PROPERTY), 20.0f);
         this.height = asFloat(layoutMap.get(HEIGHT_PROPERTY), 30.0f);
         this.gravity = asFloat(layoutMap.get(GRAVITY_PROPERTY), 4.0f);
@@ -112,7 +113,7 @@ public class FieldLayout {
         this.launchDeadZoneRect = asFloatList(listForKey(layoutMap, LAUNCH_DEAD_ZONE_PROPERTY));
 
         this.allParameters = layoutMap;
-        this.fieldElements = createFieldElements(layoutMap, world);
+        this.fieldElements = createFieldElements(layoutMap, worlds);
     }
 
     private Color colorFromMap(Map<String, ?> map, String key, Color defaultColor) {
