@@ -102,6 +102,7 @@ public class Ball {
         }
         Body oldBody = this.body;
         this.body = copyBodyToWorld(worlds.existingWorldForLayer(newLayer));
+        this.layer = newLayer;
         oldBody.getWorld().destroyBody(oldBody);
     }
 

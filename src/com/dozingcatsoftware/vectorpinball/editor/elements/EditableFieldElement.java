@@ -131,6 +131,11 @@ public abstract class EditableFieldElement implements PropertyContainer {
         return color;
     }
 
+    public int getLayer() {
+        return this.properties.containsKey(LAYER_PROPERTY) ?
+                ((Number)this.properties.get(LAYER_PROPERTY)).intValue() : 0;
+    }
+
     /**
      * Draws the element in the context of a field editor. By default this just calls draw(), but some
      * elements may want to do something else, for example if they're normally invisible.

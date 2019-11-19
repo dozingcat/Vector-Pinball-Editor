@@ -1,11 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.editor.elements;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 
@@ -108,8 +103,10 @@ public class EditableField implements PropertyContainer {
         return elements;
     }
 
-    public void removeElement(EditableFieldElement element) {
-        this.elements.remove(element);
+    public List<EditableFieldElement> elementsSortedByLayer() {
+        List<EditableFieldElement> els = new ArrayList<>(this.elements);
+        Collections.sort(els, Comparator.comparingInt(EditableFieldElement::getLayer));
+        return els;
     }
 
     public void removeElements(Collection<EditableFieldElement> elements) {

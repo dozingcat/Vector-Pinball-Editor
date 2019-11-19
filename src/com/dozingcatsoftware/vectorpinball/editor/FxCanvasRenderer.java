@@ -136,7 +136,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
         context.setFill(javafx.scene.paint.Color.BLACK);
         context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         if (editableField != null) {
-            for (EditableFieldElement elem : editableField.getElements()) {
+            for (EditableFieldElement elem : editableField.elementsSortedByLayer()) {
                 elem.drawForEditor(this, editableField.isElementSelected(elem));
             }
         }
