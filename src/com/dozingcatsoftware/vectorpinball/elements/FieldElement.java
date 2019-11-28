@@ -13,7 +13,7 @@ import com.dozingcatsoftware.vectorpinball.model.*;
  * Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
  */
 
-public abstract class FieldElement {
+public abstract class FieldElement implements IDrawable {
 
     public static final String CLASS_PROPERTY = "class";
     public static final String ID_PROPERTY = "id";
@@ -172,7 +172,7 @@ public abstract class FieldElement {
     /**
      * Must be overridden by subclasses to draw the element, using IFieldRenderer methods.
      */
-    public abstract void draw(IFieldRenderer renderer);
+    @Override public abstract void draw(IFieldRenderer renderer);
 
     /**
      * Called when a ball collides with a Body in this element. The default implementation does
@@ -186,7 +186,7 @@ public abstract class FieldElement {
         return elementID;
     }
 
-    public int getLayer() {
+    @Override public int getLayer() {
         return this.layer;
     }
 

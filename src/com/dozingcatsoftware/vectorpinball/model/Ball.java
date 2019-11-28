@@ -11,7 +11,7 @@ import com.dozingcatsoftware.vectorpinball.elements.Box2DFactory;
  * Represents a ball in play. Not part of the elements package because balls are created and
  * removed at "runtime" rather than being part of the table definition.
  */
-public class Ball {
+public class Ball implements IDrawable {
     private WorldLayers worlds;
     private int layer;
     private Body body;
@@ -44,7 +44,7 @@ public class Ball {
         return ballBody;
     }
 
-    public void draw(IFieldRenderer renderer) {
+    @Override public void draw(IFieldRenderer renderer) {
         Vector2 center = this.body.getPosition();
         float radius = this.getRadius();
         renderer.fillCircle(center.x, center.y, radius, primaryColor);
@@ -54,6 +54,10 @@ public class Ball {
         float smallCenterX = center.x + (radius / 2) * MathUtils.cos(angle);
         float smallCenterY = center.y + (radius / 2) * MathUtils.sin(angle);
         renderer.fillCircle(smallCenterX, smallCenterY, radius / 4, secondaryColor);
+    }
+
+    @Override public int getLayer() {
+        return this.layer;
     }
 
     public Vector2 getPosition() {
@@ -92,16 +96,12 @@ public class Ball {
         this.secondaryColor = secondaryColor;
     }
 
-    public int getLayer() {
-        return this.layer;
-    }
-
     public void moveToLayer(int newLayer) {
         if (layer == newLayer) {
             return;
         }
         Body oldBody = this.body;
-        this.body = copyBodyToWorld(worlds.existingWorldForLayer(newLayer));
+        this.body = copyBodyToWorld(worlds.existingOrNewWorldForLayer(newLayer));
         this.layer = newLayer;
         oldBody.getWorld().destroyBody(oldBody);
     }

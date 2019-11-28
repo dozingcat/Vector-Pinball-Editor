@@ -1,6 +1,8 @@
 package com.dozingcatsoftware.vectorpinball.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +18,6 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.elements.DropTargetGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
@@ -333,10 +334,41 @@ public class Field implements ContactListener {
         deadBalls.clear();
     }
 
-    /** Called by FieldView to draw the balls currently in play. */
-    public void drawBalls(IFieldRenderer renderer) {
-        for(int i=0; i<this.balls.size(); i++) {
-            this.balls.get(i).draw(renderer);
+    // Reusable array for sorting elements and balls into the order in which they should be draw.
+    private ArrayList<IDrawable> elementsInDrawOrder = new ArrayList<IDrawable>();
+    private Comparator<IDrawable> drawOrdering = new Comparator<IDrawable>() {
+        @Override public int compare(IDrawable e1, IDrawable e2) {
+            boolean e1Ball = (e1 instanceof Ball);
+            boolean e2Ball = (e2 instanceof Ball);
+            if (e1Ball == e2Ball) {
+                return e1.getLayer() - e2.getLayer();
+            }
+            if (e1Ball) {
+                return (e1.getLayer() >= e2.getLayer()) ? 1 : -1;
+            }
+            else {
+                return (e2.getLayer() >= e1.getLayer()) ? -1 : 1;
+            }
+        }
+    };
+
+    /**
+     * Draws all field elements and balls. Levels are drawn low to high, and each ball is drawn
+     * after (i.e. on top of) all elements at its level.
+     */
+    public void draw(IFieldRenderer renderer) {
+        // Draw levels low to high, and draw each ball after everything else at its level.
+        elementsInDrawOrder.clear();
+        for (FieldElement elem : this.getFieldElementsArray()) {
+            elementsInDrawOrder.add(elem);
+        }
+        for (int i = 0; i < this.balls.size(); i++) {
+            elementsInDrawOrder.add(this.balls.get(i));
+        }
+        Collections.sort(elementsInDrawOrder, drawOrdering);
+
+        for (int i = 0; i < elementsInDrawOrder.size(); i++) {
+            this.elementsInDrawOrder.get(i).draw(renderer);
         }
     }
 
