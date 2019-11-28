@@ -7,25 +7,24 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.dozingcatsoftware.vectorpinball.model.Ball;
-import com.dozingcatsoftware.vectorpinball.model.Color;
-import com.dozingcatsoftware.vectorpinball.model.Field;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.*;
 
 /**
  * Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
  */
 
-public abstract class FieldElement {
+public abstract class FieldElement implements IDrawable {
 
     public static final String CLASS_PROPERTY = "class";
     public static final String ID_PROPERTY = "id";
     public static final String SCORE_PROPERTY = "score";
     public static final String COLOR_PROPERTY = "color";
+    public static final String LAYER_PROPERTY = "layer";
 
     Map<String, ?> parameters;
     World box2dWorld;
     String elementID;
+    int layer = 0;
     Color initialColor;
     Color newColor;
 
@@ -55,7 +54,7 @@ public abstract class FieldElement {
      */
     @SuppressWarnings("unchecked")
     public static FieldElement createFromParameters(
-            Map<String, Object> params, FieldElementCollection collection, World world)
+            Map<String, Object> params, FieldElementCollection collection, WorldLayers worlds)
                     throws DependencyNotAvailableException {
         if (!params.containsKey(CLASS_PROPERTY)) {
             throw new IllegalArgumentException("class not specified for element: " + params);
@@ -83,7 +82,10 @@ public abstract class FieldElement {
         catch (InstantiationException e) {
             throw new RuntimeException(e);
         }
-        self.initialize(params, collection, world);
+        // TODO: Have `initialize` take WorldLayers instead of a single World.
+        int layer = params.containsKey(LAYER_PROPERTY) ?
+                ((Number)params.get(LAYER_PROPERTY)).intValue() : 0;
+        self.initialize(params, collection, worlds.existingOrNewWorldForLayer(layer));
         return self;
     }
 
@@ -106,6 +108,9 @@ public abstract class FieldElement {
 
         if (params.containsKey(SCORE_PROPERTY)) {
             this.score = ((Number)params.get(SCORE_PROPERTY)).longValue();
+        }
+        if (params.containsKey(LAYER_PROPERTY)) {
+            this.layer = ((Number)params.get(LAYER_PROPERTY)).intValue();
         }
 
         this.finishCreateElement(params, collection);
@@ -167,7 +172,7 @@ public abstract class FieldElement {
     /**
      * Must be overridden by subclasses to draw the element, using IFieldRenderer methods.
      */
-    public abstract void draw(IFieldRenderer renderer);
+    @Override public abstract void draw(IFieldRenderer renderer);
 
     /**
      * Called when a ball collides with a Body in this element. The default implementation does
@@ -179,6 +184,10 @@ public abstract class FieldElement {
     /** Returns this element's ID, or null if not specified. */
     public String getElementId() {
         return elementID;
+    }
+
+    @Override public int getLayer() {
+        return this.layer;
     }
 
     /** Returns the parameter map from which this element was created. */

@@ -56,7 +56,6 @@ public class BumperElement extends FieldElement {
         return true;
     }
 
-
     Vector2 impulseForBall(Ball ball) {
         if (this.kick <= 0.01f) return null;
         // Compute unit vector from center of bumper to ball, and scale by kick value to get impulse.

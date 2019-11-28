@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -34,9 +35,11 @@ public class WallPathElementInspector extends ElementInspector {
     @Override void drawInPane(Pane pane) {
         VBox box = new VBox();
         box.getChildren().add(createStringFieldWithLabel(
-                EditableWallPathElement.ID_PROPERTY, localizedString("ID")));
+                EditableFieldElement.ID_PROPERTY, localizedString("ID")));
+        box.getChildren().add(createIntegerFieldWithLabel(
+                EditableFieldElement.LAYER_PROPERTY, "Layer"));
         box.getChildren().add(createColorSelectorWithLabel(
-                EditableWallPathElement.COLOR_PROPERTY, localizedString("Color")));
+                EditableFieldElement.COLOR_PROPERTY, localizedString("Color")));
         box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
                 EditableWallPathElement.IGNORE_BALL_PROPERTY, localizedString("Ignore ball")));
 
