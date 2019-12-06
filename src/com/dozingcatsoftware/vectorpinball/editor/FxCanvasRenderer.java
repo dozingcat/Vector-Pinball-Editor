@@ -1,18 +1,20 @@
 package com.dozingcatsoftware.vectorpinball.editor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.ArcType;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
-import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
@@ -20,11 +22,11 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 
 public class FxCanvasRenderer implements IFieldRenderer {
 
-    static final double DEFAULT_SCALE = 25;
+    private static final double DEFAULT_SCALE = 25;
     // Zoom levels greater than 2 result in poor performance using the simple
     // approach of creating a larger canvas.
-    static final double[] SCALE_RATIOS = {1.0/2, 3.0/4, 1.0, 3.0/2, 2.0};
-    static final int DEFAULT_SCALE_RATIO_INDEX = 2;
+    private static final double[] SCALE_RATIOS = {1.0/2, 3.0/4, 1.0, 3.0/2, 2.0};
+    private static final int DEFAULT_SCALE_RATIO_INDEX = 2;
 
     private Canvas canvas;
     private GraphicsContext context;
@@ -37,8 +39,8 @@ public class FxCanvasRenderer implements IFieldRenderer {
     private double xOffset = -1.5;
     private double yOffset = -1.5;
 
-    Point dragStartPoint;
-    Point lastDragPoint;
+    private Point dragStartPoint;
+    private Point lastDragPoint;
 
     public void setCanvas(Canvas c) {
         canvas = c;
@@ -59,27 +61,27 @@ public class FxCanvasRenderer implements IFieldRenderer {
         undoStack = stack;
     }
 
-    static Paint toFxPaint(Color color) {
+    private static Paint toFxPaint(Color color) {
         return javafx.scene.paint.Color.rgb(color.red, color.green, color.blue, color.alpha/255.0);
     }
 
-    double worldToPixelX(double x) {
+    private double worldToPixelX(double x) {
         return scale * (x-xOffset);
     }
 
-    double worldToPixelY(double y) {
+    private double worldToPixelY(double y) {
         return canvas.getHeight() - (scale * (y-yOffset));
     }
 
-    double pixelToWorldX(double x) {
+    private double pixelToWorldX(double x) {
         return x/scale + xOffset;
     }
 
-    double pixelToWorldY(double y) {
+    private double pixelToWorldY(double y) {
         return (canvas.getHeight()-y)/scale + yOffset;
     }
 
-    double worldToPixelDistance(double dist) {
+    private double worldToPixelDistance(double dist) {
         return scale * dist;
     }
 
@@ -157,9 +159,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
         return true;
     }
 
-    @Override public void setDebugMessage(String debugInfo) {
-
-    }
+    @Override public void setDebugMessage(String debugInfo) {}
 
     @Override public double getRelativeScale() {
         return SCALE_RATIOS[scaleRatioIndex];
@@ -184,43 +184,79 @@ public class FxCanvasRenderer implements IFieldRenderer {
         scale = SCALE_RATIOS[scaleRatioIndex] * DEFAULT_SCALE;
     }
 
-    Point worldPointFromEvent(MouseEvent event) {
+    private Point worldPointFromEvent(MouseEvent event) {
         return Point.fromXY(pixelToWorldX(event.getX()), pixelToWorldY(event.getY()));
     }
 
-    EditableFieldElement findClickTarget(Point worldPoint) {
+    private boolean isElementInClickRange(EditableFieldElement elem, Point point) {
+        double distance = 10.0 / this.scale;
+        return elem.isPointWithinDistance(point, distance);
+    }
+
+    private EditableFieldElement findClickTarget(Point worldPoint) {
         // Give priority to already-selected elements.
-        if (editableField.hasSelection()) {
-            for (EditableFieldElement elem : editableField.getSelectedElements()) {
-                if (elem.isPointWithinDistance(worldPoint, 10.0/scale)) {
-                    return elem;
-                }
+        for (EditableFieldElement elem : editableField.getSelectedElements()) {
+            if (isElementInClickRange(elem, worldPoint)) {
+                return elem;
             }
         }
         for (EditableFieldElement elem : editableField.getElements()) {
-            if (elem.isPointWithinDistance(worldPoint, 10.0/scale)) {
+            if (isElementInClickRange(elem, worldPoint)) {
                 return elem;
             }
         }
         return null;
     }
 
-    void handleEditorMouseDown(MouseEvent event) {
-        Point worldPoint = worldPointFromEvent(event);
+    private void selectFirstElementAtPoint(Point point) {
         List<EditableFieldElement> selected = new ArrayList<>();
         if (editableField == null) return;
-        EditableFieldElement clickedElement = findClickTarget(worldPoint);
+        EditableFieldElement clickedElement = findClickTarget(point);
         if (clickedElement != null) {
             selected.add(clickedElement);
-            clickedElement.startDrag(worldPoint);
+            clickedElement.startDrag(point);
         }
-        editableField.setSelectedElements(selected);
-        dragStartPoint = (selected.isEmpty()) ? null : worldPoint;
-        lastDragPoint = null;
+        this.editableField.setSelectedElements(selected);
+        this.dragStartPoint = (selected.isEmpty()) ? null : point;
+        this.lastDragPoint = null;
         draw();
     }
 
-    void handleEditorMouseDrag(MouseEvent event) {
+    private void selectNextElementAtPoint(EditableFieldElement afterElem, Point point) {
+        double distance = 10.0 / this.scale;
+        List<EditableFieldElement> available = editableField.getElements().stream()
+                .filter(elem -> elem.isPointWithinDistance(point, distance))
+                .collect(Collectors.toList());
+        int index = available.indexOf(afterElem);
+        if (index == -1 || available.size() <= 1) {
+            return;
+        }
+        this.editableField.setSelectedElements(
+                Collections.singleton(available.get((index + 1) % available.size())));
+        draw();
+    }
+
+    public void handleEditorMouseDown(MouseEvent event) {
+        switch (event.getButton()) {
+            case PRIMARY:
+                Point worldPoint = worldPointFromEvent(event);
+                selectFirstElementAtPoint(worldPoint);
+                break;
+            case SECONDARY:
+                if (this.dragStartPoint != null && editableField.getSelectedElements().size() == 1) {
+                    EditableFieldElement sel = (EditableFieldElement) editableField.getSelectedElements().toArray()[0];
+                    selectNextElementAtPoint(sel, this.dragStartPoint);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void handleEditorMouseDrag(MouseEvent event) {
+        if (event.getButton() != MouseButton.PRIMARY) {
+            return;
+        }
         if (editableField != null && editableField.hasSelection() && dragStartPoint!=null) {
             Point worldPoint = worldPointFromEvent(event);
             Point totalDragOffset = worldPoint.subtract(dragStartPoint);
@@ -233,7 +269,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
         }
     }
 
-    void handleEditorMouseUp(MouseEvent event) {
+    public void handleEditorMouseUp(MouseEvent event) {
         if (editableField != null && editableField.hasSelection() && dragStartPoint!=null) {
             undoStack.pushSnapshot();
         }
