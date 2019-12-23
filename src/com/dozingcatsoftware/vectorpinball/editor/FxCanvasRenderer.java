@@ -223,9 +223,8 @@ public class FxCanvasRenderer implements IFieldRenderer {
     }
 
     private void selectNextElementAtPoint(EditableFieldElement afterElem, Point point) {
-        double distance = 10.0 / this.scale;
         List<EditableFieldElement> available = editableField.getElements().stream()
-                .filter(elem -> elem.isPointWithinDistance(point, distance))
+                .filter(elem -> isElementInClickRange(elem, point))
                 .collect(Collectors.toList());
         int index = available.indexOf(afterElem);
         if (index == -1 || available.size() <= 1) {
