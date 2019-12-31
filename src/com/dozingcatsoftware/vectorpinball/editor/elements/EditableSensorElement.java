@@ -13,7 +13,8 @@ import com.dozingcatsoftware.vectorpinball.model.Point;
 public class EditableSensorElement extends EditableFieldElement {
 
     public static final String RECT_PROPERTY = "rect";
-    public static final String BALL_LAYER_PROPERTY = "ballLayer";
+    public static final String BALL_LAYER_TO_PROPERTY = "ballLayer";
+    public static final String BALL_LAYER_FROM_PROPERTY = "ballLayerFrom";
 
     static final Color EDITOR_OUTLINE_COLOR = Color.fromRGB(128, 128, 128);
     static final Color EDITOR_FILL_COLOR = Color.fromRGB(128, 128, 128, 128);
