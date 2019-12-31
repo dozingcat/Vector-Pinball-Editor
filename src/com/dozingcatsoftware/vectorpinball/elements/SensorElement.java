@@ -24,10 +24,12 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 public class SensorElement extends FieldElement {
 
     public static final String RECT_PROPERTY = "rect";
-    public static final String BALL_LAYER_PROPERTY = "ballLayer";
+    public static final String BALL_LAYER_TO_PROPERTY = "ballLayer";
+    public static final String BALL_LAYER_FROM_PROPERTY = "ballLayerFrom";
 
     private float xmin, ymin, xmax, ymax;
-    private Number ballLayer;
+    private Number ballLayerTo;
+    private Number ballLayerFrom;
 
     @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
         List<?> rectPos = (List<?>)params.get(RECT_PROPERTY);
@@ -35,7 +37,8 @@ public class SensorElement extends FieldElement {
         this.ymin = Math.min(asFloat(rectPos.get(1)), asFloat(rectPos.get(3)));
         this.xmax = Math.max(asFloat(rectPos.get(0)), asFloat(rectPos.get(2)));
         this.ymax = Math.max(asFloat(rectPos.get(1)), asFloat(rectPos.get(3)));
-        this.ballLayer = (Number)params.get(BALL_LAYER_PROPERTY);
+        this.ballLayerTo = (Number)params.get(BALL_LAYER_TO_PROPERTY);
+        this.ballLayerFrom = (Number)params.get(BALL_LAYER_FROM_PROPERTY);
     }
 
     @Override public void createBodies(World world) {
@@ -57,11 +60,13 @@ public class SensorElement extends FieldElement {
 
     @Override public void tick(Field field) {
         List<Ball> balls = field.getBalls();
-        for(int i=0; i<balls.size(); i++) {
+        for(int i = 0; i < balls.size(); i++) {
             Ball ball = balls.get(i);
             if (ballInRange(ball)) {
-                if (this.ballLayer != null) {
-                    ball.moveToLayer(this.ballLayer.intValue());
+                if (this.ballLayerTo != null &&
+                        (this.ballLayerFrom == null ||
+                        this.ballLayerFrom.intValue() == ball.getLayer())) {
+                    ball.moveToLayer(this.ballLayerTo.intValue());
                 }
                 field.getDelegate().ballInSensorRange(field, this, ball);
             }
