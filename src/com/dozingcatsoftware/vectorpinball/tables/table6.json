@@ -40,7 +40,7 @@
         {
             "class": "WallElement",
             "name": "left border",
-            "position": ["0.1", "4", "0.1", "24.9"]
+            "position": ["0.1", "4", "0.1", "11"]
         }, 
         {
             "class": "WallElement",
@@ -55,17 +55,17 @@
             "color": [128, 128, 128],
             "disabled": true,
             "id": "LaunchBarrier",
-            "position": [0.050000000000001155, 28.59, 0.7500000000000004, 29.799999999999997]
+            "position": [17.87, 12.290000000000001, 18.830000000000002, 13.12]
         }, 
         {
             "class": "SensorElement",
             "id": "LaunchBarrierSensor",
-            "rect": [-0.9500000000000015, 28.110000000000003, 0.0499999999999986, 29.580000000000002]
+            "rect": [17.349999999999998, 12.950000000000003, 18.349999999999998, 14.420000000000002]
         }, 
         {
             "class": "SensorElement",
             "id": "LaunchBarrierRetract",
-            "rect": [-1.180000000000002, 25.48, -0.18000000000000194, 27.48]
+            "rect": [18.799999999999997, 7.820000000000002, 19.799999999999997, 9.820000000000002]
         }, 
         {
             "class": "WallElement",
@@ -290,19 +290,19 @@
         {
             "class": "BumperElement",
             "kick": "1.0",
-            "position": [15.02, 24.340000000000007],
+            "position": [14.639999999999999, 26.980000000000008],
             "radius": "0.5"
         }, 
         {
             "class": "BumperElement",
             "kick": "1.0",
-            "position": [16.859999999999996, 26.220000000000013],
+            "position": [16.800000000000004, 25.84000000000001],
             "radius": "0.5"
         }, 
         {
             "class": "BumperElement",
             "kick": "1.0",
-            "position": [14.420000000000003, 27.039999999999996],
+            "position": [15.14, 24.179999999999996],
             "radius": "0.5"
         }, 
         {
@@ -330,18 +330,6 @@
         {
             "class": "WallElement",
             "position": [18.839999999999996, 13.219999999999999, 18.439999999999998, 19.94]
-        }, 
-        {
-            "class": "BumperElement",
-            "kick": "1.0",
-            "position": [0.8200000000000003, 8.4],
-            "radius": "0.5"
-        }, 
-        {
-            "class": "BumperElement",
-            "kick": "1.0",
-            "position": [17.96, 8.34],
-            "radius": "0.5"
         }, 
         {
             "class": "WallPathElement",
@@ -616,9 +604,41 @@
             "wallStart": ["2.78", "21.85"]
         }, 
         {
+            "center": ["4.1", "11"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "140",
+            "segments": 12,
+            "xradius": "4",
+            "yradius": "4"
+        }, 
+        {
             "class": "WallElement",
-            "color": [255, 0, 0],
-            "position": [0.09999999999999987, 11.700000000000003, 1.56, 19.98]
+            "position": [1.029999999999999, 13.57, 1.5599999999999996, 19.94]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.2",
+            "gapFromWall": "-0.2",
+            "numTargets": 4,
+            "positions": [],
+            "reset": "2",
+            "startDistanceAlongWall": "1",
+            "targetWidth": "1",
+            "wallEnd": ["1.56", "19.94"],
+            "wallStart": ["1.03", "13.57"]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.2",
+            "gapFromWall": "0.2",
+            "numTargets": 4,
+            "positions": [],
+            "reset": "2",
+            "startDistanceAlongWall": "1",
+            "targetWidth": "1",
+            "wallEnd": ["18.44", "19.94"],
+            "wallStart": ["18.84", "13.22"]
         }
     ],
     "gravity": "4",
