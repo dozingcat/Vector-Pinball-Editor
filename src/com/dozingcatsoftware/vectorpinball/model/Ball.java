@@ -17,6 +17,7 @@ public class Ball implements IDrawable {
     private Body body;
     private Color primaryColor;
     private Color secondaryColor;
+    private String previousSensorId;
 
     private Ball(
             WorldLayers worlds, int layer, Body body, Color primaryColor, Color secondaryColor) {
@@ -95,6 +96,14 @@ public class Ball implements IDrawable {
     public void setSecondaryColor(Color secondaryColor) {
         this.secondaryColor = secondaryColor;
     }
+
+    public String getPreviousSensorId() {
+        return this.previousSensorId;
+    }
+    public void setPreviousSensorId(String s) {
+        this.previousSensorId = s;
+    }
+
 
     public void moveToLayer(int newLayer) {
         if (layer == newLayer) {

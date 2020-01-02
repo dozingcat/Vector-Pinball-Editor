@@ -620,6 +620,7 @@
             "class": "DropTargetGroupElement",
             "gapBetweenTargets": "0.2",
             "gapFromWall": "-0.2",
+            "id": "DropTargetLeftSave",
             "numTargets": 4,
             "positions": [],
             "reset": "2",
@@ -632,6 +633,7 @@
             "class": "DropTargetGroupElement",
             "gapBetweenTargets": "0.2",
             "gapFromWall": "0.2",
+            "id": "DropTargetRightSave",
             "numTargets": 4,
             "positions": [],
             "reset": "2",
@@ -639,6 +641,30 @@
             "targetWidth": "1",
             "wallEnd": ["18.44", "19.94"],
             "wallStart": ["18.84", "13.22"]
+        }, 
+        {
+            "ballLayerFrom": 1,
+            "class": "SensorElement",
+            "id": "LeftLoopDetector_Trigger",
+            "rect": ["3.1", "26", "3.9", "28.6"]
+        }, 
+        {
+            "ballLayerFrom": 1,
+            "class": "SensorElement",
+            "id": "LeftLoopDetector_Enter",
+            "rect": ["4.6", "26", "5.4", "28.6"]
+        }, 
+        {
+            "ballLayerFrom": 1,
+            "class": "SensorElement",
+            "id": "RightLoopDetector_Enter",
+            "rect": ["13.8", "26.6", "14.6", "29"]
+        }, 
+        {
+            "ballLayerFrom": 1,
+            "class": "SensorElement",
+            "id": "RightLoopDetector_Trigger",
+            "rect": ["15.5", "26.6", "16.3", "29"]
         }
     ],
     "gravity": "4",
@@ -649,7 +675,7 @@
     "launchVelocityRandomDelta": ["0", "0.1"],
     "name": "Space",
     "numballs": 3,
-    "script": "// Initialized in gameStarted.\u000adef TAU = 2 * Math.PI;\u000adef GRAV_FORCE = 10.0;  // multiplied by radius^3 for each planet/sun.\u000adef GRAV_DEPTH_SQ = 2.0 * 2.0\u000adef GRAV_RANGE_SQ = 8.0 * 8.0;\u000adef launchBarrier = null;\u000adef orbits = null;\u000adef sun = null;\u000adef planetRadii;\u000adef planetAngles;\u000a\u000a// These methods are called for specific game events.\u000areturn [\u000a  gameStarted: {field ->\u000a    // Initialize common variables.\u000a    launchBarrier = field.getFieldElementById(\"LaunchBarrier\");\u000a    sun = field.getFieldElementById(\"Sun\");\u000a    sun.setRolloverActiveAtIndex(0, true);\u000a    orbits = field.getFieldElementById(\"Orbits\");\u000a    planets = field.getFieldElementById(\"PlanetRollovers\");\u000a    planetRadii = [];\u000a    planetAngles = [];\u000a    planetVelocities = [];\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      planetRadii.add(orbits.getRolloverRadiusAtIndex(i));\u000a      planetAngles.add(Math.random() * TAU);\u000a      planetVelocities.add((0.9 + 0.2 * Math.random()) / (i + 1));\u000a    }\u000a    // Remove the launch barrier.\u000a    launchBarrier.setRetracted(true);\u000a  },\u000a\u000a  isFieldActive: {field -> return true;},\u000a\u000a  ballLost: {field ->\u000a    // Restore the launch barrier.\u000a    launchBarrier.setRetracted(false);\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    // Check for retracting or restoring the launch barrier.\u000a    if (sensorId == 'LaunchBarrierSensor') {\u000a      launchBarrier.setRetracted(false);\u000a    }\u000a    else if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a  },\u000a\u000a  tick: {field, nanos ->\u000a    if (orbits == null) return;\u000a    def dt = nanos / 1e9;\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      def da = dt * planetVelocities[i];\u000a      planetAngles[i] += da;\u000a      if (planetAngles[i] >= TAU) {planetAngles -= TAU;}\u000a      if (planetAngles[i] < 0) {planetAngles += TAU;}\u000a      def center = orbits.getRolloverCenterAtIndex(i);\u000a      def px = center.x + planetRadii[i] * Math.cos(planetAngles[i]);\u000a      def py = center.y + planetRadii[i] * Math.sin(planetAngles[i]);\u000a      planets.setRolloverCenterAtIndex(i, px, py);\u000a    }\u000a      field.getBalls().each {ball ->\u000a        def sunpos = sun.getRolloverCenterAtIndex(0);\u000a        def bpos = ball.getPosition();\u000a        def sunDistSq = Math.pow(sunpos.x - bpos.x, 2) + Math.pow(sunpos.y - bpos.y, 2);\u000a        if (sunDistSq <= GRAV_RANGE_SQ) {\u000a          // Force points toward center of sun/planet.\u000a          def angle = Math.atan2(sunpos.y - bpos.y, sunpos.x - bpos.x);\u000a          def g = dt * GRAV_FORCE / (GRAV_DEPTH_SQ + sunDistSq);\u000a          def gx = g * Math.cos(angle);\u000a          def gy = g * Math.sin(angle);\u000a          ball.applyLinearImpulse(new Vector2(gx.toFloat(), gy.toFloat()));\u000a        }\u000a\u000a      // }\u000a    }\u000a  },\u000a];\u000a",
+    "script": "// Initialized in gameStarted.\u000adef TAU = 2 * Math.PI;\u000adef GRAV_FORCE = 10.0;  // multiplied by radius^3 for each planet/sun.\u000adef GRAV_DEPTH_SQ = 2.0 * 2.0\u000adef GRAV_RANGE_SQ = 8.0 * 8.0;\u000adef launchBarrier = null;\u000adef orbits = null;\u000adef sun = null;\u000adef planetRadii;\u000adef planetAngles;\u000a\u000a// These methods are called for specific game events.\u000areturn [\u000a  gameStarted: {field ->\u000a    // Initialize common variables.\u000a    launchBarrier = field.getFieldElementById(\"LaunchBarrier\");\u000a    sun = field.getFieldElementById(\"Sun\");\u000a    sun.setRolloverActiveAtIndex(0, true);\u000a    orbits = field.getFieldElementById(\"Orbits\");\u000a    planets = field.getFieldElementById(\"PlanetRollovers\");\u000a    planetRadii = [];\u000a    planetAngles = [];\u000a    planetVelocities = [];\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      planetRadii.add(orbits.getRolloverRadiusAtIndex(i));\u000a      planetAngles.add(Math.random() * TAU);\u000a      planetVelocities.add((0.9 + 0.2 * Math.random()) / (i + 1));\u000a    }\u000a    // Remove the launch barrier.\u000a    launchBarrier.setRetracted(true);\u000a  },\u000a\u000a  isFieldActive: {field -> return true;},\u000a\u000a  ballLost: {field ->\u000a    // Restore the launch barrier.\u000a    launchBarrier.setRetracted(false);\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    // Check for retracting or restoring the launch barrier.\u000a    if (sensorId == 'LaunchBarrierSensor') {\u000a      launchBarrier.setRetracted(false);\u000a    }\u000a    else if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a    else if (sensorId == 'LeftLoopDetector_Trigger') {\u000a      if (ball.getPreviousSensorId() == 'LeftLoopDetector_Enter') {\u000a        field.showGameMessage('Left Loop!', 1500);\u000a      }\u000a    }\u000a    else if (sensorId == 'RightLoopDetector_Trigger') {\u000a      if (ball.getPreviousSensorId() == 'RightLoopDetector_Enter') {\u000a        field.showGameMessage('Right Loop!', 1500);\u000a      }\u000a    }\u000a  },\u000a\u000a  allDropTargetsInGroupHit: {field, targetGroup ->\u000a    // Activate ball saver for left and right groups.\u000a    def id = targetGroup.getElementId();\u000a    if (id == \"DropTargetLeftSave\") {\u000a      field.getFieldElementById('BallSaver-left').setRetracted(false);\u000a      field.showGameMessage('Left Save Enabled', 1500);\u000a    }\u000a    else if (id == \"DropTargetRightSave\") {\u000a      field.getFieldElementById('BallSaver-right').setRetracted(false);\u000a      field.showGameMessage('Right Save Enabled', 1500);\u000a    }\u000a  },\u000a\u000a  tick: {field, nanos ->\u000a    if (orbits == null) return;\u000a    def dt = nanos / 1e9;\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      def da = dt * planetVelocities[i];\u000a      planetAngles[i] += da;\u000a      if (planetAngles[i] >= TAU) {planetAngles -= TAU;}\u000a      if (planetAngles[i] < 0) {planetAngles += TAU;}\u000a      def center = orbits.getRolloverCenterAtIndex(i);\u000a      def px = center.x + planetRadii[i] * Math.cos(planetAngles[i]);\u000a      def py = center.y + planetRadii[i] * Math.sin(planetAngles[i]);\u000a      planets.setRolloverCenterAtIndex(i, px, py);\u000a    }\u000a      field.getBalls().each {ball ->\u000a        def sunpos = sun.getRolloverCenterAtIndex(0);\u000a        def bpos = ball.getPosition();\u000a        def sunDistSq = Math.pow(sunpos.x - bpos.x, 2) + Math.pow(sunpos.y - bpos.y, 2);\u000a        if (sunDistSq <= GRAV_RANGE_SQ) {\u000a          // Force points toward center of sun/planet.\u000a          def angle = Math.atan2(sunpos.y - bpos.y, sunpos.x - bpos.x);\u000a          def g = dt * GRAV_FORCE / (GRAV_DEPTH_SQ + sunDistSq);\u000a          def gx = g * Math.cos(angle);\u000a          def gy = g * Math.sin(angle);\u000a          ball.applyLinearImpulse(new Vector2(gx.toFloat(), gy.toFloat()));\u000a        }\u000a\u000a      // }\u000a    }\u000a  },\u000a];\u000a",
     "targetTimeRatio": "2.3",
     "version": 1,
     "width": "20"
