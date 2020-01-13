@@ -55,6 +55,7 @@
             "color": [128, 128, 128],
             "disabled": true,
             "id": "LaunchBarrier",
+            "kick": "0.2",
             "position": [17.87, 12.290000000000001, 18.830000000000002, 13.12]
         }, 
         {
@@ -232,17 +233,17 @@
                 {
                     "color": [255, 85, 0],
                     "position": ["-0.14", "0.7"],
-                    "radius": "0.2"
+                    "radius": "0.25"
                 }, 
                 {
                     "color": [0, 204, 204],
                     "position": ["0.86", "0.7"],
-                    "radius": "0.3"
+                    "radius": "0.35"
                 }, 
                 {
                     "color": [153, 0, 0],
                     "position": ["1.86", "0.7"],
-                    "radius": "0.25"
+                    "radius": "0.3"
                 }, 
                 {
                     "color": [153, 85, 34],
@@ -290,31 +291,34 @@
         {
             "class": "BumperElement",
             "kick": "1.0",
-            "position": [14.639999999999999, 26.980000000000008],
-            "radius": "0.5"
+            "position": [13.98, 23.740000000000002],
+            "radius": "0.35",
+            "score": 500
         }, 
         {
             "class": "BumperElement",
             "kick": "1.0",
-            "position": [16.800000000000004, 25.84000000000001],
-            "radius": "0.5"
+            "position": [15.939999999999998, 23.700000000000006],
+            "radius": "0.35",
+            "score": 500
         }, 
         {
             "class": "BumperElement",
             "kick": "1.0",
-            "position": [15.14, 24.179999999999996],
-            "radius": "0.5"
+            "position": [14.840000000000002, 22.06],
+            "radius": "0.35",
+            "score": 500
         }, 
         {
-            "center": ["15", "23.8"],
+            "center": ["15.2", "23.8"],
             "class": "WallArcElement",
             "color": [255, 255, 0, 128],
             "layer": 1,
             "maxangle": "180",
             "minangle": "0",
             "segments": 20,
-            "xradius": "2.7",
-            "yradius": "3.2"
+            "xradius": "2.9",
+            "yradius": "3.4"
         }, 
         {
             "center": ["14.9", "24.6"],
@@ -336,9 +340,9 @@
             "color": [255, 255, 0, 136],
             "layer": 1,
             "positions": [
-                [15.860000000000003, 5.820000000000001], 
-                [15.84, 9.1], 
-                [17.680000000000003, 23.779999999999998]
+                ["15.86", "5.82"], 
+                ["15.84", "9.1"], 
+                ["18.1", "23.8"]
             ]
         }, 
         {
@@ -346,28 +350,28 @@
             "color": [255, 255, 0, 136],
             "layer": 1,
             "positions": [
-                [17.34, 5.780000000000003], 
-                [17.380000000000003, 8.720000000000002], 
-                [19.42, 24.580000000000002]
+                ["17.34", "5.78"], 
+                ["17.38", "8.72"], 
+                ["19.4", "24.6"]
             ]
         }, 
         {
-            "center": ["15", "23.8"],
+            "center": ["15.2", "23.8"],
             "class": "WallArcElement",
             "color": [0, 255, 255],
             "layer": 0,
             "maxangle": "180",
-            "minangle": "135",
+            "minangle": "152",
             "segments": 10,
-            "xradius": "2.7",
-            "yradius": "3.2"
+            "xradius": "2.9",
+            "yradius": "3.4"
         }, 
         {
             "center": ["14.9", "24.6"],
             "class": "WallArcElement",
             "color": [0, 255, 255],
             "maxangle": "180",
-            "minangle": "55",
+            "minangle": "135",
             "segments": 30,
             "xradius": "4.5",
             "yradius": "4.3"
@@ -375,12 +379,12 @@
         {
             "ballLayer": 0,
             "class": "SensorElement",
-            "rect": ["10.5", "24.4", "12.3", "25.4"]
+            "rect": [10.399999999999999, 23.68, 12.2, 24.68]
         }, 
         {
             "ballLayer": 1,
             "class": "SensorElement",
-            "rect": [10.920000000000002, 25.599999999999998, 12.720000000000002, 26.419999999999998]
+            "rect": [10.580000000000002, 24.779999999999998, 12.380000000000003, 25.599999999999998]
         }, 
         {
             "center": ["10", "24.9"],
@@ -406,8 +410,8 @@
             "center": ["14.9", "24.9"],
             "class": "WallArcElement",
             "color": [0, 255, 0],
-            "maxangle": "360",
-            "minangle": "315",
+            "maxangle": "350",
+            "minangle": "320",
             "xradius": "3.3",
             "yradius": "4.3"
         }, 
@@ -444,7 +448,7 @@
             "color": [255, 0, 255, 136],
             "layer": 2,
             "maxangle": "360",
-            "minangle": "315",
+            "minangle": "320",
             "xradius": "3.3",
             "yradius": "4.3"
         }, 
@@ -452,7 +456,7 @@
             "ballLayer": 2,
             "ballLayerFrom": 0,
             "class": "SensorElement",
-            "rect": ["18.2", "24", "19.8", "24.8"]
+            "rect": [18.12, 23.14, 19.720000000000002, 23.94]
         }, 
         {
             "ballLayer": 0,
@@ -462,7 +466,7 @@
         }, 
         {
             "class": "WallElement",
-            "position": [18.2, 24.82, 19.36, 26.500000000000004]
+            "position": ["16.86", "26.5", 18.06, 27.78]
         }, 
         {
             "center": ["4.4", "24.6"],
@@ -477,27 +481,27 @@
         }, 
         {
             "class": "WallElement",
-            "position": [13.120000000000001, 26.060000000000002, 11.700000000000001, 27.48]
+            "position": ["12.66", "26.5", "11.78", "27.64"]
         }, 
         {
-            "center": ["4.4", "23.8"],
+            "center": ["4.2", "23.8"],
             "class": "WallArcElement",
             "color": [255, 255, 0, 136],
             "layer": 1,
             "maxangle": "180",
             "minangle": "0",
             "segments": 20,
-            "xradius": "2.2",
-            "yradius": "2.7"
+            "xradius": "2.4",
+            "yradius": "3"
         }, 
         {
             "class": "WallPathElement",
             "color": [255, 255, 0, 136],
             "layer": 1,
             "positions": [
-                [2.9600000000000004, 5.739999999999998], 
-                [2.9600000000000004, 9.060000000000002], 
-                [2.22, 23.840000000000003]
+                ["2.96", "5.74"], 
+                ["2.96", "9.06"], 
+                ["1.8", "23.8"]
             ]
         }, 
         {
@@ -505,19 +509,19 @@
             "color": [255, 255, 0, 136],
             "layer": 1,
             "positions": [
-                [1.4400000000000004, 5.680000000000001], 
-                [1.48, 7.82], 
-                [0.41999999999999993, 24.64]
+                ["1.44", "5.68"], 
+                ["1.48", "7.82"], 
+                ["0.4", "24.6"]
             ]
         }, 
         {
-            "center": ["4.4", "23.8"],
+            "center": ["4.2", "23.8"],
             "class": "WallArcElement",
             "color": [0, 255, 0],
             "maxangle": "45",
             "minangle": "0",
-            "xradius": "2.2",
-            "yradius": "2.7"
+            "xradius": "2.4",
+            "yradius": "3"
         }, 
         {
             "center": ["4.4", "24.6"],
@@ -598,6 +602,7 @@
             "numTargets": 4,
             "positions": [],
             "reset": "2",
+            "score": 500,
             "startDistanceAlongWall": "0.2",
             "targetWidth": "0.9",
             "wallEnd": ["6.6", "23.8"],
@@ -624,6 +629,7 @@
             "numTargets": 4,
             "positions": [],
             "reset": "2",
+            "score": 500,
             "startDistanceAlongWall": "1",
             "targetWidth": "1",
             "wallEnd": ["1.56", "19.94"],
@@ -637,6 +643,7 @@
             "numTargets": 4,
             "positions": [],
             "reset": "2",
+            "score": 500,
             "startDistanceAlongWall": "1",
             "targetWidth": "1",
             "wallEnd": ["18.44", "19.94"],
@@ -665,6 +672,63 @@
             "class": "SensorElement",
             "id": "RightLoopDetector_Trigger",
             "rect": ["15.5", "26.6", "16.3", "29"]
+        }, 
+        {
+            "ballLayerFrom": 2,
+            "class": "SensorElement",
+            "id": "OrbitDetector_Left",
+            "rect": ["8.5", "28", "9.5", "30"]
+        }, 
+        {
+            "ballLayerFrom": 2,
+            "class": "SensorElement",
+            "id": "OrbitDetector_Right",
+            "rect": ["10.5", "28", "11.5", "30"]
+        }, 
+        {
+            "center": ["14.9", "24.6"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "120",
+            "segments": 20,
+            "xradius": "6.5",
+            "yradius": "6"
+        }, 
+        {
+            "class": "WallElement",
+            "position": [12.660000000000002, 25.5, 12.660000000000002, 26.5]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 224, 224],
+            "radius": "0.35",
+            "rollovers": [
+                {
+                    "position": ["13.36", "26"]
+                }, 
+                {
+                    "position": ["14.76", "26"]
+                }, 
+                {
+                    "position": ["16.16", "26"]
+                }
+            ]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["14.06", "25.5", "14.06", "26.5"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.46", "25.5", "15.46", "26.5"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["16.86", "25.5", "16.86", "26.5"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": [18.139999999999997, 24.119999999999997, "16.86", "25.5"]
         }
     ],
     "gravity": "4",
@@ -675,7 +739,7 @@
     "launchVelocityRandomDelta": ["0", "0.1"],
     "name": "Space",
     "numballs": 3,
-    "script": "// Initialized in gameStarted.\u000adef TAU = 2 * Math.PI;\u000adef GRAV_FORCE = 10.0;  // multiplied by radius^3 for each planet/sun.\u000adef GRAV_DEPTH_SQ = 2.0 * 2.0\u000adef GRAV_RANGE_SQ = 8.0 * 8.0;\u000adef launchBarrier = null;\u000adef orbits = null;\u000adef sun = null;\u000adef planetRadii;\u000adef planetAngles;\u000a\u000a// These methods are called for specific game events.\u000areturn [\u000a  gameStarted: {field ->\u000a    // Initialize common variables.\u000a    launchBarrier = field.getFieldElementById(\"LaunchBarrier\");\u000a    sun = field.getFieldElementById(\"Sun\");\u000a    sun.setRolloverActiveAtIndex(0, true);\u000a    orbits = field.getFieldElementById(\"Orbits\");\u000a    planets = field.getFieldElementById(\"PlanetRollovers\");\u000a    planetRadii = [];\u000a    planetAngles = [];\u000a    planetVelocities = [];\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      planetRadii.add(orbits.getRolloverRadiusAtIndex(i));\u000a      planetAngles.add(Math.random() * TAU);\u000a      planetVelocities.add((0.9 + 0.2 * Math.random()) / (i + 1));\u000a    }\u000a    // Remove the launch barrier.\u000a    launchBarrier.setRetracted(true);\u000a  },\u000a\u000a  isFieldActive: {field -> return true;},\u000a\u000a  ballLost: {field ->\u000a    // Restore the launch barrier.\u000a    launchBarrier.setRetracted(false);\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    // Check for retracting or restoring the launch barrier.\u000a    if (sensorId == 'LaunchBarrierSensor') {\u000a      launchBarrier.setRetracted(false);\u000a    }\u000a    else if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a    else if (sensorId == 'LeftLoopDetector_Trigger') {\u000a      if (ball.getPreviousSensorId() == 'LeftLoopDetector_Enter') {\u000a        field.showGameMessage('Left Loop!', 1500);\u000a      }\u000a    }\u000a    else if (sensorId == 'RightLoopDetector_Trigger') {\u000a      if (ball.getPreviousSensorId() == 'RightLoopDetector_Enter') {\u000a        field.showGameMessage('Right Loop!', 1500);\u000a      }\u000a    }\u000a  },\u000a\u000a  allDropTargetsInGroupHit: {field, targetGroup ->\u000a    // Activate ball saver for left and right groups.\u000a    def id = targetGroup.getElementId();\u000a    if (id == \"DropTargetLeftSave\") {\u000a      field.getFieldElementById('BallSaver-left').setRetracted(false);\u000a      field.showGameMessage('Left Save Enabled', 1500);\u000a    }\u000a    else if (id == \"DropTargetRightSave\") {\u000a      field.getFieldElementById('BallSaver-right').setRetracted(false);\u000a      field.showGameMessage('Right Save Enabled', 1500);\u000a    }\u000a  },\u000a\u000a  tick: {field, nanos ->\u000a    if (orbits == null) return;\u000a    def dt = nanos / 1e9;\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      def da = dt * planetVelocities[i];\u000a      planetAngles[i] += da;\u000a      if (planetAngles[i] >= TAU) {planetAngles -= TAU;}\u000a      if (planetAngles[i] < 0) {planetAngles += TAU;}\u000a      def center = orbits.getRolloverCenterAtIndex(i);\u000a      def px = center.x + planetRadii[i] * Math.cos(planetAngles[i]);\u000a      def py = center.y + planetRadii[i] * Math.sin(planetAngles[i]);\u000a      planets.setRolloverCenterAtIndex(i, px, py);\u000a    }\u000a      field.getBalls().each {ball ->\u000a        def sunpos = sun.getRolloverCenterAtIndex(0);\u000a        def bpos = ball.getPosition();\u000a        def sunDistSq = Math.pow(sunpos.x - bpos.x, 2) + Math.pow(sunpos.y - bpos.y, 2);\u000a        if (sunDistSq <= GRAV_RANGE_SQ) {\u000a          // Force points toward center of sun/planet.\u000a          def angle = Math.atan2(sunpos.y - bpos.y, sunpos.x - bpos.x);\u000a          def g = dt * GRAV_FORCE / (GRAV_DEPTH_SQ + sunDistSq);\u000a          def gx = g * Math.cos(angle);\u000a          def gy = g * Math.sin(angle);\u000a          ball.applyLinearImpulse(new Vector2(gx.toFloat(), gy.toFloat()));\u000a        }\u000a\u000a      // }\u000a    }\u000a  },\u000a];\u000a",
+    "script": "// Initialized in gameStarted.\u000adef TAU = 2 * Math.PI;\u000adef GRAV_FORCE = 10.0;  // multiplied by radius^3 for each planet/sun.\u000adef GRAV_DEPTH_SQ = 2.0 * 2.0\u000adef GRAV_RANGE_SQ = 8.0 * 8.0;\u000adef launchBarrier = null;\u000adef orbits = null;\u000adef sun = null;\u000adef planetRadii;\u000adef planetAngles;\u000a\u000adef rampBonusDuration = 200e9;\u000adef rampBonusTimeRemaining = 0;\u000adef rampBonusMultiplier = 1;\u000a\u000a\u000a// store last ramp time, shoot another ramp in a specified interval for combo bonus\u000a// shoot all four ramps and then center to lock ball, barrier in center?\u000a// hit all planets to...?\u000a// multiball: planets spin backwards\u000a\u000adef checkRamp = {field, ball, prevSensor, points ->\u000a  if (ball.getPreviousSensorId() == prevSensor) {\u000a    if (rampBonusTimeRemaining > 0) {\u000a      rampBonusMultiplier += 1;\u000a//      field.showGameMessage(rampBonusMultiplier + \"x Ramp!\", 1000);\u000a    }\u000a    else {\u000a      rampBonusMultiplier = 1;\u000a    }\u000a    rampBonusTimeRemaining = rampBonusDuration;\u000a    field.addScore(points * rampBonusMultiplier);\u000a      field.showGameMessage(rampBonusMultiplier + \"x Ramp!\", 1000);\u000a  }\u000a};\u000a\u000a// These methods are called for specific game events.\u000areturn [\u000a  gameStarted: {field ->\u000a    // Initialize common variables.\u000a    launchBarrier = field.getFieldElementById(\"LaunchBarrier\");\u000a    sun = field.getFieldElementById(\"Sun\");\u000a    sun.setRolloverActiveAtIndex(0, true);\u000a    orbits = field.getFieldElementById(\"Orbits\");\u000a    planets = field.getFieldElementById(\"PlanetRollovers\");\u000a    planetRadii = [];\u000a    planetAngles = [];\u000a    planetVelocities = [];\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      planetRadii.add(orbits.getRolloverRadiusAtIndex(i));\u000a      planetAngles.add(Math.random() * TAU);\u000a      planetVelocities.add((0.9 + 0.2 * Math.random()) / (i + 1));\u000a    }\u000a    // Remove the launch barrier.\u000a    launchBarrier.setRetracted(true);\u000a  },\u000a\u000a  isFieldActive: {field -> return true;},\u000a\u000a  ballLost: {field ->\u000a    // Restore the launch barrier.\u000a    launchBarrier.setRetracted(false);\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    // Check for retracting or restoring the launch barrier.\u000a    if (sensorId == 'LaunchBarrierSensor') {\u000a      launchBarrier.setRetracted(false);\u000a    }\u000a    else if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a    else if (sensorId == 'LeftLoopDetector_Trigger') {\u000a      checkRamp(field, ball, 'LeftLoopDetector_Enter', 2500);\u000a    }\u000a    else if (sensorId == 'RightLoopDetector_Trigger') {\u000a      checkRamp(field, ball, 'RightLoopDetector_Enter', 2500);\u000a    }\u000a    else if (sensorId == 'OrbitDetector_Left') {\u000a      checkRamp(field, ball, 'OrbitDetector_Right', 2500);\u000a    }\u000a    else if (sensorId == 'OrbitDetector_Right') {\u000a      checkRamp(field, ball, 'OrbitDetector_Left', 2500);\u000a    }\u000a  },\u000a\u000a  allDropTargetsInGroupHit: {field, targetGroup ->\u000a    // Activate ball saver for left and right groups.\u000a    def id = targetGroup.getElementId();\u000a    if (id == \"DropTargetLeftSave\") {\u000a      field.getFieldElementById('BallSaver-left').setRetracted(false);\u000a      field.showGameMessage('Left Save Enabled', 1500);\u000a    }\u000a    else if (id == \"DropTargetRightSave\") {\u000a      field.getFieldElementById('BallSaver-right').setRetracted(false);\u000a      field.showGameMessage('Right Save Enabled', 1500);\u000a    }\u000a  },\u000a\u000a  tick: {field, nanos ->\u000a    if (rampBonusTimeRemaining > 0) {\u000a      rampBonusTimeRemaining -= nanos;\u000a    }\u000a    // field.showGameMessage(\"\" + rampBonusTimeRemaining, 1000);\u000a    if (orbits == null) return;\u000a    def dt = nanos / 1e9;\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      def da = dt * planetVelocities[i];\u000a      planetAngles[i] += da;\u000a      if (planetAngles[i] >= TAU) {planetAngles -= TAU;}\u000a      if (planetAngles[i] < 0) {planetAngles += TAU;}\u000a      def center = orbits.getRolloverCenterAtIndex(i);\u000a      def px = center.x + planetRadii[i] * Math.cos(planetAngles[i]);\u000a      def py = center.y + planetRadii[i] * Math.sin(planetAngles[i]);\u000a      planets.setRolloverCenterAtIndex(i, px, py);\u000a    }\u000a      field.getBalls().each {ball ->\u000a        def sunpos = sun.getRolloverCenterAtIndex(0);\u000a        def bpos = ball.getPosition();\u000a        def sunDistSq = Math.pow(sunpos.x - bpos.x, 2) + Math.pow(sunpos.y - bpos.y, 2);\u000a        if (sunDistSq <= GRAV_RANGE_SQ) {\u000a          // Force points toward center of sun/planet.\u000a          def angle = Math.atan2(sunpos.y - bpos.y, sunpos.x - bpos.x);\u000a          def g = dt * GRAV_FORCE / (GRAV_DEPTH_SQ + sunDistSq);\u000a          def gx = g * Math.cos(angle);\u000a          def gy = g * Math.sin(angle);\u000a          ball.applyLinearImpulse(new Vector2(gx.toFloat(), gy.toFloat()));\u000a        }\u000a\u000a      // }\u000a    }\u000a  },\u000a];\u000a",
     "targetTimeRatio": "2.3",
     "version": 1,
     "width": "20"
