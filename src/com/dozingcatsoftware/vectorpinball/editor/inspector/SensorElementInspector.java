@@ -22,11 +22,11 @@ public class SensorElementInspector extends ElementInspector {
                 EditableSensorElement.RECT_PROPERTY,
                 Arrays.asList("Left/Bottom", "Right/Top"),
                 2, 2));
-        box.getChildren().add(new Label("Change ball layer:"));
+        box.getChildren().add(new Label("Layers:"));
         box.getChildren().add(createIntegerFieldWithLabel(
-                EditableSensorElement.BALL_LAYER_TO_PROPERTY, "To layer"));
+                EditableSensorElement.BALL_LAYER_FROM_PROPERTY, "Trigger at"));
         box.getChildren().add(createIntegerFieldWithLabel(
-                EditableSensorElement.BALL_LAYER_FROM_PROPERTY, "If at layer"));
+                EditableSensorElement.BALL_LAYER_TO_PROPERTY, "Move ball to"));
         pane.getChildren().add(box);
     }
 

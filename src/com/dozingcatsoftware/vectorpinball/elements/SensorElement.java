@@ -28,8 +28,8 @@ public class SensorElement extends FieldElement {
     public static final String BALL_LAYER_FROM_PROPERTY = "ballLayerFrom";
 
     private float xmin, ymin, xmax, ymax;
-    private Number ballLayerTo;
-    private Number ballLayerFrom;
+    private Number layerTo;
+    private Number layerFrom;
 
     @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
         List<?> rectPos = (List<?>)params.get(RECT_PROPERTY);
@@ -37,8 +37,8 @@ public class SensorElement extends FieldElement {
         this.ymin = Math.min(asFloat(rectPos.get(1)), asFloat(rectPos.get(3)));
         this.xmax = Math.max(asFloat(rectPos.get(0)), asFloat(rectPos.get(2)));
         this.ymax = Math.max(asFloat(rectPos.get(1)), asFloat(rectPos.get(3)));
-        this.ballLayerTo = (Number)params.get(BALL_LAYER_TO_PROPERTY);
-        this.ballLayerFrom = (Number)params.get(BALL_LAYER_FROM_PROPERTY);
+        this.layerFrom = (Number)params.get(BALL_LAYER_FROM_PROPERTY);
+        this.layerTo = (Number)params.get(BALL_LAYER_TO_PROPERTY);
     }
 
     @Override public void createBodies(World world) {
@@ -63,12 +63,14 @@ public class SensorElement extends FieldElement {
         for(int i = 0; i < balls.size(); i++) {
             Ball ball = balls.get(i);
             if (ballInRange(ball)) {
-                if (this.ballLayerTo != null &&
-                        (this.ballLayerFrom == null ||
-                        this.ballLayerFrom.intValue() == ball.getLayer())) {
-                    ball.moveToLayer(this.ballLayerTo.intValue());
+                // Only trigger the sensor if the "from" layer is empty or it matches the ball.
+                if (this.layerFrom == null || this.layerFrom.intValue() == ball.getLayer()) {
+                    if (this.layerTo != null) {
+                        ball.moveToLayer(this.layerTo.intValue());
+                    }
+                    field.getDelegate().ballInSensorRange(field, this, ball);
+                    ball.setPreviousSensorId(this.getElementId());
                 }
-                field.getDelegate().ballInSensorRange(field, this, ball);
             }
         }
     }
