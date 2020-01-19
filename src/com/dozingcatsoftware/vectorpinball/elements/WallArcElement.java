@@ -10,6 +10,7 @@ import java.util.Map;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.model.Color;
+import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 
 /**
@@ -90,8 +91,8 @@ public class WallArcElement extends FieldElement {
         return wallBodies;
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
-        Color color = currentColor(DEFAULT_WALL_COLOR);
+    @Override public void draw(Field field, IFieldRenderer renderer) {
+        Color color = currentColor(field, DEFAULT_WALL_COLOR);
         for (float[] segment : this.lineSegments) {
             renderer.drawLine(segment[0], segment[1], segment[2], segment[3], color);
         }

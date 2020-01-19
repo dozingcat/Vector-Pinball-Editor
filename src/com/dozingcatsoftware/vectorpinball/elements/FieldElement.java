@@ -20,6 +20,7 @@ public abstract class FieldElement implements IDrawable {
     public static final String SCORE_PROPERTY = "score";
     public static final String COLOR_PROPERTY = "color";
     public static final String LAYER_PROPERTY = "layer";
+    public static final String INACTIVE_LAYER_COLOR_PROPERTY = "inactiveLayerColor";
 
     Map<String, ?> parameters;
     World box2dWorld;
@@ -27,6 +28,9 @@ public abstract class FieldElement implements IDrawable {
     int layer = 0;
     Color initialColor;
     Color newColor;
+    Color inactiveLayerColor;
+    // Between 0 and 1, increases if a ball is at this element's layer, decreases if not.
+    double layerColorFraction = 0;
 
     int flashCounter=0; // Inverts colors when >0, decrements in tick().
     long score = 0;
@@ -94,16 +98,19 @@ public abstract class FieldElement implements IDrawable {
      * subclasses to further initialize themselves. Subclasses should override finishCreate, and
      * should not override this method.
      */
+    @SuppressWarnings("unchecked")
     public void initialize(Map<String, ?> params, FieldElementCollection collection, World world)
             throws DependencyNotAvailableException {
         this.parameters = params;
         this.box2dWorld = world;
         this.elementID = (String)params.get(ID_PROPERTY);
 
-        @SuppressWarnings("unchecked")
-        List<Number> colorList = (List<Number>)params.get(COLOR_PROPERTY);
-        if (colorList!=null) {
-            this.initialColor = Color.fromList(colorList);
+        if (params.containsKey(COLOR_PROPERTY)) {
+            this.initialColor = Color.fromList((List<Number>) params.get(COLOR_PROPERTY));
+        }
+        if (params.containsKey(INACTIVE_LAYER_COLOR_PROPERTY)) {
+            this.inactiveLayerColor =
+                    Color.fromList((List<Number>) params.get(INACTIVE_LAYER_COLOR_PROPERTY));
         }
 
         if (params.containsKey(SCORE_PROPERTY)) {
@@ -123,16 +130,29 @@ public abstract class FieldElement implements IDrawable {
      * tick() to be called. This is an optimization to avoid needless method calls in the game loop.
      */
     public boolean shouldCallTick() {
-        return false;
+        return (this.inactiveLayerColor != null);
     }
 
     /**
      * Called on every update from Field.tick. Default implementation decrements flash counter if
-     * active, subclasses can override to perform additional processing, e.g. RolloverGroupElement
-     * checking for balls within radius of rollovers. Subclasses should call super.tick(field).
+     * active and updates layer color fraction, subclasses can override to perform additional
+     * processing, e.g. RolloverGroupElement checking for balls within radius of rollovers.
+     * Subclasses should call super.tick(field).
      */
     public void tick(Field field) {
-        if (flashCounter>0) flashCounter--;
+        if (this.flashCounter > 0) {
+            this.flashCounter--;
+        }
+        if (this.inactiveLayerColor != null) {
+            // Might want to make this configurable, but 10 ticks in the transition works well.
+            double increment = 0.1;
+            if (field.hasBallAtLayer(this.getLayer())) {
+                this.layerColorFraction = Math.min(this.layerColorFraction + increment, 1.0);
+            }
+            else {
+                this.layerColorFraction = Math.max(this.layerColorFraction - increment, 0.0);
+            }
+        }
     }
 
     /**
@@ -172,7 +192,7 @@ public abstract class FieldElement implements IDrawable {
     /**
      * Must be overridden by subclasses to draw the element, using IFieldRenderer methods.
      */
-    @Override public abstract void draw(IFieldRenderer renderer);
+    @Override public abstract void draw(Field field, IFieldRenderer renderer);
 
     /**
      * Called when a ball collides with a Body in this element. The default implementation does
@@ -253,10 +273,13 @@ public abstract class FieldElement implements IDrawable {
      * Gets the current color by using the defined color if set and the default color if not, and
      * inverting if the element is flashing. Subclasses can override.
      */
-    protected Color currentColor(Color defaultColor) {
+    protected Color currentColor(Field field, Color defaultColor) {
         Color baseColor = (this.newColor != null) ?
                 this.newColor :
-                    (this.initialColor != null) ? this.initialColor : defaultColor;
+                (this.initialColor != null) ? this.initialColor : defaultColor;
+        if (this.inactiveLayerColor != null && this.layerColorFraction < 1) {
+            return this.inactiveLayerColor.blendedWith(baseColor, this.layerColorFraction);
+        }
         return (flashCounter > 0) ? baseColor.inverted() : baseColor;
     }
 }

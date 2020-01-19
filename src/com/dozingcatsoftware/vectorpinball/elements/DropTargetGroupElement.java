@@ -153,9 +153,9 @@ public class DropTargetGroupElement extends FieldElement {
         }
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         // draw line for each target
-        Color color = currentColor(DEFAULT_COLOR);
+        Color color = currentColor(field, DEFAULT_COLOR);
         int bsize = allBodies.size();
         for(int i=0; i<bsize; i++) {
             Body body = allBodies.get(i);

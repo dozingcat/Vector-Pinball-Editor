@@ -79,7 +79,7 @@ public class SensorElement extends FieldElement {
         return Collections.emptyList();
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         // No UI.
     }
 }

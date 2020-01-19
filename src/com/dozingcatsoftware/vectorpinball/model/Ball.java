@@ -45,7 +45,7 @@ public class Ball implements IDrawable {
         return ballBody;
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         Vector2 center = this.body.getPosition();
         float radius = this.getRadius();
         renderer.fillCircle(center.x, center.y, radius, primaryColor);

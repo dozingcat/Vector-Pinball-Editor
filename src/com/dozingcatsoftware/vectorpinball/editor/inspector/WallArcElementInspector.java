@@ -22,6 +22,9 @@ public class WallArcElementInspector extends ElementInspector {
                 EditableFieldElement.LAYER_PROPERTY, "Layer"));
         box.getChildren().add(createColorSelectorWithLabel(
                 EditableFieldElement.COLOR_PROPERTY, localizedString("Color")));
+        box.getChildren().add(createColorSelectorWithLabel(
+                EditableFieldElement.INACTIVE_LAYER_COLOR_PROPERTY,
+                localizedString("Inactive layer")));
         box.getChildren().add(createPositionStringFieldsWithLabel(
                 EditableWallArcElement.CENTER_PROPERTY, localizedString("Center")));
         box.getChildren().add(createDecimalStringFieldWithLabel(
