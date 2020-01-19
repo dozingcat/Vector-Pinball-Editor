@@ -170,7 +170,7 @@ public class FlipperElement extends FieldElement {
         return anchorBody;
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         // Draw single line segment from anchor point.
         Vector2 position = anchorBody.getPosition();
         float angle = joint.getJointAngle();
@@ -182,6 +182,6 @@ public class FlipperElement extends FieldElement {
         float x2 = position.x + flipperLength * (float)Math.cos(angle);
         float y2 = position.y + flipperLength * (float)Math.sin(angle);
 
-        renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_COLOR));
+        renderer.drawLine(x1, y1, x2, y2, currentColor(field, DEFAULT_COLOR));
     }
 }

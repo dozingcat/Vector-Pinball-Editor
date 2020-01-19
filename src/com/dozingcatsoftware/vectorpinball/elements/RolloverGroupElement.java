@@ -279,11 +279,11 @@ public class RolloverGroupElement extends FieldElement {
         this.isVisible = visible;
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         if (!this.isVisible) return;
 
         // default color defined at the group level
-        Color groupColor = currentColor(DEFAULT_COLOR);
+        Color groupColor = currentColor(field, DEFAULT_COLOR);
 
         // for each rollover, draw outlined circle for inactive or filled circle for active
         int rsize = this.rollovers.size();

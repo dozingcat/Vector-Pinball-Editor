@@ -368,7 +368,7 @@ public class Field implements ContactListener {
         Collections.sort(elementsInDrawOrder, drawOrdering);
 
         for (int i = 0; i < elementsInDrawOrder.size(); i++) {
-            this.elementsInDrawOrder.get(i).draw(renderer);
+            this.elementsInDrawOrder.get(i).draw(this, renderer);
         }
     }
 
@@ -581,6 +581,15 @@ public class Field implements ContactListener {
 
     public void addExtraBall() {
         gameState.setExtraBalls(gameState.getExtraBalls() + 1);
+    }
+
+    public boolean hasBallAtLayer(int layer) {
+        for (int i = 0; i < this.balls.size(); i++) {
+            if (this.balls.get(i).getLayer() == layer) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

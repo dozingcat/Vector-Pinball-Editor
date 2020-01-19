@@ -166,8 +166,8 @@ public class WallElement extends FieldElement {
         wallBody.setTransform((x1+x2) / 2f, (y1+y2) / 2f, angle);
     }
 
-    @Override public void draw(IFieldRenderer renderer) {
+    @Override public void draw(Field field, IFieldRenderer renderer) {
         if (!visible || isRetracted()) return;
-        renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
+        renderer.drawLine(x1, y1, x2, y2, currentColor(field, DEFAULT_WALL_COLOR));
     }
 }

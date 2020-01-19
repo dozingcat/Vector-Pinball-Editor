@@ -40,6 +40,9 @@ public class WallPathElementInspector extends ElementInspector {
                 EditableFieldElement.LAYER_PROPERTY, "Layer"));
         box.getChildren().add(createColorSelectorWithLabel(
                 EditableFieldElement.COLOR_PROPERTY, localizedString("Color")));
+        box.getChildren().add(createColorSelectorWithLabel(
+                EditableFieldElement.INACTIVE_LAYER_COLOR_PROPERTY,
+                localizedString("Inactive layer")));
         box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
                 EditableWallPathElement.IGNORE_BALL_PROPERTY, localizedString("Ignore ball")));
 
