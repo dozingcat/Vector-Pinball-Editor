@@ -98,15 +98,15 @@ public class GroovyFieldDelegate implements Field.Delegate {
 		}
 	}
 
-	@Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
+	@Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball) {
 		if (allDropTargetsInGroupHit != null) {
-			allDropTargetsInGroupHit.call(field, targetGroup);
+			allDropTargetsInGroupHit.call(field, targetGroup, ball);
 		}
 	}
 
-	@Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
+	@Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {
 		if (allRolloversInGroupActivated != null) {
-			allRolloversInGroupActivated.call(field, rolloverGroup);
+			allRolloversInGroupActivated.call(field, rolloverGroup, ball);
 		}
 	}
 

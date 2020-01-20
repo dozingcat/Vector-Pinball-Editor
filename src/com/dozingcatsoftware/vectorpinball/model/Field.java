@@ -78,9 +78,9 @@ public class Field implements ContactListener {
 
         public void flippersActivated(Field field, List<FlipperElement> flippers);
 
-        public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup);
+        public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball);
 
-        public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup);
+        public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball);
 
         public void ballInSensorRange(Field field, SensorElement sensor, Ball ball);
 

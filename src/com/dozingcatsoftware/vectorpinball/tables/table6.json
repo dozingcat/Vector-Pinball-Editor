@@ -202,7 +202,7 @@
                     "radius": "2"
                 }, 
                 {
-                    "color": [0, 204, 204, 102],
+                    "color": [0, 153, 255, 102],
                     "position": ["9.4", "15"],
                     "radius": "3.2"
                 }, 
@@ -222,41 +222,6 @@
                     "radius": "6.8"
                 }
             ]
-        }, 
-        {
-            "class": "RolloverGroupElement",
-            "cycleOnFlipper": false,
-            "id": "PlanetRollovers",
-            "ignoreBall": false,
-            "radius": "0.3",
-            "rollovers": [
-                {
-                    "color": [255, 85, 0],
-                    "position": ["-0.14", "0.7"],
-                    "radius": "0.25"
-                }, 
-                {
-                    "color": [0, 204, 204],
-                    "position": ["0.86", "0.7"],
-                    "radius": "0.35"
-                }, 
-                {
-                    "color": [153, 0, 0],
-                    "position": ["1.86", "0.7"],
-                    "radius": "0.3"
-                }, 
-                {
-                    "color": [0, 170, 102],
-                    "position": ["2.86", "0.7"],
-                    "radius": "0.5"
-                }, 
-                {
-                    "color": [170, 34, 204],
-                    "position": ["3.86", "0.7"],
-                    "radius": "0.4"
-                }
-            ],
-            "toggleOff": false
         }, 
         {
             "center": ["14", "10.2"],
@@ -290,7 +255,7 @@
         }, 
         {
             "class": "BumperElement",
-            "color": [0, 204, 204],
+            "color": [0, 153, 238],
             "kick": "1.0",
             "position": [13.98, 23.740000000000002],
             "radius": "0.35",
@@ -298,7 +263,7 @@
         }, 
         {
             "class": "BumperElement",
-            "color": [0, 204, 204],
+            "color": [0, 153, 255],
             "kick": "1.0",
             "position": [15.939999999999998, 23.700000000000006],
             "radius": "0.35",
@@ -306,7 +271,7 @@
         }, 
         {
             "class": "BumperElement",
-            "color": [0, 204, 204],
+            "color": [0, 153, 255],
             "kick": "1.0",
             "position": [14.840000000000002, 22.06],
             "radius": "0.35",
@@ -378,7 +343,7 @@
             "class": "WallArcElement",
             "color": [153, 0, 0],
             "maxangle": "180",
-            "minangle": "135",
+            "minangle": "138",
             "segments": 30,
             "xradius": "4.5",
             "yradius": "4.3"
@@ -494,7 +459,7 @@
         {
             "class": "WallElement",
             "color": [68, 68, 170, 136],
-            "position": ["12.66", "26.5", "11.78", "27.64"]
+            "position": ["12.66", "26.5", "11.56", "27.48"]
         }, 
         {
             "center": ["4.2", "23.8"],
@@ -662,13 +627,13 @@
             "rect": ["4.6", "26", "5.4", "28.6"]
         }, 
         {
-            "ballLayerFrom": 1,
+            "ballLayerFrom": 3,
             "class": "SensorElement",
             "id": "RightLoopDetector_Enter",
             "rect": ["13.8", "26.6", "14.6", "29"]
         }, 
         {
-            "ballLayerFrom": 1,
+            "ballLayerFrom": 3,
             "class": "SensorElement",
             "id": "RightLoopDetector_Trigger",
             "rect": ["15.5", "26.6", "16.3", "29"]
@@ -701,8 +666,9 @@
         }, 
         {
             "class": "RolloverGroupElement",
-            "color": [0, 204, 204],
+            "color": [0, 153, 255],
             "cycleOnFlipper": true,
+            "id": "Planet2Rollovers",
             "radius": "0.35",
             "rollovers": [
                 {
@@ -747,6 +713,7 @@
             "color": [255, 85, 0],
             "gapBetweenTargets": "0.3",
             "gapFromWall": "-0.2",
+            "id": "Planet1Targets",
             "numTargets": 3,
             "positions": [],
             "reset": "2",
@@ -768,6 +735,66 @@
             "position": [4.159999999999999, 24.34],
             "radius": "0.5",
             "score": 1000
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [255, 85, 0],
+            "id": "Planet1",
+            "ignoreBall": false,
+            "radius": "0.27",
+            "rollovers": [
+                {
+                    "position": ["9.4", "13"]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 153, 255],
+            "id": "Planet2",
+            "ignoreBall": false,
+            "radius": "0.35",
+            "rollovers": [
+                {
+                    "position": ["9.4", "11.8"]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [153, 0, 0],
+            "id": "Planet3",
+            "ignoreBall": false,
+            "radius": "0.31",
+            "rollovers": [
+                {
+                    "position": ["9.4", "10.6"]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 170, 102],
+            "id": "Planet4",
+            "ignoreBall": false,
+            "radius": "0.5",
+            "rollovers": [
+                {
+                    "position": ["9.4", "9.4"]
+                }
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [170, 34, 204],
+            "id": "Planet5",
+            "ignoreBall": false,
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["9.4", "8.2"]
+                }
+            ]
         }
     ],
     "gravity": "4",
@@ -776,9 +803,9 @@
     "launchPosition": ["19.3", "3.0"],
     "launchVelocity": ["0", "22"],
     "launchVelocityRandomDelta": ["0", "0.1"],
-    "name": "Space",
+    "name": "Orbiters",
     "numballs": 3,
-    "script": "// Initialized in gameStarted.\u000adef TAU = 2 * Math.PI;\u000adef GRAV_FORCE = 10.0;  // multiplied by radius^3 for each planet/sun.\u000adef GRAV_DEPTH_SQ = 2.0 * 2.0\u000adef GRAV_RANGE_SQ = 8.0 * 8.0;\u000adef launchBarrier = null;\u000adef orbits = null;\u000adef sun = null;\u000adef planetRadii;\u000adef planetAngles;\u000a\u000adef rampBonusDuration = 200e9;\u000adef rampBonusTimeRemaining = 0;\u000adef rampBonusMultiplier = 1;\u000a\u000a\u000a// store last ramp time, shoot another ramp in a specified interval for combo bonus\u000a// shoot all four ramps and then center to lock ball, barrier in center?\u000a// hit all planets to...?\u000a// multiball: planets spin backwards\u000a\u000adef checkRamp = {field, ball, prevSensor, points ->\u000a  if (ball.getPreviousSensorId() == prevSensor) {\u000a    if (rampBonusTimeRemaining > 0) {\u000a      rampBonusMultiplier += 1;\u000a//      field.showGameMessage(rampBonusMultiplier + \"x Ramp!\", 1000);\u000a    }\u000a    else {\u000a      rampBonusMultiplier = 1;\u000a    }\u000a    rampBonusTimeRemaining = rampBonusDuration;\u000a    field.addScore(points * rampBonusMultiplier);\u000a      field.showGameMessage(rampBonusMultiplier + \"x Ramp!\", 1000);\u000a  }\u000a};\u000a\u000a// These methods are called for specific game events.\u000areturn [\u000a  gameStarted: {field ->\u000a    // Initialize common variables.\u000a    launchBarrier = field.getFieldElementById(\"LaunchBarrier\");\u000a    sun = field.getFieldElementById(\"Sun\");\u000a    sun.setRolloverActiveAtIndex(0, true);\u000a    orbits = field.getFieldElementById(\"Orbits\");\u000a    planets = field.getFieldElementById(\"PlanetRollovers\");\u000a    planetRadii = [];\u000a    planetAngles = [];\u000a    planetVelocities = [];\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      planetRadii.add(orbits.getRolloverRadiusAtIndex(i));\u000a      planetAngles.add(Math.random() * TAU);\u000a      planetVelocities.add((0.9 + 0.2 * Math.random()) / (i + 1));\u000a    }\u000a    // Remove the launch barrier.\u000a    launchBarrier.setRetracted(true);\u000a  },\u000a\u000a  isFieldActive: {field -> return true;},\u000a\u000a  ballLost: {field ->\u000a    // Restore the launch barrier.\u000a    launchBarrier.setRetracted(false);\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    // Check for retracting or restoring the launch barrier.\u000a    if (sensorId == 'LaunchBarrierSensor') {\u000a      launchBarrier.setRetracted(false);\u000a    }\u000a    else if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a    else if (sensorId == 'LeftLoopDetector_Trigger') {\u000a      checkRamp(field, ball, 'LeftLoopDetector_Enter', 2500);\u000a    }\u000a    else if (sensorId == 'RightLoopDetector_Trigger') {\u000a      checkRamp(field, ball, 'RightLoopDetector_Enter', 2500);\u000a    }\u000a    else if (sensorId == 'OrbitDetector_Left') {\u000a      checkRamp(field, ball, 'OrbitDetector_Right', 2500);\u000a    }\u000a    else if (sensorId == 'OrbitDetector_Right') {\u000a      checkRamp(field, ball, 'OrbitDetector_Left', 2500);\u000a    }\u000a  },\u000a\u000a  allDropTargetsInGroupHit: {field, targetGroup ->\u000a    // Activate ball saver for left and right groups.\u000a    def id = targetGroup.getElementId();\u000a    if (id == \"DropTargetLeftSave\") {\u000a      field.getFieldElementById('BallSaver-left').setRetracted(false);\u000a      field.showGameMessage('Left Save Enabled', 1500);\u000a    }\u000a    else if (id == \"DropTargetRightSave\") {\u000a      field.getFieldElementById('BallSaver-right').setRetracted(false);\u000a      field.showGameMessage('Right Save Enabled', 1500);\u000a    }\u000a  },\u000a\u000a  tick: {field, nanos ->\u000a    if (rampBonusTimeRemaining > 0) {\u000a      rampBonusTimeRemaining -= nanos;\u000a    }\u000a    // field.showGameMessage(\"\" + rampBonusTimeRemaining, 1000);\u000a    if (orbits == null) return;\u000a    def dt = nanos / 1e9;\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      def da = dt * planetVelocities[i];\u000a      planetAngles[i] += da;\u000a      if (planetAngles[i] >= TAU) {planetAngles -= TAU;}\u000a      if (planetAngles[i] < 0) {planetAngles += TAU;}\u000a      def center = orbits.getRolloverCenterAtIndex(i);\u000a      def px = center.x + planetRadii[i] * Math.cos(planetAngles[i]);\u000a      def py = center.y + planetRadii[i] * Math.sin(planetAngles[i]);\u000a      planets.setRolloverCenterAtIndex(i, px, py);\u000a    }\u000a      field.getBalls().each {ball ->\u000a        def sunpos = sun.getRolloverCenterAtIndex(0);\u000a        def bpos = ball.getPosition();\u000a        def sunDistSq = Math.pow(sunpos.x - bpos.x, 2) + Math.pow(sunpos.y - bpos.y, 2);\u000a        if (sunDistSq <= GRAV_RANGE_SQ) {\u000a          // Force points toward center of sun/planet.\u000a          def angle = Math.atan2(sunpos.y - bpos.y, sunpos.x - bpos.x);\u000a          def g = dt * GRAV_FORCE / (GRAV_DEPTH_SQ + sunDistSq);\u000a          def gx = g * Math.cos(angle);\u000a          def gy = g * Math.sin(angle);\u000a          ball.applyLinearImpulse(new Vector2(gx.toFloat(), gy.toFloat()));\u000a        }\u000a\u000a      // }\u000a    }\u000a  },\u000a];\u000a",
+    "script": "// Initialized in gameStarted.\u000adef TAU = 2 * Math.PI;\u000adef SUN_GRAV_FORCE = 8.0; \u000adef PLANET_GRAV_FORCE = 15.0;  // multiplied by radius^3 for each planet.\u000adef GRAV_DEPTH_SQ = 2.0 * 2.0\u000adef GRAV_RANGE_SQ = 8.0 * 8.0;\u000adef launchBarrier = null;\u000adef orbits = null;\u000adef sun = null;\u000adef planetGroups = null;\u000adef planetRadii;\u000adef planetAngles;\u000adef planetVelocities;\u000a\u000adef rampBonusDuration = 10e9;\u000adef rampBonusTimeRemaining = 0;\u000adef rampBonusMultiplier = 1;\u000a\u000aenum MultiballStatus {INACTIVE, STARTING, ACTIVE};\u000adef multiballStatus = MultiballStatus.INACTIVE;\u000adef multiballJackpotMultiplier = 1;\u000a\u000aenum PlanetStatus {OFF, IN_PROGRESS, ON};\u000adef planetStatuses;\u000adef inProgressPlanetPhase = 0;\u000a\u000aBLACK = Color.fromRGB(0, 0, 0);\u000a\u000aPLANET_COLORS = [\u000a  Color.fromRGB(0xFF, 0x55, 0x00),\u000a  Color.fromRGB(0x00, 0x99, 0xFF),\u000a  Color.fromRGB(0x99, 0x00, 0x00),\u000a  Color.fromRGB(0x00, 0xAA, 0x66),\u000a  Color.fromRGB(0xAA, 0x22, 0xCC),\u000a];\u000aBALL_COLORS = [\u000a  Color.fromRGB(0xFF, 0x99, 0x44),\u000a  Color.fromRGB(0x77, 0xCC, 0xFF),\u000a  Color.fromRGB(0xCC, 0x66, 0x66),\u000a  Color.fromRGB(0x77, 0xCC, 0xAA),\u000a  Color.fromRGB(0xCC, 0x88, 0xEE),\u000a];\u000aBALL_SECONDARY_COLORS = [\u000a  Color.fromRGB(0xCC, 0x77, 0x22),\u000a  Color.fromRGB(0x55, 0xAA, 0xCC),\u000a  Color.fromRGB(0xAA, 0x44, 0x44),\u000a  Color.fromRGB(0x55, 0xAA, 0x88),\u000a  Color.fromRGB(0xAA, 0x66, 0xCC),\u000a];\u000a\u000adef startMultiball = {field ->\u000a  field.getFieldElementById(\"BallSaver-left\").setRetracted(false);\u000a  field.getFieldElementById(\"BallSaver-right\").setRetracted(false);\u000a  (0..<planetStatuses.size()).each {planetStatuses[it] = PlanetStatus.OFF;};\u000a\u000a  def doLaunch = {field.launchBall();};\u000a\u000a  // \"Starting\" state until the last ball is launched so we\u000a  // don't exit multiball until then.\u000a  multiballStatus = MultiballStatus.STARTING;\u000a  multiballJackpotMultiplier = 1;\u000a  field.showGameMessage(\"Multiball!\", 4000);\u000a  field.scheduleAction(1000, {field.launchBall();});\u000a  field.scheduleAction(4000, {\u000a    field.launchBall();\u000a    multiballStatus = MultiballStatus.ACTIVE;\u000a  });\u000a};\u000a\u000adef endMultiball = {field ->\u000a  multiballStatus = MultiballStatus.INACTIVE;\u000a  (0..<planetStatuses.size()).each {planetStatuses[it] = PlanetStatus.OFF;};\u000a};\u000a\u000adef activatePlanetIfMatch = {field, ball, planetIndex ->\u000a  if (planetStatuses[planetIndex] == PlanetStatus.ON) return;\u000a  def bpIndex = BALL_COLORS.indexOf(ball.getPrimaryColor());\u000a  if (bpIndex == planetIndex) {\u000a    planetStatuses[planetIndex] = PlanetStatus.ON;\u000a    field.addScore(5000);\u000a    if (planetStatuses.every({it == PlanetStatus.ON})) {\u000a      if (multiballStatus == MultiballStatus.INACTIVE) {\u000a        startMultiball(field);\u000a      }\u000a      else {\u000a        def prefix = (multiballJackpotMultiplier > 1) ? (multiballJackpotMultiplier + \"x \") : \"\";\u000a        def msg = prefix + \"Jackpot!\";\u000a        field.showGameMessage(msg, 2000);\u000a        field.addScore(100000 * multiballJackpotMultiplier);\u000a        multiballJackpotMultiplier += 1;\u000a        (0..<planetStatuses.size()).each {planetStatuses[it] = PlanetStatus.OFF;};\u000a      }\u000a    }\u000a    else {\u000a      field.showGameMessage(\"Planet \" + (planetIndex + 1) + \" activated\", 1500);\u000a    }\u000a  }\u000a};\u000a\u000adef checkRamp = {field, ball, prevSensor, points, planetIndex ->\u000a  if (ball.getPreviousSensorId() == prevSensor) {\u000a    if (rampBonusTimeRemaining > 0) {\u000a      rampBonusMultiplier += 1;\u000a      field.showGameMessage(rampBonusMultiplier + \"x Ramp\", 1000);\u000a    }\u000a    else {\u000a      rampBonusMultiplier = 1;\u000a    }\u000a    rampBonusTimeRemaining = rampBonusDuration;\u000a    field.addScore(points * rampBonusMultiplier);\u000a    if (planetIndex != null) {\u000a      activatePlanetIfMatch(field, ball, planetIndex);\u000a    }\u000a  }\u000a};\u000a\u000adef anyBallHasColorIndex = {field, index ->\u000a  return field.getBalls().any({BALL_COLORS.indexOf(it.getPrimaryColor()) == index});\u000a};\u000a\u000adef updatePlanetStatus = {field, nanos ->\u000a  inProgressPlanetPhase += TAU * (nanos / 4e9);\u000a  while (inProgressPlanetPhase > TAU) {\u000a    inProgressPlanetPhase -= TAU;\u000a  }\u000a  planetGroups.eachWithIndex {group, index -> \u000a    def status = planetStatuses[index];\u000a    if (status != PlanetStatus.ON) {\u000a      planetStatuses[index] = anyBallHasColorIndex(field, index) ?\u000a          PlanetStatus.IN_PROGRESS : PlanetStatus.OFF;\u000a    }\u000a    group.setAllRolloversActivated(status != PlanetStatus.OFF);\u000a    // In-progress planets cycle between 30% and 100% of their full color.\u000a    def phase = (status == PlanetStatus.IN_PROGRESS) ?\u000a        (1 + Math.sin(inProgressPlanetPhase)) * 0.35 : 0;\u000a    group.setRolloverColorAtIndex(0, PLANET_COLORS[index].blendedWith(BLACK, phase));\u000a  };\u000a};\u000a\u000a// These methods are called for specific game events.\u000areturn [\u000a  gameStarted: {field ->\u000a    // Initialize common variables.\u000a    launchBarrier = field.getFieldElementById(\"LaunchBarrier\");\u000a    sun = field.getFieldElementById(\"Sun\");\u000a    sun.setRolloverActiveAtIndex(0, true);\u000a    orbits = field.getFieldElementById(\"Orbits\");\u000a    planetGroups = [\"Planet1\", \"Planet2\", \"Planet3\", \"Planet4\", \"Planet5\"].collect(\u000a        {field.getFieldElementById(it)});\u000a    planetRadii = [];\u000a    planetAngles = [];\u000a    planetVelocities = [];\u000a    planetStatuses = [];\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      planetRadii.add(orbits.getRolloverRadiusAtIndex(i));\u000a      planetAngles.add(Math.random() * TAU);\u000a      planetVelocities.add((0.9 + 0.2 * Math.random()) / (i + 1));\u000a      planetStatuses.add(PlanetStatus.OFF);\u000a    }\u000a    // Remove the launch barrier.\u000a    launchBarrier.setRetracted(true);\u000a  },\u000a\u000a  isFieldActive: {field -> return true;},\u000a\u000a  ballLost: {field ->\u000a    // Restore the launch barrier.\u000a    launchBarrier.setRetracted(false);\u000a    // Deactivate in-progress planets.\u000a    planetStatuses.eachWithIndex {status, index -> \u000a      if (status == PlanetStatus.IN_PROGRESS) {\u000a        planetStatuses[index] = PlanetStatus.OFF;\u000a      }\u000a    };\u000a  },\u000a\u000a  ballInSensorRange: {field, sensor, ball ->\u000a    def sensorId = sensor.getElementId();\u000a    // Check for retracting or restoring the launch barrier.\u000a    if (sensorId == 'LaunchBarrierSensor') {\u000a      launchBarrier.setRetracted(false);\u000a    }\u000a    else if (sensorId == 'LaunchBarrierRetract') {\u000a      launchBarrier.setRetracted(true);\u000a    }\u000a    else if (sensorId == 'LeftLoopDetector_Trigger') {\u000a      checkRamp(field, ball, 'LeftLoopDetector_Enter', 2500, 3);\u000a    }\u000a    else if (sensorId == 'RightLoopDetector_Trigger') {\u000a      checkRamp(field, ball, 'RightLoopDetector_Enter', 2500, 2);\u000a    }\u000a    else if (sensorId == 'OrbitDetector_Left') {\u000a      checkRamp(field, ball, 'OrbitDetector_Right', 2500, 4);\u000a    }\u000a    else if (sensorId == 'OrbitDetector_Right') {\u000a      checkRamp(field, ball, 'OrbitDetector_Left', 2500, 4);\u000a    }\u000a  },\u000a\u000a  allDropTargetsInGroupHit: {field, targetGroup, ball ->\u000a    // Activate ball saver for left and right groups.\u000a    def id = targetGroup.getElementId();\u000a    if (id == \"DropTargetLeftSave\") {\u000a      field.getFieldElementById('BallSaver-left').setRetracted(false);\u000a      field.showGameMessage('Left Save Enabled', 1500);\u000a    }\u000a    else if (id == \"DropTargetRightSave\") {\u000a      field.getFieldElementById('BallSaver-right').setRetracted(false);\u000a      field.showGameMessage('Right Save Enabled', 1500);\u000a    }\u000a    else if (id == \"Planet1Targets\") {\u000a      field.addScore(5000);\u000a      activatePlanetIfMatch(field, ball, 0);\u000a    }\u000a  },\u000a\u000a  allRolloversInGroupActivated: {field, group, ball ->\u000a    if (group.getElementId() == \"FlipperRollovers\") {\u000a      group.setAllRolloversActivated(false);\u000a      field.incrementScoreMultiplier();\u000a      field.showGameMessage(field.getScoreMultiplier().intValue() + 'x Multiplier', 1500);\u000a    }\u000a    else if (group.getElementId() == \"Planet2Rollovers\") {\u000a      group.setAllRolloversActivated(false);\u000a      field.addScore(5000);\u000a      activatePlanetIfMatch(field, ball, 1);\u000a    }\u000a    else if (planetGroups.contains(group)) {\u000a      def index = planetGroups.indexOf(group);\u000a      // If the ball's previous planet was in progress, set it to off.\u000a      def ballPrevIndex = BALL_COLORS.indexOf(ball.getPrimaryColor());\u000a      if (ballPrevIndex >= 0 && planetStatuses[ballPrevIndex] == PlanetStatus.IN_PROGRESS) {\u000a        planetStatuses[ballPrevIndex] = PlanetStatus.OFF;\u000a      }\u000a      ball.setPrimaryColor(BALL_COLORS[index]);\u000a      ball.setSecondaryColor(BALL_SECONDARY_COLORS[index]);\u000a      planetStatuses[index] = PlanetStatus.IN_PROGRESS;\u000a    }\u000a  },\u000a\u000a  tick: {field, nanos ->\u000a    if (orbits == null) return;\u000a    // Check for exiting multiball.\u000a    if (field.getBalls().size()<=1 && multiballStatus == MultiballStatus.ACTIVE) {\u000a      endMultiball(field);\u000a    }\u000a    updatePlanetStatus(field, nanos);    \u000a    if (rampBonusTimeRemaining > 0) {\u000a      rampBonusTimeRemaining -= nanos;\u000a    }\u000a    def dt = nanos / 1e9;\u000a    def numPlanets = orbits.numberOfRollovers();\u000a    for (def i = 0; i < numPlanets; i++) {\u000a      def da = dt * planetVelocities[i];\u000a      planetAngles[i] += da;\u000a      if (planetAngles[i] >= TAU) {planetAngles -= TAU;}\u000a      if (planetAngles[i] < 0) {planetAngles += TAU;}\u000a      def center = orbits.getRolloverCenterAtIndex(i);\u000a      def px = center.x + planetRadii[i] * Math.cos(planetAngles[i]);\u000a      def py = center.y + planetRadii[i] * Math.sin(planetAngles[i]);\u000a      planetGroups[i].setRolloverCenterAtIndex(0, px, py);\u000a    }\u000a    field.getBalls().each {ball ->\u000a      def sunpos = sun.getRolloverCenterAtIndex(0);\u000a      def bpos = ball.getPosition();\u000a      def dx = sunpos.x - bpos.x;\u000a      def dy = sunpos.y - bpos.y;\u000a      def sunDistSq = dx * dx + dy * dy;\u000a      if (sunDistSq <= GRAV_RANGE_SQ) {\u000a        // Force points toward center of sun/planet.\u000a        def angle = Math.atan2(dy, dx);\u000a        def g = dt * SUN_GRAV_FORCE / (GRAV_DEPTH_SQ + sunDistSq);\u000a        def gx = g * Math.cos(angle);\u000a        def gy = g * Math.sin(angle);\u000a\u000a        planetGroups.each {\u000a          def ppos = it.getRolloverCenterAtIndex(0);\u000a          def mass = Math.pow(it.getRolloverRadiusAtIndex(0), 3);\u000a          dx = ppos.x - bpos.x;\u000a          dy = ppos.y - bpos.y;\u000a          def pDistSq = dx * dx + dy * dy;\u000a          def pa = Math.atan2(dy, dx);\u000a          g = dt * PLANET_GRAV_FORCE * mass / (GRAV_DEPTH_SQ + pDistSq);\u000a          gx += g * Math.cos(pa);\u000a          gy += g * Math.sin(pa);\u000a        };\u000a        ball.applyLinearImpulse(new Vector2(gx.toFloat(), gy.toFloat()));\u000a      }\u000a    };\u000a  },\u000a];\u000a",
     "targetTimeRatio": "2.3",
     "version": 1,
     "width": "20"

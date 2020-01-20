@@ -131,7 +131,7 @@ public class DropTargetGroupElement extends FieldElement {
         bodyHit.setActive(false);
         // if all hit, notify delegate and check for reset parameter
         if (allTargetsHit()) {
-            field.getDelegate().allDropTargetsInGroupHit(field, this);
+            field.getDelegate().allDropTargetsInGroupHit(field, this, ball);
 
             float restoreTime = asFloat(this.parameters.get(RESET_DELAY_PROPERTY));
             if (restoreTime>0) {

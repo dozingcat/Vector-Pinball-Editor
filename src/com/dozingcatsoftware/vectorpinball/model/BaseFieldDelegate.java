@@ -19,9 +19,9 @@ public class BaseFieldDelegate implements Field.Delegate {
 
 	public final static BaseFieldDelegate INSTANCE = new BaseFieldDelegate();
 
-	@Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {}
+	@Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball) {}
 
-	@Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {}
+	@Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {}
 
 	@Override public void flippersActivated(Field field, List<FlipperElement> flippers) {}
 
