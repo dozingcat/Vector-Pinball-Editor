@@ -148,7 +148,7 @@ public class Field3Delegate extends BaseFieldDelegate {
     }
 
     @Override
-    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup) {
+    public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {
         String id = rolloverGroup.getElementId();
         if ("LeftRampRollover".equals(id) || "RightRampRollover".equals(id)) {
             startBumperBonus();
@@ -169,7 +169,7 @@ public class Field3Delegate extends BaseFieldDelegate {
     }
 
     @Override
-    public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup) {
+    public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball) {
         // activate ball saver for left and right groups
         String id = targetGroup.getElementId();
         if ("DropTargetLeftSave".equals(id)) {
