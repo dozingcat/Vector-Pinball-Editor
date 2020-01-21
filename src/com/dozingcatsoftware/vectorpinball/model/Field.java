@@ -30,9 +30,7 @@ public class Field implements ContactListener {
     FieldLayout layout;
     WorldLayers worlds;
 
-    Set<Body> layoutBodies;
     List<Ball> balls;
-    Set<Body> ballsAtTargets;
 
     // Allow access to model objects from Box2d bodies.
     Map<Body, FieldElement> bodyToFieldElement;
@@ -66,25 +64,25 @@ public class Field implements ContactListener {
 
     // Interface to allow custom behavior for various game events.
     public static interface Delegate {
-        public void gameStarted(Field field);
+        void gameStarted(Field field);
 
-        public void ballLost(Field field);
+        void ballLost(Field field);
 
-        public void gameEnded(Field field);
+        void gameEnded(Field field);
 
-        public void tick(Field field, long nanos);
+        void tick(Field field, long nanos);
 
-        public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball);
+        void processCollision(Field field, FieldElement element, Body hitBody, Ball ball);
 
-        public void flippersActivated(Field field, List<FlipperElement> flippers);
+        void flippersActivated(Field field, List<FlipperElement> flippers);
 
-        public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball);
+        void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball);
 
-        public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball);
+        void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball);
 
-        public void ballInSensorRange(Field field, SensorElement sensor, Ball ball);
+        void ballInSensorRange(Field field, SensorElement sensor, Ball ball);
 
-        public boolean isFieldActive(Field field);
+        boolean isFieldActive(Field field);
     }
 
     // Helper class to represent actions scheduled in the future.
@@ -130,7 +128,6 @@ public class Field implements ContactListener {
         this.layout = FieldLayout.layoutForLevel(layoutMap, worlds);
         worlds.setGravity(new Vector2(0.0f, -this.layout.getGravity()));
         balls = new ArrayList<Ball>();
-        ballsAtTargets = new HashSet<Body>();
 
         scheduledActions = new PriorityQueue<ScheduledAction>();
         gameTime = 0;
@@ -420,7 +417,7 @@ public class Field implements ContactListener {
     public void endGame() {
         audioPlayer.playStart(); // play startup sound at end of game
         for(Ball ball : this.getBalls()) {
-            ball.getBody().getWorld().destroyBody(ball.getBody());
+            ball.destroySelf();
         }
         this.balls.clear();
         this.getGameState().setGameInProgress(false);
@@ -623,9 +620,6 @@ public class Field implements ContactListener {
         return layout.getHeight();
     }
 
-    public Set<Body> getLayoutBodies() {
-        return layoutBodies;
-    }
     public List<Ball> getBalls() {
         return balls;
     }

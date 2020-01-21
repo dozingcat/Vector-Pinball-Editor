@@ -165,8 +165,7 @@ public class RolloverGroupElement extends FieldElement {
         rollovers.get(index).color = color;
     }
 
-    @Override
-    public boolean shouldCallTick() {
+    @Override public boolean shouldCallTick() {
         return true;
     }
 
@@ -226,7 +225,6 @@ public class RolloverGroupElement extends FieldElement {
         for(int i = 0; i < allHitRollovers.size(); i++) {
             rolloversHitOnPreviousTick.add(allHitRollovers.get(i));
         }
-
     }
 
     @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {
@@ -291,20 +289,20 @@ public class RolloverGroupElement extends FieldElement {
         if (!this.isVisible) return;
 
         // default color defined at the group level
-        Color groupColor = currentColor(field, DEFAULT_COLOR);
+        Color groupColor = currentColor(DEFAULT_COLOR);
 
         // for each rollover, draw outlined circle for inactive or filled circle for active
         int rsize = this.rollovers.size();
         for(int i=0; i<rsize; i++) {
-            Rollover rollover = this.rollovers.get(i);
+            Rollover r = this.rollovers.get(i);
             // use custom rollover color if available
-            Color color = (rollover.color != null) ? rollover.color : groupColor;
+            Color color = (r.color != null) ? r.color : groupColor;
 
-            if (activeRollovers.contains(rollover)) {
-                renderer.fillCircle(rollover.position.x, rollover.position.y, rollover.radius, color);
+            if (activeRollovers.contains(r)) {
+                renderer.fillCircle(r.position.x, r.position.y, r.radius, color);
             }
             else {
-                renderer.frameCircle(rollover.position.x, rollover.position.y, rollover.radius, color);
+                renderer.frameCircle(r.position.x, r.position.y, r.radius, color);
             }
         }
     }

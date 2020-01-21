@@ -46,7 +46,7 @@ public class Ball implements IDrawable {
     }
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
-        Vector2 center = this.body.getPosition();
+        Vector2 center = this.getPosition();
         float radius = this.getRadius();
         renderer.fillCircle(center.x, center.y, radius, primaryColor);
 
@@ -79,7 +79,6 @@ public class Ball implements IDrawable {
 
     public float getRadius() {
         CircleShape shape = (CircleShape)body.getFixtureList().get(0).getShape();
-        Vector2 center = body.getPosition();
         return shape.getRadius();
     }
 
@@ -125,6 +124,6 @@ public class Ball implements IDrawable {
     }
 
     void destroySelf() {
-        this.body.getWorld().destroyBody(this.getBody());
+        this.getBody().getWorld().destroyBody(this.getBody());
     }
 }

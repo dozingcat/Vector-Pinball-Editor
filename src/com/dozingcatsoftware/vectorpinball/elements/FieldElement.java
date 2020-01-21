@@ -126,8 +126,8 @@ public abstract class FieldElement implements IDrawable {
 
     /**
      * Called after creation to determine if tick() needs to be called after every frame is
-     * simulated. Default returns false, subclasses must override to return true in order for
-     * tick() to be called. This is an optimization to avoid needless method calls in the game loop.
+     * simulated. Default returns false unless there is a separate inactive layer color. Subclasses
+     * can override. This is an optimization to avoid needless method calls in the game loop.
      */
     public boolean shouldCallTick() {
         return (this.inactiveLayerColor != null);
@@ -273,7 +273,7 @@ public abstract class FieldElement implements IDrawable {
      * Gets the current color by using the defined color if set and the default color if not, and
      * inverting if the element is flashing. Subclasses can override.
      */
-    protected Color currentColor(Field field, Color defaultColor) {
+    protected Color currentColor(Color defaultColor) {
         Color baseColor = (this.newColor != null) ?
                 this.newColor :
                 (this.initialColor != null) ? this.initialColor : defaultColor;

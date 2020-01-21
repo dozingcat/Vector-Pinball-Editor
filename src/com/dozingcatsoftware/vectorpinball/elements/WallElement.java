@@ -168,6 +168,6 @@ public class WallElement extends FieldElement {
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
         if (!visible || isRetracted()) return;
-        renderer.drawLine(x1, y1, x2, y2, currentColor(field, DEFAULT_WALL_COLOR));
+        renderer.drawLine(x1, y1, x2, y2, currentColor(DEFAULT_WALL_COLOR));
     }
 }

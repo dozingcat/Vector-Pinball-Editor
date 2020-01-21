@@ -58,7 +58,7 @@ public class WallPathElement extends FieldElement {
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
         for (float[] segment : this.lineSegments) {
-            renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(field, DEFAULT_WALL_COLOR));
+            renderer.drawLine(segment[0], segment[1], segment[2], segment[3], currentColor(DEFAULT_WALL_COLOR));
         }
     }
 }

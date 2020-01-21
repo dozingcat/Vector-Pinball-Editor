@@ -129,7 +129,7 @@ public class DropTargetGroupElement extends FieldElement {
 
     @Override public void handleCollision(Ball ball, Body bodyHit, final Field field) {
         bodyHit.setActive(false);
-        // if all hit, notify delegate and check for reset parameter
+        // If all hit, notify delegate and check for reset parameter.
         if (allTargetsHit()) {
             field.getDelegate().allDropTargetsInGroupHit(field, this, ball);
 
@@ -155,7 +155,7 @@ public class DropTargetGroupElement extends FieldElement {
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
         // draw line for each target
-        Color color = currentColor(field, DEFAULT_COLOR);
+        Color color = currentColor(DEFAULT_COLOR);
         int bsize = allBodies.size();
         for(int i=0; i<bsize; i++) {
             Body body = allBodies.get(i);
