@@ -137,10 +137,14 @@ public class FxCanvasRenderer implements IFieldRenderer {
     void draw() {
         context.setFill(javafx.scene.paint.Color.BLACK);
         context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        // When editing, use thin lines so they can be positioned accurately.
+        // When playing, use the same 1/216 ratio as the mobile app.
         if (editableField != null) {
+            context.setLineWidth(1);
             editableField.drawForEditor(this);
         }
         else if (field != null) {
+            context.setLineWidth(((int) Math.min(canvas.getWidth(), canvas.getHeight())) / 216);
             synchronized(field) {
                 field.draw(this);
             }
