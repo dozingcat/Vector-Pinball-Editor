@@ -24,7 +24,7 @@ public class EditableRolloverGroupElement extends EditableFieldElement {
     public static final String COLOR_PROPERTY = "color";
     public static final String SCORE_PROPERTY = "score";
 
-    static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
+    static final int DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
     // This element doesn't use dirty checking.
 
@@ -36,18 +36,18 @@ public class EditableRolloverGroupElement extends EditableFieldElement {
     }
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
-        Color groupColor = currentColor(DEFAULT_COLOR);
+        int groupColor = currentColor(DEFAULT_COLOR);
         double groupRadius = asDouble(getProperty(RADIUS_PROPERTY));
         List<Map<String, Object>> rolloverMaps = (List<Map<String, Object>>)getProperty(ROLLOVERS_PROPERTY);
         for (Map<String, Object> rmap : rolloverMaps) {
             List<Object> pos = (List<Object>)rmap.get(POSITION_PROPERTY);
-            Color color = rmap.containsKey(COLOR_PROPERTY) ?
+            int color = rmap.containsKey(COLOR_PROPERTY) ?
                     Color.fromList((List<Number>)rmap.get(COLOR_PROPERTY)) : groupColor;
             double radius = rmap.containsKey(RADIUS_PROPERTY) ?
                     asDouble(rmap.get(RADIUS_PROPERTY)) : groupRadius;
             renderer.frameCircle(asDouble(pos.get(0)), asDouble(pos.get(1)), radius, color);
             if (isSelected) {
-                Color colorWithAlpha = Color.fromRGB(color.red, color.green, color.blue, color.alpha/2);
+                int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
                 renderer.fillCircle(asDouble(pos.get(0)), asDouble(pos.get(1)), radius, colorWithAlpha);
             }
         }

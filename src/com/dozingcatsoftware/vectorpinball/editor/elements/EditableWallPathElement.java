@@ -44,7 +44,7 @@ public class EditableWallPathElement extends EditableFieldElement {
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         double selectionCircleRadius = 0.25 / renderer.getRelativeScale();
-        Color color = currentColor(DEFAULT_WALL_COLOR);
+        int color = currentColor(DEFAULT_WALL_COLOR);
         int size = numPoints();
         for (int i=1; i<size; i++) {
             renderer.drawLine(getSegmentX(i-1), getSegmentY(i-1),

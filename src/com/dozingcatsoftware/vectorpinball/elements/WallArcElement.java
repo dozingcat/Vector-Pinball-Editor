@@ -92,7 +92,7 @@ public class WallArcElement extends FieldElement {
     }
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
-        Color color = currentColor(DEFAULT_WALL_COLOR);
+        int color = currentColor(DEFAULT_WALL_COLOR);
         for (float[] segment : this.lineSegments) {
             renderer.drawLine(segment[0], segment[1], segment[2], segment[3], color);
         }

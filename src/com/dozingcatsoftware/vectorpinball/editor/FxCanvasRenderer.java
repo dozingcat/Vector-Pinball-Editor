@@ -61,8 +61,12 @@ public class FxCanvasRenderer implements IFieldRenderer {
         undoStack = stack;
     }
 
-    private static Paint toFxPaint(Color color) {
-        return javafx.scene.paint.Color.rgb(color.red, color.green, color.blue, color.alpha/255.0);
+    private static Paint toFxPaint(int color) {
+        return javafx.scene.paint.Color.rgb(
+                Color.getRed(color),
+                Color.getGreen(color),
+                Color.getBlue(color),
+                Color.getAlpha(color) / 255.0);
     }
 
     private double worldToPixelX(double x) {
@@ -85,36 +89,36 @@ public class FxCanvasRenderer implements IFieldRenderer {
         return scale * dist;
     }
 
-    @Override public void drawLine(double x1, double y1, double x2, double y2, Color color) {
+    @Override public void drawLine(double x1, double y1, double x2, double y2, int color) {
         context.setStroke(toFxPaint(color));
         context.beginPath();
         context.moveTo(worldToPixelX(x1), worldToPixelY(y1));
         context.lineTo(worldToPixelX(x2), worldToPixelY(y2));
         context.stroke();
     }
-    @Override public void drawLine(float x1, float y1, float x2, float y2, Color color) {
+    @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
         drawLine((double)x1, y1, x2, y2, color);
     }
 
-    @Override public void fillCircle(double cx, double cy, double radius, Color color) {
+    @Override public void fillCircle(double cx, double cy, double radius, int color) {
         context.setFill(toFxPaint(color));
         context.fillArc(worldToPixelX(cx - radius), worldToPixelY(cy + radius),
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
     }
-    @Override public void fillCircle(float cx, float cy, float radius, Color color) {
+    @Override public void fillCircle(float cx, float cy, float radius, int color) {
         fillCircle((double)cx, (double)cy, radius, color);
     }
 
-    @Override public void frameCircle(double cx, double cy, double radius, Color color) {
+    @Override public void frameCircle(double cx, double cy, double radius, int color) {
         context.setStroke(toFxPaint(color));
         context.strokeArc(worldToPixelX(cx - radius), worldToPixelY(cy + radius),
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
     }
-    @Override public void frameCircle(float cx, float cy, float radius, Color color) {
+    @Override public void frameCircle(float cx, float cy, float radius, int color) {
         frameCircle((double)cx, (double)cy, radius, color);
     }
 
-    @Override public void fillPolygon(double[] xPoints, double[] yPoints, Color color) {
+    @Override public void fillPolygon(double[] xPoints, double[] yPoints, int color) {
         double[] pixelX = new double[xPoints.length];
         double[] pixelY = new double[yPoints.length];
         for (int i=0; i<xPoints.length; i++) {

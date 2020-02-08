@@ -65,7 +65,7 @@ public class EditableWallArcElement extends EditableFieldElement {
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
-        Color color = currentColor(DEFAULT_WALL_COLOR);
+        int color = currentColor(DEFAULT_WALL_COLOR);
         for (double[] segment : this.lineSegments) {
             renderer.drawLine(segment[0], segment[1], segment[2], segment[3], color);
         }
@@ -75,7 +75,7 @@ public class EditableWallArcElement extends EditableFieldElement {
             double[] last = lineSegments[lineSegments.length-1];
             renderer.fillCircle(last[2], last[3], endpointRadius, color);
 
-            Color colorWithAlpha = Color.fromRGB(color.red, color.green, color.blue, color.alpha/2);
+            int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
             List<?> centerPos = (List<?>)getProperty(CENTER_PROPERTY);
             double cx = asDouble(centerPos.get(0));
             double cy = asDouble(centerPos.get(1));

@@ -25,7 +25,7 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
     public static final String RESET_DELAY_PROPERTY = "reset";
     public static final String NUM_TARGETS_PROPERTY = "numTargets";
 
-    static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
+    static final int DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
     boolean usesDirectPositions;
     double[][] positions;
@@ -92,13 +92,13 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
         // draw line for each target
-        Color color = currentColor(DEFAULT_COLOR);
+        int color = currentColor(DEFAULT_COLOR);
         for(double[] pos : positions) {
             renderer.drawLine(pos[0], pos[1], pos[2], pos[3], color);
         }
         if (isSelected) {
             // Draw a translucent rectangle around each target.
-            Color colorWithAlpha = Color.fromRGB(color.red, color.green, color.blue, color.alpha/2);
+            int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
             double dist = 0.1 * renderer.getRelativeScale();
             double[] xPoints = new double[4];
             double[] yPoints = new double[4];

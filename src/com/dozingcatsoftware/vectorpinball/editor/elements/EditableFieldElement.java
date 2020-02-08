@@ -19,7 +19,7 @@ public abstract class EditableFieldElement implements PropertyContainer {
     public static final String LAYER_PROPERTY = "layer";
     public static final String INACTIVE_LAYER_COLOR_PROPERTY = "inactiveLayerColor";
 
-    static final Color DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
+    static final int DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
     static final String CLASS_PREFIX = "com.dozingcatsoftware.vectorpinball.editor.elements.Editable";
 
     private Map<String, Object> properties;
@@ -118,16 +118,19 @@ public abstract class EditableFieldElement implements PropertyContainer {
     /**
      * Gets the current color by using the defined color if set and the default color if not.
      */
-    protected Color currentColor(Color defaultColor) {
-        Color color = properties.containsKey(COLOR_PROPERTY) ?
+    protected int currentColor(int defaultColor) {
+        int color = properties.containsKey(COLOR_PROPERTY) ?
                 Color.fromList((List<Number>)properties.get(COLOR_PROPERTY)) : defaultColor;
 
         // If very dark, make brighter for display.
-        int rgbSum = color.red + color.green + color.blue;
-        if (rgbSum < 192 || color.alpha < 64) {
+        int rgbSum = Color.getRed(color) + Color.getGreen(color) + Color.getBlue(color);
+        if (rgbSum < 192 || Color.getAlpha(color) < 64) {
             int extra = Math.max(0, (192 - rgbSum) / 3);
             color = Color.fromRGB(
-                    color.red + extra, color.green + extra, color.blue + extra, Math.max(color.alpha, 128));
+                    Color.getRed(color) + extra,
+                    Color.getGreen(color) + extra,
+                    Color.getBlue(color) + extra,
+                    Math.max(Color.getAlpha(color), 128));
         }
         return color;
     }
