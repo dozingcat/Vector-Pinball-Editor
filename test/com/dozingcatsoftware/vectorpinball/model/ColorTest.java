@@ -17,7 +17,7 @@ class ColorTest {
     }
 
     @Test void testCreateWithAlpha() {
-        int c = Color.fromRGB(10, 20, 30, 40);
+        int c = Color.fromRGBA(10, 20, 30, 40);
         assertEquals(10, Color.getRed(c));
         assertEquals(20, Color.getGreen(c));
         assertEquals(30, Color.getBlue(c));
@@ -41,26 +41,26 @@ class ColorTest {
     }
 
     @Test void testInverse() {
-        int c = Color.fromRGB(0, 100, 200, 111);
+        int c = Color.fromRGBA(0, 100, 200, 111);
         int inv = Color.inverse(c);
-        assertEquals(Color.fromRGB(255, 155, 55, 111), inv);
+        assertEquals(Color.fromRGBA(255, 155, 55, 111), inv);
         assertEquals(c, Color.inverse(inv));
     }
 
     @Test void testWithAlpha() {
-        int c = Color.fromRGB(0, 100, 200, 111);
+        int c = Color.fromRGBA(0, 100, 200, 111);
         int ca = Color.withAlpha(c, 123);
-        assertEquals(Color.fromRGB(0, 100, 200, 123), ca);
+        assertEquals(Color.fromRGBA(0, 100, 200, 123), ca);
     }
 
     @Test void testBlend() {
-        int start = Color.fromRGB(0, 100, 200, 255);
-        int end = Color.fromRGB(100, 110, 190, 155);
+        int start = Color.fromRGBA(0, 100, 200, 255);
+        int end = Color.fromRGBA(100, 110, 190, 155);
         int b0 = Color.blend(start, end, 0);
         assertEquals(start, b0);
         int b1 = Color.blend(start, end, 1);
         assertEquals(end, b1);
         int b20 = Color.blend(start, end, 0.2);
-        assertEquals(Color.fromRGB(20, 102, 198, 235), b20);
+        assertEquals(Color.fromRGBA(20, 102, 198, 235), b20);
     }
 }

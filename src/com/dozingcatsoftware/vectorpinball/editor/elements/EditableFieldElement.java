@@ -126,7 +126,7 @@ public abstract class EditableFieldElement implements PropertyContainer {
         int rgbSum = Color.getRed(color) + Color.getGreen(color) + Color.getBlue(color);
         if (rgbSum < 192 || Color.getAlpha(color) < 64) {
             int extra = Math.max(0, (192 - rgbSum) / 3);
-            color = Color.fromRGB(
+            color = Color.fromRGBA(
                     Color.getRed(color) + extra,
                     Color.getGreen(color) + extra,
                     Color.getBlue(color) + extra,
