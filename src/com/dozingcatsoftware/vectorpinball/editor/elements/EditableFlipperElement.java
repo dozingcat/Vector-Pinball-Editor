@@ -21,7 +21,7 @@ public class EditableFlipperElement extends EditableFieldElement {
     public static final String UP_SPEED_PROPERTY = "upspeed";
     public static final String DOWN_SPEED_PROPERTY = "downspeed";
 
-    static final Color DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
+    static final int DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
     double flipperLength; // negative if flipper rotates around its right end
     double minangle, maxangle;
@@ -66,7 +66,7 @@ public class EditableFlipperElement extends EditableFieldElement {
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
-        Color color = currentColor(DEFAULT_COLOR);
+        int color = currentColor(DEFAULT_COLOR);
         renderer.drawLine(cx, cy, endX(), endY(), color);
         if (isSelected) {
             renderer.fillCircle(cx, cy, 0.35*renderer.getRelativeScale(), color);

@@ -27,7 +27,7 @@ public class EditableWallElement extends EditableFieldElement {
     DragType dragType;
 
     @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
-        Color color = currentColor(DEFAULT_WALL_COLOR);
+        int color = currentColor(DEFAULT_WALL_COLOR);
         double selectionCircleRadius = 0.25 / renderer.getRelativeScale();
         List<?> pos = (List<?>)getProperty(POSITION_PROPERTY);
         double x1 = asDouble(pos.get(0));

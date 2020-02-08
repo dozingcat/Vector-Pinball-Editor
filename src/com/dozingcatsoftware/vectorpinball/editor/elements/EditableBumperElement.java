@@ -15,11 +15,11 @@ public class EditableBumperElement extends EditableFieldElement {
     public static final String RADIUS_PROPERTY = "radius";
     public static final String KICK_PROPERTY = "kick";
 
-    static final Color DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
+    static final int DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
 
     double cx, cy;
     double radius;
-    Color color;
+    int color;
 
     @Override protected void refreshInternalValues() {
         List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
