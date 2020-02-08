@@ -31,7 +31,7 @@ public class Color {
     }
 
     public static int getRed(int color) {
-        return (color >> 24) & 0xff;
+        return (color >> 24 ) & 0xff;
     }
 
     public static int getGreen(int color) {
