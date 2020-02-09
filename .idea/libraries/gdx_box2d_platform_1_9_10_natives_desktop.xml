@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="gdx-box2d-platform-1.9.10-natives-desktop">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/gdx-box2d-platform-1.9.10-natives-desktop.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

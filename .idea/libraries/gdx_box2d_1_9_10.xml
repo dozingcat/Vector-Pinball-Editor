@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="gdx-1.9.9">
+  <library name="gdx-box2d-1.9.10">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/gdx-1.9.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/gdx-box2d-1.9.10.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
