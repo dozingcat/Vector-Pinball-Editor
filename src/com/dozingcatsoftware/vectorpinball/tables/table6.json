@@ -678,7 +678,8 @@
                 {
                     "position": ["16.16", "26"]
                 }
-            ]
+            ],
+            "score": 1000
         }, 
         {
             "class": "WallElement",
