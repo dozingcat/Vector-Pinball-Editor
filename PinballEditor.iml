@@ -37,9 +37,9 @@
       </library>
     </orderEntry>
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="library" name="gdx-box2d-platform-1.9.9-natives-desktop" level="project" />
-    <orderEntry type="library" name="gdx-box2d-1.9.9" level="project" />
-    <orderEntry type="library" name="gdx-1.9.9" level="project" />
+    <orderEntry type="library" name="gdx-box2d-platform-1.9.10-natives-desktop" level="project" />
+    <orderEntry type="library" name="gdx-box2d-1.9.10" level="project" />
+    <orderEntry type="library" name="gdx-1.9.10" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
