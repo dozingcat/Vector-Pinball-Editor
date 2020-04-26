@@ -1,0 +1,745 @@
+{
+    "ballcolor": [192, 192, 224],
+    "ballradius": "0.49",
+    "delegate": "Field7Delegate",
+    "elements": [
+        {
+            "class": "WallElement",
+            "position": ["18.7", "0.1", "18.7", "11.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["19.9", "0.1", "19.9", "11.8"]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "9.9",
+            "yradius": "7"
+        }, 
+        {
+            "center": ["10", "11.8"],
+            "class": "WallArcElement",
+            "maxangle": "30",
+            "minangle": "0",
+            "segments": 12,
+            "xradius": "8.7",
+            "yradius": "5.6"
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 0],
+            "kill": true,
+            "position": ["0.1", "0.1", "18.7", "0.1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["18.7", "0.1", "19.9", "0.1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["0.1", "4", "6", "1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["18.7", "4", "12.7", "1"]
+        }, 
+        {
+            "class": "WallElement",
+            "name": "left border",
+            "position": ["0.1", "4", "0.1", "11.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.45", "8.5", "1.45", "4.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.35", "8.5", "17.35", "4.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [128, 128, 128],
+            "disabled": true,
+            "id": "LaunchBarrier",
+            "position": [17.540000000000006, 14.609999999999992, 18.09, 15.809999999999999]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "LaunchBarrierSensor",
+            "rect": [16.590000000000003, 15.090000000000003, 17.590000000000003, 16.560000000000002]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "LaunchBarrierRetract",
+            "rect": [17.939999999999998, 13.310000000000002, 18.939999999999998, 15.31]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["1.45", "4.8", "6.25", "2.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["17.35", "4.8", "12.45", "2.3"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-left",
+            "kick": "6.0",
+            "position": ["0.15", "5.0", "1.35", "5.0"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 255, 0],
+            "id": "BallSaver-right",
+            "kick": "6.0",
+            "position": ["17.45", "5.0", "18.65", "5.0"],
+            "retractWhenHit": true
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "3.5",
+            "position": ["3.2", "8.77", "5.7", "4.43"],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "9.2", "3.2", "8.77"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["5.95", "4", "5.7", "4.43"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "9.2", "2.95", "5.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["2.95", "5.8", "5.95", "4"]
+        }, 
+        {
+            "class": "WallElement",
+            "color": [0, 0, 255],
+            "kick": "3.5",
+            "position": ["15.6", "8.77", "13.1", "4.43"],
+            "score": 100
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "9.2", "15.6", "8.77"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["12.85", "4", "13.1", "4.43"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "9.2", "15.85", "5.8"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["15.85", "5.8", "12.85", "4"]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 224, 224],
+            "cycleOnFlipper": true,
+            "id": "FlipperRollovers",
+            "radius": "0.4",
+            "rollovers": [
+                {
+                    "position": ["0.775", "7.0"]
+                }, 
+                {
+                    "position": ["2.2", "7.0"]
+                }, 
+                {
+                    "position": ["16.6", "7.0"]
+                }, 
+                {
+                    "position": ["18.025", "7.0"]
+                }
+            ],
+            "score": 500
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "2.5",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["6.35", "2.2"],
+            "upspeed": "7"
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "length": "-2.5",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["12.35", "2.2"],
+            "upspeed": "7"
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [170, 170, 170],
+            "ignoreBall": true,
+            "radius": "0.5",
+            "rollovers": [
+                {
+                    "position": ["9.4", "13"],
+                    "radius": "4.5"
+                }
+            ]
+        }, 
+        {
+            "class": "BumperElement",
+            "kick": "1.0",
+            "position": ["9.34", "23"],
+            "radius": "0.34",
+            "score": 500
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "inactiveLayerColor": [0, 255, 0, 34],
+            "layer": 1,
+            "length": "1.7",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["0.74", "21.84"],
+            "upspeed": "7"
+        }, 
+        {
+            "class": "FlipperElement",
+            "downspeed": "3",
+            "inactiveLayerColor": [0, 255, 0, 34],
+            "layer": 1,
+            "length": "-1.7",
+            "maxangle": "20",
+            "minangle": "-20",
+            "position": ["5.3", "21.84"],
+            "upspeed": "7"
+        }, 
+        {
+            "center": ["10", "11.8"],
+            "class": "WallArcElement",
+            "maxangle": "35",
+            "minangle": "0",
+            "segments": 15,
+            "xradius": "9.9",
+            "yradius": "7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "0",
+            "minangle": "-35",
+            "segments": 20,
+            "xradius": "9.9",
+            "yradius": "12.5"
+        }, 
+        {
+            "ballLayer": 0,
+            "class": "SensorElement",
+            "rect": ["17.6", "18.96", "19.3", "19.96"]
+        }, 
+        {
+            "ballLayer": 1,
+            "class": "SensorElement",
+            "rect": [18.24, 21.480000000000004, 19.74, 22.740000000000006]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [170, 0, 0],
+            "inactiveLayerColor": [170, 0, 0, 68],
+            "layer": 1,
+            "maxangle": "0",
+            "minangle": "-35",
+            "segments": 35,
+            "xradius": "9.9",
+            "yradius": "12.5"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [170, 0, 0],
+            "inactiveLayerColor": [170, 0, 0, 34],
+            "layer": 1,
+            "maxangle": "120",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "8",
+            "yradius": "5"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [170, 0, 0],
+            "inactiveLayerColor": [170, 0, 0, 34],
+            "layer": 1,
+            "maxangle": "115",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "9.9",
+            "yradius": "7"
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [170, 0, 0],
+            "inactiveLayerColor": [170, 0, 0, 34],
+            "layer": 1,
+            "positions": [
+                [2.15, 15.92], 
+                [3.55, 19.4], 
+                [5.886666666666668, 21.473333333333336], 
+                [5.993333333333333, 27.313333333333333]
+            ]
+        }, 
+        {
+            "ballLayer": 0,
+            "class": "SensorElement",
+            "rect": ["1.6", "7", "2.8", "8.4"]
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [255, 0, 0],
+            "inactiveLayerColor": [255, 0, 0, 34],
+            "layer": 1,
+            "positions": [
+                [1.37, 17.58], 
+                [2.21, 19.6], 
+                [0.1, 20.76], 
+                [0.1, 29.3], 
+                [5.82, 29.36]
+            ]
+        }, 
+        {
+            "center": ["8.8", "11.8"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "140",
+            "segments": 12,
+            "xradius": "8.7",
+            "yradius": "5.6"
+        }, 
+        {
+            "class": "BumperElement",
+            "kick": "1.0",
+            "position": ["10.9866", "23.5133"],
+            "radius": "0.34",
+            "score": 500
+        }, 
+        {
+            "class": "BumperElement",
+            "kick": "1.0",
+            "position": ["9.7934", "24.6467"],
+            "radius": "0.34",
+            "score": 500
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["7.9", "26.2", "7.9", "27.2"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["9.3", "26.2", "9.3", "27.2"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["10.7", "26.2", "10.7", "27.2"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["12.1", "26.2", "12.1", "27.2"]
+        }, 
+        {
+            "ballLayer": 0,
+            "ballLayerFrom": 1,
+            "class": "SensorElement",
+            "rect": ["1.6", "16.9", "2.6", "18.1"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["7.9", "27.2", 6.886666666666667, 27.959966666666666]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "113",
+            "segments": 20,
+            "xradius": "8",
+            "yradius": "5.4"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "215",
+            "minangle": "180",
+            "segments": 12,
+            "xradius": "8",
+            "yradius": "9"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "217.5",
+            "minangle": "180",
+            "segments": 20,
+            "xradius": "9.9",
+            "yradius": "12.5"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "215",
+            "minangle": "180",
+            "segments": 12,
+            "xradius": "6",
+            "yradius": "7"
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["4", "23", "2", "23"]
+        }, 
+        {
+            "ballLayer": 0,
+            "ballLayerFrom": 2,
+            "class": "SensorElement",
+            "rect": [2.92, 19.04, 4.32, 20.44]
+        }, 
+        {
+            "ballLayer": 2,
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "rect": ["2.2", "21.4", "3.6", "22.8"]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "maxangle": "215",
+            "minangle": "180",
+            "segments": 12,
+            "xradius": "8",
+            "yradius": "9"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "maxangle": "215",
+            "minangle": "180",
+            "segments": 12,
+            "xradius": "6",
+            "yradius": "7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "130",
+            "xradius": "8",
+            "yradius": "5.4"
+        }, 
+        {
+            "center": ["5.5", "23"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "maxangle": "180",
+            "minangle": "0",
+            "segments": 30,
+            "xradius": "3.5",
+            "yradius": "6"
+        }, 
+        {
+            "center": ["5.5", "23"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "maxangle": "180",
+            "minangle": "0",
+            "segments": 20,
+            "xradius": "1.5",
+            "yradius": "4"
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "positions": [
+                ["2.95", "6.08"], 
+                ["2.95", "9.2"], 
+                ["9", "23"]
+            ]
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "positions": [
+                [1.45, 6.04], 
+                [1.47, 9.24], 
+                [6.999999999999999, 23.000000000000004]
+            ]
+        }, 
+        {
+            "class": "RolloverGroupElement",
+            "color": [0, 238, 238],
+            "radius": "0.35",
+            "rollovers": [
+                {
+                    "position": ["8.6", "26.7"]
+                }, 
+                {
+                    "position": ["10", "26.7"]
+                }, 
+                {
+                    "position": ["11.4", "26.7"]
+                }
+            ]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["12.1267", "27.2", "13.94", "29.44"]
+        }, 
+        {
+            "class": "SensorElement",
+            "rect": [11.846666666666668, 27.933333333333334, 12.646666666666668, 29.633333333333333]
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "0",
+            "minangle": "-30",
+            "xradius": "8",
+            "yradius": "9"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [170, 0, 0],
+            "inactiveLayerColor": [170, 0, 0, 34],
+            "layer": 1,
+            "maxangle": "0",
+            "minangle": "-30",
+            "xradius": "8",
+            "yradius": "9"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "0",
+            "minangle": "-35",
+            "segments": 12,
+            "xradius": "6",
+            "yradius": "7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "maxangle": "0",
+            "minangle": "-35",
+            "segments": 12,
+            "xradius": "6",
+            "yradius": "7"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "maxangle": "0",
+            "minangle": "-30",
+            "xradius": "8",
+            "yradius": "9"
+        }, 
+        {
+            "ballLayer": 0,
+            "class": "SensorElement",
+            "rect": ["15.5", "19", "17", "20"]
+        }, 
+        {
+            "ballLayer": 2,
+            "class": "SensorElement",
+            "rect": ["16.1", "21.5", "17.6", "22.8"]
+        }, 
+        {
+            "center": ["14.5", "23"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "maxangle": "180",
+            "minangle": "0",
+            "segments": 20,
+            "xradius": "1.5",
+            "yradius": "4"
+        }, 
+        {
+            "center": ["14.5", "23"],
+            "class": "WallArcElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "maxangle": "180",
+            "minangle": "0",
+            "segments": 20,
+            "xradius": "3.5",
+            "yradius": "6"
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "positions": [
+                [15.86, 6.133333333333335], 
+                [15.886666666666667, 9.146666666666668], 
+                [11.006666666666666, 22.986666666666665]
+            ]
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [0, 255, 255],
+            "inactiveLayerColor": [0, 255, 255, 34],
+            "layer": 2,
+            "positions": [
+                [17.339999999999996, 6.066666666666668], 
+                [17.35333333333333, 9.240000000000002], 
+                [12.993333333333332, 22.96]
+            ]
+        }, 
+        {
+            "ballLayer": 0,
+            "class": "SensorElement",
+            "rect": ["16", "7", "17.2", "8.5"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["13.28", "24.44", "11.3", "20.9"]
+        }, 
+        {
+            "center": ["7.9", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "90",
+            "segments": 12,
+            "xradius": "3.9",
+            "yradius": "3.2"
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["6.63", "19.78", "8.7", "20.9"]
+        }, 
+        {
+            "center": ["12.1", "23"],
+            "class": "WallArcElement",
+            "maxangle": "90",
+            "minangle": "0",
+            "segments": 15,
+            "xradius": "3.9",
+            "yradius": "3.2"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "220",
+            "minangle": "180",
+            "segments": 15,
+            "xradius": "4.4",
+            "yradius": "5"
+        }, 
+        {
+            "center": ["10", "23"],
+            "class": "WallArcElement",
+            "maxangle": "0",
+            "minangle": "-40",
+            "segments": 15,
+            "xradius": "4.4",
+            "yradius": "5"
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["13.37", "19.78", "11.3", "20.9"]
+        }, 
+        {
+            "class": "WallElement",
+            "position": ["8.7", "20.9", "6.72", "24.44"]
+        }, 
+        {
+            "center": ["7.1", "23"],
+            "class": "WallArcElement",
+            "maxangle": "180",
+            "minangle": "105",
+            "radius": "1.5",
+            "segments": 10
+        }, 
+        {
+            "center": ["12.9", "23"],
+            "class": "WallArcElement",
+            "maxangle": "75",
+            "minangle": "0",
+            "radius": "1.5",
+            "segments": 10
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.12",
+            "gapFromWall": "-0.15",
+            "numTargets": 3,
+            "positions": [],
+            "reset": "2",
+            "startDistanceAlongWall": "0.05",
+            "targetWidth": "0.65",
+            "wallEnd": ["8.7", "20.9"],
+            "wallStart": ["6.63", "19.78"]
+        }, 
+        {
+            "class": "DropTargetGroupElement",
+            "gapBetweenTargets": "0.12",
+            "gapFromWall": "0.15",
+            "numTargets": 3,
+            "positions": [],
+            "reset": "2",
+            "startDistanceAlongWall": "0.05",
+            "targetWidth": "0.65",
+            "wallEnd": ["11.3", "20.9"],
+            "wallStart": ["13.37", "19.78"]
+        }
+    ],
+    "gravity": "4",
+    "height": "30",
+    "launchDeadZone": ["18.8", "0", "20", "1.4"],
+    "launchPosition": ["19.3", "3.0"],
+    "launchVelocity": ["0", "15.4"],
+    "launchVelocityRandomDelta": ["0", "0.6"],
+    "name": "Ad Astra",
+    "numballs": 3,
+    "script": "",
+    "targetTimeRatio": "2.3",
+    "version": 1,
+    "width": "20"
+}

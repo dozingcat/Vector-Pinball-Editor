@@ -204,6 +204,7 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     @Override
     public void tick(Field field, long nanos) {
+        System.out.println("Tick!");
         if (bumperBonusActive) {
             bumperBonusNanosElapsed += nanos;
             if (bumperBonusNanosElapsed >= bumperBonusDurationNanos) {

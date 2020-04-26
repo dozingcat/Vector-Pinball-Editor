@@ -51,8 +51,9 @@ public class EditableWallPathElement extends EditableFieldElement {
                     getSegmentX(i), getSegmentY(i), color);
         }
         if (isSelected) {
-            for (int i=0; i<size; i++) {
-                renderer.fillCircle(getSegmentX(i), getSegmentY(i), selectionCircleRadius, color);
+            int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
+            for (int i = 0; i < size; i++) {
+                renderer.fillCircle(getSegmentX(i), getSegmentY(i), selectionCircleRadius, colorWithAlpha);
             }
         }
     }

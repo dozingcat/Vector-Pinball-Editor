@@ -23,6 +23,7 @@ public class GroovyFieldDelegateBuilder {
 
         ImportCustomizer imports = new ImportCustomizer();
         imports.addImport("Color", "com.dozingcatsoftware.vectorpinball.model.Color");
+        imports.addImport("Shape", "com.dozingcatsoftware.vectorpinball.model.Shape");
         imports.addImport("Vector2", "com.badlogic.gdx.math.Vector2");
 
         config.addCompilationCustomizers(secureAst, imports);
