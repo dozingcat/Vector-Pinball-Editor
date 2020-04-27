@@ -454,7 +454,7 @@
             "yradius": "5.4"
         }, 
         {
-            "center": [5.5, 23.013333333333332],
+            "center": ["5.5", "23"],
             "class": "WallArcElement",
             "color": [0, 255, 255],
             "inactiveLayerColor": [0, 255, 255, 34],
@@ -708,6 +708,7 @@
             "class": "DropTargetGroupElement",
             "gapBetweenTargets": "0.12",
             "gapFromWall": "-0.15",
+            "id": "DropTargetLeftSave",
             "numTargets": 3,
             "positions": [],
             "reset": "2",
@@ -721,6 +722,7 @@
             "class": "DropTargetGroupElement",
             "gapBetweenTargets": "0.12",
             "gapFromWall": "0.15",
+            "id": "DropTargetRightSave",
             "numTargets": 3,
             "positions": [],
             "reset": "2",

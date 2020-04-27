@@ -1,12 +1,12 @@
 package com.dozingcatsoftware.vectorpinball.tables;
 
+import com.dozingcatsoftware.vectorpinball.elements.DropTargetGroupElement;
+import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
 import com.dozingcatsoftware.vectorpinball.elements.WallElement;
 import com.dozingcatsoftware.vectorpinball.model.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Field7Delegate extends BaseFieldDelegate {
 
@@ -41,13 +41,47 @@ public class Field7Delegate extends BaseFieldDelegate {
     double rigel_ra = 78.6*TAU/360;
     double rigel_dec = -8.2*TAU/360;
 
+    int namedStarIndex = 0;
+
+    long tickCounter = 0;
+
     @Override public void tick(Field field, long nanos) {
+        tickCounter += nanos;
+        if (tickCounter > 10_000_000_000L) {
+            tickCounter -= 10_000_000_000L;
+            namedStarIndex = (namedStarIndex + 1) % (catalog.namedIndices.length);
+        }
         rightAscension += 0.01;
         if (rightAscension > TAU) {
             rightAscension -= TAU;
         }
-        projectVisibleStars(catalog, rightAscension, betel_dec, 0.7, projection);
+        int index = catalog.namedIndices[namedStarIndex];
+        double dec = catalog.declination[index];
+        double ra = catalog.rightAscension[index];
+        projectVisibleStars(catalog, ra, dec, 0.7, projection);
         field.setShapes(shapesFromProjection(projection, 9.4, 13, 4.5/.7, 0.05));
+    }
+
+    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {
+        String id = rolloverGroup.getElementId();
+        // HERE
+        {
+            // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
+            rolloverGroup.setAllRolloversActivated(false);
+            field.getGameState().incrementScoreMultiplier();
+            field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
+        }
+    }
+    @Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball) {
+        String id = targetGroup.getElementId();
+        if ("DropTargetLeftSave".equals(id)) {
+            ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+            field.showGameMessage("Left Save Enabled", 1500);
+        }
+        else if ("DropTargetRightSave".equals(id)) {
+            ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+            field.showGameMessage("Right Save Enabled", 1500);
+        }
     }
 
     static List<Shape> shapesFromProjection(
@@ -63,10 +97,15 @@ public class Field7Delegate extends BaseFieldDelegate {
     }
 
     static class StarCatalog {
+        double[] declination;
+        double[] rightAscension;
         double[] x;
         double[] y;
         double[] z;
         double[] magnitude;
+
+        String[] names;
+        int[] namedIndices;
 
         int size() {
             return this.x.length;
@@ -77,6 +116,8 @@ public class Field7Delegate extends BaseFieldDelegate {
         StarCatalog cat = new StarCatalog();
         assert STAR_DATA.length % 3 == 0;
         int numStars = STAR_DATA.length / 3;
+        cat.declination = new double[numStars];
+        cat.rightAscension = new double[numStars];
         cat.x = new double[numStars];
         cat.y = new double[numStars];
         cat.z = new double[numStars];
@@ -85,11 +126,20 @@ public class Field7Delegate extends BaseFieldDelegate {
             int offset = 3 * i;
             double rho = Math.toRadians(STAR_DATA[offset]);
             double theta = Math.toRadians(STAR_DATA[offset + 1]);
+            cat.declination[i] = rho;
+            cat.rightAscension[i] = theta;
             cat.x[i] = Math.cos(rho) * Math.cos(theta);
             cat.y[i] = -Math.cos(rho) * Math.sin(theta);
             cat.z[i] = Math.sin(rho);
             cat.magnitude[i] = STAR_DATA[offset + 2];
         }
+        cat.names = new String[] {
+                "Sirius", "Canopus", "Arcturus", "Alpha Centauri", "Vega", "Rigel", "Capella",
+                "Procyon", "Betelgeuse", "Acrux", "Antares", "Dubhe", "Castor", "Polaris",
+        };
+        cat.namedIndices = new int[] {
+                0, 1, 2, 3, 4, 5, 6, 7, 10, 12, 16, 17, 36, 46,
+        };
         return cat;
     }
 
