@@ -69,8 +69,9 @@ public class EditableFlipperElement extends EditableFieldElement {
         int color = currentColor(DEFAULT_COLOR);
         renderer.drawLine(cx, cy, endX(), endY(), color);
         if (isSelected) {
-            renderer.fillCircle(cx, cy, 0.35*renderer.getRelativeScale(), color);
-            renderer.fillCircle(endX(), endY(), 0.15*renderer.getRelativeScale(), color);
+            int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
+            renderer.fillCircle(cx, cy, 0.35*renderer.getRelativeScale(), colorWithAlpha);
+            renderer.fillCircle(endX(), endY(), 0.15*renderer.getRelativeScale(), colorWithAlpha);
         }
     }
 

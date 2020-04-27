@@ -1,5 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.editor.inspector;
 
+import static com.dozingcatsoftware.vectorpinball.util.Localization.localizedString;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -34,8 +36,12 @@ public class DropTargetGroupElementInspector extends ElementInspector {
         VBox box = new VBox(5);
         box.getChildren().add(createStringFieldWithLabel(
                 EditableDropTargetGroupElement.ID_PROPERTY, "ID"));
+        box.getChildren().add(createIntegerFieldWithLabel(
+                EditableFieldElement.LAYER_PROPERTY, "Layer"));
         box.getChildren().add(createColorSelectorWithLabel(
                 EditableDropTargetGroupElement.COLOR_PROPERTY, "Color"));
+        box.getChildren().add(createColorSelectorWithLabel(
+                EditableFieldElement.INACTIVE_LAYER_COLOR_PROPERTY, "Inactive layer"));
         box.getChildren().add(createIntegerFieldWithLabel(
                 EditableDropTargetGroupElement.SCORE_PROPERTY, "Score"));
 
