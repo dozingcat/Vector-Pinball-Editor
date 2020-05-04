@@ -1,6 +1,6 @@
 {
     "ballcolor": [192, 192, 224],
-    "ballradius": "0.49",
+    "ballradius": "0.5",
     "delegate": "Field7Delegate",
     "elements": [
         {
@@ -190,12 +190,13 @@
         {
             "class": "RolloverGroupElement",
             "color": [170, 170, 170],
+            "id": "StarViewBoundary",
             "ignoreBall": true,
             "radius": "0.5",
             "rollovers": [
                 {
                     "position": ["9.4", "13"],
-                    "radius": "4.5"
+                    "radius": "5"
                 }
             ]
         }, 
