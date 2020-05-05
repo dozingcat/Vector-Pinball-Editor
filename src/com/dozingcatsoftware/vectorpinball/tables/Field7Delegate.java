@@ -37,7 +37,7 @@ public class Field7Delegate extends BaseFieldDelegate {
     }
 
     class State {
-        Constellation activeConstellation = Stars.CONSTELLATIONS.get(0);
+        Constellation activeConstellation = Stars.CONSTELLATIONS.get(3);
         Constellation animateFromConstellation = null;
         long animationDurationNanos = billions(10);
         long animationElapsedNanos = 0;
@@ -47,7 +47,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         void tick(long nanos) {
             if (animateFromConstellation == null) {
                 tickCounter += nanos;
-                if (tickCounter > billions(30)) {
+                if (tickCounter > billions(3000)) {
                     tickCounter -= billions(30);
                     animateFromConstellation = activeConstellation;
                     animationElapsedNanos = 0;
@@ -82,12 +82,16 @@ public class Field7Delegate extends BaseFieldDelegate {
     }
 
     @Override public void ballInSensorRange(final Field field, SensorElement sensor, Ball ball) {
-        String sensorID = sensor.getElementId();
+        String id = sensor.getElementId();
         // Enable launch barrier.
-        if ("LaunchBarrierSensor".equals(sensorID)) {
+        if ("LaunchBarrierSensor".equals(id)) {
             setLaunchBarrierEnabled(field, true);
-        } else if ("LaunchBarrierRetract".equals(sensorID)) {
+        }
+        else if ("LaunchBarrierRetract".equals(id)) {
             setLaunchBarrierEnabled(field, false);
+        }
+        else if ("LeftFlipperDropSensor".equals(id) || "RightFlipperDropSensor".equals(id)) {
+            ball.getBody().setLinearVelocity(0, 0);
         }
     }
 
@@ -188,7 +192,7 @@ public class Field7Delegate extends BaseFieldDelegate {
     static int INACTIVE_STAR_ACTIVE_CONSTELLATION_COLOR = Color.fromRGB(0, 255, 0);
     static int ACTIVE_STAR_INACTIVE_CONSTELLATION_COLOR = Color.fromRGB(255, 0, 0);
     static int INACTIVE_STAR_INACTIVE_CONSTELLATION_COLOR = Color.fromRGB(128, 0, 0);
-    static int CONSTELLATION_LINE_COLOR = Color.fromRGB(255, 255, 255);
+    static int CONSTELLATION_LINE_COLOR = Color.fromRGBA(240, 240, 240, 192);
 
     int starColorForIndex(int starIndex) {
         boolean isActive = state.activatedStars.contains(starIndex);

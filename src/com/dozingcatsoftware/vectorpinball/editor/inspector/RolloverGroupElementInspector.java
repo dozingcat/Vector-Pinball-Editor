@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -16,6 +17,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableRolloverGroupElement;
+
+import static com.dozingcatsoftware.vectorpinball.util.Localization.localizedString;
 
 public class RolloverGroupElementInspector extends ElementInspector {
 
@@ -59,8 +62,12 @@ public class RolloverGroupElementInspector extends ElementInspector {
         VBox box = new VBox();
         box.getChildren().add(createStringFieldWithLabel(
                 EditableRolloverGroupElement.ID_PROPERTY, "ID"));
+        box.getChildren().add(createIntegerFieldWithLabel(
+                EditableFieldElement.LAYER_PROPERTY, "Layer"));
         box.getChildren().add(createColorSelectorWithLabel(
                 EditableRolloverGroupElement.COLOR_PROPERTY, "Default color"));
+        box.getChildren().add(createColorSelectorWithLabel(
+                EditableFieldElement.INACTIVE_LAYER_COLOR_PROPERTY, "Inactive layer"));
         box.getChildren().add(createDecimalStringFieldWithLabel(
                 EditableRolloverGroupElement.RADIUS_PROPERTY, "Default radius"));
         box.getChildren().add(createIntegerFieldWithLabel(

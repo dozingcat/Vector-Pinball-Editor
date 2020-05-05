@@ -20,13 +20,13 @@ public class WallElementInspector extends ElementInspector {
         VBox box = new VBox();
         box.getChildren().add(createStringFieldWithLabel(
                 EditableFieldElement.ID_PROPERTY, localizedString("ID")));
+        box.getChildren().add(createIntegerFieldWithLabel(
+                EditableFieldElement.LAYER_PROPERTY, localizedString("Layer")));
         box.getChildren().add(createColorSelectorWithLabel(
                 EditableFieldElement.COLOR_PROPERTY, localizedString("Color")));
         box.getChildren().add(createColorSelectorWithLabel(
                 EditableFieldElement.INACTIVE_LAYER_COLOR_PROPERTY,
                 localizedString("Inactive layer")));
-        box.getChildren().add(createIntegerFieldWithLabel(
-                EditableFieldElement.LAYER_PROPERTY, localizedString("Layer")));
         // For position, use 2x2 grid of text fields which produce a value of a 4-element list.
         box.getChildren().add(createMultiRowDecimalArrayFieldWithLabels(
                 EditableWallElement.POSITION_PROPERTY,
