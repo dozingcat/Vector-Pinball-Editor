@@ -254,9 +254,10 @@
         }, 
         {
             "ballLayer": 4,
+            "ballLayerFrom": 0,
             "class": "SensorElement",
             "id": "MiniTableOrBallLockSensor",
-            "rect": ["18.24", "21.48", "19.74", "22.74"]
+            "rect": [18.099999999999998, 20.900000000000002, 19.599999999999998, 22.16]
         }, 
         {
             "center": ["10", "23"],
@@ -507,6 +508,7 @@
             "class": "RolloverGroupElement",
             "color": [0, 238, 238],
             "cycleOnFlipper": true,
+            "id": "TopRollovers",
             "radius": "0.35",
             "rollovers": [
                 {
@@ -834,25 +836,14 @@
         {
             "ballLayerFrom": 2,
             "class": "SensorElement",
-            "id": "LeftLoopDetector_Trigger",
-            "rect": ["3.8", "26.3", "4.8", "28.8"]
-        }, 
-        {
-            "ballLayerFrom": 2,
-            "class": "SensorElement",
-            "id": "LeftLoopDetector_Enter",
+            "id": "LeftLoopDetector",
             "rect": ["6.0", "26.3", "7.0", "28.8"]
         }, 
         {
             "ballLayerFrom": 3,
             "class": "SensorElement",
-            "id": "RightLoopDetector_Enter",
+            "id": "RightLoopDetector",
             "rect": ["13", "26.3", "14", "28.8"]
-        }, 
-        {
-            "class": "SensorElement",
-            "id": "RightLoopDetector_Trigger",
-            "rect": ["14.8", "26.3", "15.8", "28.8"]
         }, 
         {
             "class": "WallPathElement",
