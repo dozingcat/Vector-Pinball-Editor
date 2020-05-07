@@ -72,7 +72,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         }
     }
 
-    static class State {
+    static class StarState {
         Set<Integer> activatedStars = new HashSet<Integer>();
         List<Constellation> lockedConstellations = new ArrayList<Constellation>();
         Constellation currentConstellation = CONSTELLATIONS.get(0);
@@ -192,17 +192,30 @@ public class Field7Delegate extends BaseFieldDelegate {
         }
     }
 
-    State state = new State();
+    StarState starState = new StarState();
+
+    enum MultiballStatus {INACTIVE, STARTING, ACTIVE};
+    MultiballStatus multiballStatus;
+    int numBallsLocked;
 
     Vector2 starViewCenter;
     double starViewRadius;
+
+    void initFieldElements(Field field) {
+        RolloverGroupElement boundary =
+                (RolloverGroupElement) field.getFieldElementById("StarViewBoundary");
+        starViewCenter = boundary.getRolloverCenterAtIndex(0);
+        starViewRadius = boundary.getRolloverRadiusAtIndex(0);
+    }
 
     @Override public boolean isFieldActive(Field field) {
         return true;
     }
 
     @Override public void gameStarted(Field field) {
-        state = new State();
+        starState = new StarState();
+        multiballStatus = MultiballStatus.INACTIVE;
+        numBallsLocked = 0;
     }
 
     @Override public void ballInSensorRange(final Field field, SensorElement sensor, Ball ball) {
@@ -218,7 +231,12 @@ public class Field7Delegate extends BaseFieldDelegate {
             ball.getBody().setLinearVelocity(0, 0);
         }
         else if ("MiniTableOrBallLockSensor".equals(id)) {
-
+            int toLayer = 1;
+            if (this.multiballStatus == MultiballStatus.INACTIVE &&
+                    starState.allStarsInCurrentConstellationActive()) {
+                toLayer = 4;
+            }
+            ball.moveToLayer(toLayer);
         }
         else if ("LeftLoopDetector".equals(id) && !id.equals(ball.getPreviousSensorId())) {
             handleLoop(field);
@@ -230,7 +248,7 @@ public class Field7Delegate extends BaseFieldDelegate {
 
     void handleLoop(Field field) {
         field.addScore(5000);
-        state.switchConstellationIfAllowed();
+        starState.switchConstellationIfAllowed();
     }
 
     static void setLaunchBarrierEnabled(Field field, boolean enabled) {
@@ -247,20 +265,17 @@ public class Field7Delegate extends BaseFieldDelegate {
             }
             double bx = (ball.getPosition().x - starViewCenter.x) / starViewRadius;
             double by = (ball.getPosition().y - starViewCenter.y) / starViewRadius;
-            state.activateStarsInActiveConstellationNearPoint(bx, by);
+            starState.activateStarsInActiveConstellationNearPoint(bx, by);
         }
     }
 
     @Override public void tick(Field field, long nanos) {
         if (starViewCenter == null) {
-            RolloverGroupElement boundary =
-                    (RolloverGroupElement) field.getFieldElementById("StarViewBoundary");
-            starViewCenter = boundary.getRolloverCenterAtIndex(0);
-            starViewRadius = boundary.getRolloverRadiusAtIndex(0);
+            initFieldElements(field);
         }
-        state.tick(nanos);
+        starState.tick(nanos);
         updateActivatedStars(field);
-        double distScale = starViewRadius / state.currentTarget.angularRadius;
+        double distScale = starViewRadius / starState.currentTarget.angularRadius;
         field.setShapes(shapesFromProjection());
     }
 
@@ -293,8 +308,8 @@ public class Field7Delegate extends BaseFieldDelegate {
     static int CONSTELLATION_LINE_COLOR = Color.fromRGBA(240, 240, 240, 192);
 
     int starColorForIndex(int starIndex) {
-        boolean isActive = state.activatedStars.contains(starIndex);
-        boolean isInActiveConstellation = state.currentConstellation.starIndices.contains(starIndex);
+        boolean isActive = starState.activatedStars.contains(starIndex);
+        boolean isInActiveConstellation = starState.currentConstellation.starIndices.contains(starIndex);
         if (isInActiveConstellation) {
             return isActive ?
                     ACTIVE_STAR_ACTIVE_CONSTELLATION_COLOR :
@@ -308,10 +323,10 @@ public class Field7Delegate extends BaseFieldDelegate {
     }
 
     List<Shape> shapesFromProjection() {
-        Star2DProjection proj = state.projection;
+        Star2DProjection proj = starState.projection;
         double centerX = this.starViewCenter.x;
         double centerY = this.starViewCenter.y;
-        double distScale = this.starViewRadius / state.currentTarget.angularRadius;
+        double distScale = this.starViewRadius / starState.currentTarget.angularRadius;
         double baseRadius = this.starViewRadius * 0.015;
         List<Shape> shapes = new ArrayList<Shape>();
         int consColor = Color.fromRGB(255, 255, 0);
@@ -329,12 +344,12 @@ public class Field7Delegate extends BaseFieldDelegate {
         // Draw brighter stars (with lower magnitudes) last.
         Collections.reverse(shapes);
         // Lines for active constellation.
-        for (int starIndex : state.currentConstellation.starIndices) {
-            if (state.activatedStars.contains((starIndex))) {
-                Set<Integer> endpoints = state.currentConstellation.segmentsByIndex.get(starIndex);
+        for (int starIndex : starState.currentConstellation.starIndices) {
+            if (starState.activatedStars.contains((starIndex))) {
+                Set<Integer> endpoints = starState.currentConstellation.segmentsByIndex.get(starIndex);
                 if (endpoints != null) {
                     for (int endIndex : endpoints) {
-                        if (state.activatedStars.contains(endIndex)) {
+                        if (starState.activatedStars.contains(endIndex)) {
                             Integer pi1 = proj.starIndexToProjIndex.get(starIndex);
                             Integer pi2 = proj.starIndexToProjIndex.get(endIndex);
                             if (pi1 == null || pi2 == null) {

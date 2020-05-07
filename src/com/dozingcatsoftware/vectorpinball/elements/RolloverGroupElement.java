@@ -177,6 +177,7 @@ public class RolloverGroupElement extends FieldElement {
     List<Rollover> allHitRollovers = new ArrayList<Rollover>();
 
     @Override public void tick(Field field) {
+        super.tick(field);
         if (this.ignoreBall) return;
 
         boolean allActivePrevious = this.allRolloversActive();

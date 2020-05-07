@@ -86,7 +86,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         return TEMPERATURE_COLORS[(int) Math.round((len-1) * ratio)];
     }
 
-    static enum MultiballStatus {PENDING, ACTIVE, INACTIVE};
+    enum MultiballStatus {PENDING, ACTIVE, INACTIVE};
 
     static Random RAND = new Random();
 
