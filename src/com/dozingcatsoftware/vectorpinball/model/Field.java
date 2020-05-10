@@ -166,8 +166,8 @@ public class Field implements ContactListener {
      * Returns the FieldElement with the given value for its "id" attribute, or null if there is
      * no such element.
      */
-    public FieldElement getFieldElementById(String elementID) {
-        return fieldElementsByID.get(elementID);
+    public <T extends FieldElement> T getFieldElementById(String elementID) {
+        return (T) fieldElementsByID.get(elementID);
     }
 
     /**
@@ -238,6 +238,17 @@ public class Field implements ContactListener {
         }
     }
 
+    public Ball createBall(float x, float y) {
+        Ball ball = Ball.create(worlds, 0, x, y, layout.getBallRadius(),
+                layout.getBallColor(), layout.getSecondaryBallColor());
+        this.balls.add(ball);
+        return ball;
+    }
+
+    public void playBallLaunchSound() {
+        audioPlayer.playBall();
+    }
+
     /**
      * Launches a new ball. The position and velocity of the ball are controlled by the parameters
      * in the field layout JSON.
@@ -245,13 +256,9 @@ public class Field implements ContactListener {
     public Ball launchBall() {
         List<Float> position = layout.getLaunchPosition();
         List<Float> velocity = layout.getLaunchVelocity();
-        float radius = layout.getBallRadius();
-
-        Ball ball = Ball.create(worlds, 0, position.get(0), position.get(1), radius,
-                layout.getBallColor(), layout.getSecondaryBallColor());
+        Ball ball = createBall(position.get(0), position.get(1));
         ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
-        this.balls.add(ball);
-        audioPlayer.playBall();
+        playBallLaunchSound();
         return ball;
     }
 

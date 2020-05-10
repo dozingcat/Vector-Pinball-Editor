@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.tables;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.dozingcatsoftware.vectorpinball.elements.DropTargetGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
@@ -8,10 +9,12 @@ import com.dozingcatsoftware.vectorpinball.elements.WallElement;
 import com.dozingcatsoftware.vectorpinball.model.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import static com.dozingcatsoftware.vectorpinball.tables.Stars.Constellation;
@@ -20,6 +23,7 @@ import static com.dozingcatsoftware.vectorpinball.tables.Stars.StarCatalog;
 public class Field7Delegate extends BaseFieldDelegate {
 
     static final double TAU = 2 * Math.PI;
+    static Random RAND = new Random();
 
     static final List<Constellation> CONSTELLATIONS = Stars.CONSTELLATIONS;
     static final StarCatalog CATALOG = Stars.CATALOG;
@@ -194,18 +198,27 @@ public class Field7Delegate extends BaseFieldDelegate {
 
     StarState starState = new StarState();
 
+    static final int BALL_LOCK_LAYER = 4;
+    static final int MINITABLE_LAYER = 1;
+
     enum MultiballStatus {INACTIVE, STARTING, ACTIVE};
     MultiballStatus multiballStatus;
     int numBallsLocked;
 
     Vector2 starViewCenter;
     double starViewRadius;
+    List<RolloverGroupElement> lockRollovers;
 
     void initFieldElements(Field field) {
         RolloverGroupElement boundary =
                 (RolloverGroupElement) field.getFieldElementById("StarViewBoundary");
         starViewCenter = boundary.getRolloverCenterAtIndex(0);
         starViewRadius = boundary.getRolloverRadiusAtIndex(0);
+        lockRollovers = Arrays.asList(
+                field.getFieldElementById("BallLockRollover1"),
+                field.getFieldElementById("BallLockRollover2"),
+                field.getFieldElementById("BallLockRollover3")
+        );
     }
 
     @Override public boolean isFieldActive(Field field) {
@@ -215,7 +228,7 @@ public class Field7Delegate extends BaseFieldDelegate {
     @Override public void gameStarted(Field field) {
         starState = new StarState();
         multiballStatus = MultiballStatus.INACTIVE;
-        numBallsLocked = 0;
+        numBallsLocked = 2;
     }
 
     @Override public void ballInSensorRange(final Field field, SensorElement sensor, Ball ball) {
@@ -231,10 +244,10 @@ public class Field7Delegate extends BaseFieldDelegate {
             ball.getBody().setLinearVelocity(0, 0);
         }
         else if ("MiniTableOrBallLockSensor".equals(id)) {
-            int toLayer = 1;
+            int toLayer = MINITABLE_LAYER;
             if (this.multiballStatus == MultiballStatus.INACTIVE &&
                     starState.allStarsInCurrentConstellationActive()) {
-                toLayer = 4;
+                toLayer = BALL_LOCK_LAYER;
             }
             ball.moveToLayer(toLayer);
         }
@@ -256,7 +269,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         barrier.setRetracted(!enabled);
     }
 
-    void updateActivatedStars(Field field) {
+    private void updateActivatedStars(Field field) {
         List<Ball> balls = field.getBalls();
         for (int i = 0; i < balls.size(); i++) {
             Ball ball = balls.get(i);
@@ -269,14 +282,75 @@ public class Field7Delegate extends BaseFieldDelegate {
         }
     }
 
+    private void updateBallLockRollovers(Field field) {
+        for (int i = 0; i < this.lockRollovers.size(); i++) {
+            boolean activated = (this.numBallsLocked > i);
+            boolean enabled =
+                    (this.multiballStatus == MultiballStatus.INACTIVE && this.numBallsLocked == i);
+            RolloverGroupElement rollover = this.lockRollovers.get(i);
+            rollover.setAllRolloversActivated(activated);
+            rollover.setIgnoreBall(!enabled);
+        }
+    }
+
+    private void launchBallForMulitball(Field field, Ball existingBall) {
+        Ball ball = existingBall;
+        if (ball == null) {
+            Vector2 center =
+                    this.lockRollovers.get(this.numBallsLocked - 1).getRolloverCenterAtIndex(0);
+            ball = field.createBall(center.x, center.y);
+        }
+        ball.moveToLayer(BALL_LOCK_LAYER);
+        ball.getBody().setLinearVelocity(0, -(5.0f + RAND.nextFloat()));
+        field.playBallLaunchSound();
+        numBallsLocked--;
+    }
+
+    private void startMultiball(Field field) {
+        final Ball ball = field.getBalls().get(0);
+        final Body bb = ball.getBody();
+        // Position directly over final lock rollover and cancel gravity.
+        final RolloverGroupElement lastLock = this.lockRollovers.get(this.lockRollovers.size() - 1);
+        Vector2 center = lastLock.getRolloverCenterAtIndex(0);
+        bb.setTransform(center.x, center.y, bb.getAngle());
+        bb.setLinearVelocity(0, 0);
+        bb.setAngularVelocity(0);
+        final float origGravity = bb.getGravityScale();
+        bb.setGravityScale(0);
+
+        field.showGameMessage("Multiball!", 3000);
+        this.multiballStatus = MultiballStatus.STARTING;
+
+        field.scheduleAction(1000, new Runnable() {
+            @Override public void run() {
+                bb.setGravityScale(origGravity);
+                launchBallForMulitball(field, ball);
+            }
+        });
+        field.scheduleAction(3500, new Runnable() {
+            @Override public void run() {
+                launchBallForMulitball(field, null);
+            }
+        });
+        field.scheduleAction(6000, new Runnable() {
+            @Override public void run() {
+                launchBallForMulitball(field, null);
+                multiballStatus = MultiballStatus.ACTIVE;
+            }
+        });
+    }
+
     @Override public void tick(Field field, long nanos) {
         if (starViewCenter == null) {
             initFieldElements(field);
         }
         starState.tick(nanos);
         updateActivatedStars(field);
-        double distScale = starViewRadius / starState.currentTarget.angularRadius;
+        updateBallLockRollovers(field);
         field.setShapes(shapesFromProjection());
+        if (multiballStatus == MultiballStatus.ACTIVE && field.getBalls().size() <= 1) {
+            multiballStatus = MultiballStatus.INACTIVE;
+        }
     }
 
     @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {
@@ -286,6 +360,16 @@ public class Field7Delegate extends BaseFieldDelegate {
             rolloverGroup.setAllRolloversActivated(false);
             field.getGameState().incrementScoreMultiplier();
             field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
+        }
+        else if (lockRollovers.contains(rolloverGroup)) {
+            this.numBallsLocked++;
+            if (this.numBallsLocked == lockRollovers.size()) {
+                startMultiball(field);
+            }
+            else {
+                field.removeBallWithoutBallLoss(ball);
+                field.showGameMessage("Ball " + this.numBallsLocked + " locked", 3000);
+            }
         }
     }
 

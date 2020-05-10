@@ -891,7 +891,7 @@
         {
             "class": "RolloverGroupElement",
             "color": [204, 204, 238],
-            "id": "LockedBallRollover1",
+            "id": "BallLockRollover1",
             "inactiveLayerColor": [204, 204, 238, 34],
             "layer": 4,
             "radius": "0.49",
@@ -904,7 +904,7 @@
         {
             "class": "RolloverGroupElement",
             "color": [204, 204, 238],
-            "id": "LockedBallRollover2",
+            "id": "BallLockRollover2",
             "ignoreBall": true,
             "inactiveLayerColor": [204, 204, 238, 34],
             "layer": 4,
@@ -918,7 +918,7 @@
         {
             "class": "RolloverGroupElement",
             "color": [204, 204, 238],
-            "id": "LockedBallRollover3",
+            "id": "BallLockRollover3",
             "ignoreBall": true,
             "inactiveLayerColor": [204, 204, 238, 34],
             "layer": 4,
