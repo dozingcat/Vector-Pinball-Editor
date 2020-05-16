@@ -266,7 +266,7 @@ public class Field implements ContactListener {
     public void removeBall(Ball ball) {
         ball.destroySelf();
         this.balls.remove(ball);
-        if (this.balls.size()==0) {
+        if (this.balls.isEmpty()) {
             this.doBallLost();
         }
     }
@@ -287,14 +287,14 @@ public class Field implements ContactListener {
     public void doBallLost() {
         boolean hasExtraBall = (this.gameState.getExtraBalls() > 0);
         this.gameState.doNextBall();
-        // display message for next ball or game over
+        // Display message for next ball or game over.
         String msg = null;
         if (hasExtraBall) msg = "Shoot Again";
         else if (this.gameState.isGameInProgress()) msg = "Ball " + this.gameState.getBallNumber();
 
         if (msg!=null) {
-            // game is still going, show message after delay
-            final String msg2 = msg; // must be final for closure, yay Java
+            // Game is still going, show message after delay.
+            final String msg2 = msg;
             this.scheduleAction(1500, new Runnable() {
                 @Override
                 public void run() {

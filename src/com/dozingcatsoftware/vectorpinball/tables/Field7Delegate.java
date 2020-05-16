@@ -3,6 +3,7 @@ package com.dozingcatsoftware.vectorpinball.tables;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.dozingcatsoftware.vectorpinball.elements.DropTargetGroupElement;
+import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
 import com.dozingcatsoftware.vectorpinball.elements.WallElement;
@@ -36,10 +37,9 @@ public class Field7Delegate extends BaseFieldDelegate {
         return start + fraction * (end - start);
     }
 
-    enum Mode {
+    enum StarMode {
         WANDERING,
-        CONSTELLATION_IN_PROGRESS,
-        CONSTELLATION_FINISHED,
+        CONSTELLATION,
     }
 
     static class ProjectionTarget {
@@ -77,44 +77,102 @@ public class Field7Delegate extends BaseFieldDelegate {
     }
 
     static class StarState {
+        final static double CONSTELLATION_RADIUS_MULTIPLIER = 1.2;
+
         Set<Integer> activatedStars = new HashSet<Integer>();
         List<Constellation> lockedConstellations = new ArrayList<Constellation>();
-        Constellation currentConstellation = CONSTELLATIONS.get(0);
+        Constellation currentConstellation = null;
         ProjectionTarget currentTarget = new ProjectionTarget();
         Star2DProjection projection = new Star2DProjection();
+
+        StarMode mode = StarMode.WANDERING;
+        long wanderNanos = 0;
+        long wanderPeriodNanos = billions(40);
 
         ProjectionTarget animateFromTarget = new ProjectionTarget();
         ProjectionTarget animateToTarget = new ProjectionTarget();
         long animationDurationNanos = billions(10);
         long animationElapsedNanos = -1;
 
+        private void updateWanderingProjection(long nanos) {
+            wanderNanos = (wanderNanos + nanos) % wanderPeriodNanos;
+            double ra = (TAU * wanderNanos) / wanderPeriodNanos;
+            currentTarget.rightAscension = ra;
+            currentTarget.declination = 0;
+            currentTarget.angularRadius = 0.4;
+        }
+
+        private void updateAnimationProjection(long nanos) {
+            animationElapsedNanos += nanos;
+            ProjectionTarget src = this.animateFromTarget;
+            ProjectionTarget dst = this.animateToTarget;
+            double frac = Math.min(1.0, 1.0 * animationElapsedNanos / animationDurationNanos);
+            currentTarget.rightAscension = interp(src.rightAscension, dst.rightAscension, frac);
+            currentTarget.declination = interp(src.declination, dst.declination, frac);
+            currentTarget.angularRadius = interp(src.angularRadius, dst.angularRadius, frac);
+            if (animationElapsedNanos >= animationDurationNanos) {
+                animationElapsedNanos = -1;
+            }
+        }
+
+        private void updateConstellationProjection() {
+            Constellation dst = this.currentConstellation;
+            currentTarget.rightAscension = dst.centerRaRadians;
+            currentTarget.declination = dst.centerDecRadians;
+            currentTarget.angularRadius = CONSTELLATION_RADIUS_MULTIPLIER * dst.angularRadius;
+        }
+
         void tick(long nanos) {
             if (animationElapsedNanos >= 0) {
-                animationElapsedNanos += nanos;
-                if (animationElapsedNanos >= animationDurationNanos) {
-                    animationElapsedNanos = -1;
-                }
+                updateAnimationProjection(nanos);
             }
-            if (animationElapsedNanos < 0) {
-                Constellation dst = this.currentConstellation;
-                currentTarget.rightAscension = dst.centerRaRadians;
-                currentTarget.declination = dst.centerDecRadians;
-                currentTarget.angularRadius = 1.2 * dst.angularRadius;
+            else if (mode == StarMode.WANDERING) {
+                updateWanderingProjection(nanos);
             }
-            else {
-                ProjectionTarget src = this.animateFromTarget;
-                ProjectionTarget dst = this.animateToTarget;
-                double frac = Math.min(1.0, 1.0 * animationElapsedNanos / animationDurationNanos);
-                currentTarget.rightAscension = interp(src.rightAscension, dst.rightAscension, frac);
-                currentTarget.declination = interp(src.declination, dst.declination, frac);
-                currentTarget.angularRadius =
-                        1.2 * interp(src.angularRadius, dst.angularRadius, frac);
+            else if (currentConstellation != null) {
+                updateConstellationProjection();
             }
             projectVisibleStars(CATALOG, this.currentTarget, this.projection);
         }
 
+        boolean allStarsInConstellationActive(Constellation c) {
+            return this.activatedStars.containsAll(c.starIndices);
+        }
+
+        boolean allStarsInCurrentConstellationActive() {
+            return currentConstellation != null &&
+                    allStarsInConstellationActive(currentConstellation);
+        }
+
+        void enterWanderingMode() {
+            if (this.mode != StarMode.WANDERING) {
+                this.animateToStartPosition();
+                this.mode = StarMode.WANDERING;
+                this.wanderNanos = 0;
+            }
+        }
+
+        void resetAndWander() {
+            this.activatedStars.clear();
+            this.lockedConstellations.clear();
+            this.enterWanderingMode();
+        }
+
+        void lockCurrentConstellation() {
+            this.lockedConstellations.add(this.currentConstellation);
+        }
+
+        boolean currentConstellationLocked() {
+            return currentConstellation != null &&
+                    this.lockedConstellations.contains(currentConstellation);
+        }
+
+        boolean allConstellationsLocked() {
+            return this.lockedConstellations.containsAll(CONSTELLATIONS);
+        }
+
         void activateStarsInActiveConstellationNearPoint(double x, double y) {
-            if (x * x + y * y < 1) {
+            if (this.currentConstellation != null && (x * x + y * y < 1)) {
                 for (int starIndex : this.currentConstellation.starIndices) {
                     Integer pi = this.projection.starIndexToProjIndex.get(starIndex);
                     if (pi != null) {
@@ -129,10 +187,6 @@ public class Field7Delegate extends BaseFieldDelegate {
             }
         }
 
-        boolean allStarsInCurrentConstellationActive() {
-            return this.activatedStars.containsAll(this.currentConstellation.starIndices);
-        }
-
         void animateToConstellation(Constellation c) {
             this.currentConstellation = c;
             this.animateFromTarget.rightAscension = this.currentTarget.rightAscension;
@@ -140,23 +194,42 @@ public class Field7Delegate extends BaseFieldDelegate {
             this.animateFromTarget.angularRadius = this.currentTarget.angularRadius;
             this.animateToTarget.rightAscension = c.centerRaRadians;
             this.animateToTarget.declination = c.centerDecRadians;
-            this.animateToTarget.angularRadius = c.angularRadius;
+            this.animateToTarget.angularRadius = CONSTELLATION_RADIUS_MULTIPLIER * c.angularRadius;
+            // Take shorter rotation path if possible.
+            if (this.animateFromTarget.rightAscension > c.centerRaRadians + TAU / 2) {
+                this.animateFromTarget.rightAscension -= TAU;
+            }
+            else if (this.animateFromTarget.rightAscension < c.centerRaRadians - TAU / 2) {
+                this.animateFromTarget.rightAscension += TAU;
+            }
             this.animationElapsedNanos = 0;
         }
 
-        void switchConstellationIfAllowed() {
-            if (CONSTELLATIONS.size() == this.lockedConstellations.size()) {
-                return;
-            }
-            int ci = (this.currentConstellation != null) ?
-                    CONSTELLATIONS.indexOf(this.currentConstellation) : -1;
-            while (true) {
-                ci = (ci + 1) % CONSTELLATIONS.size();
-                if (!this.lockedConstellations.contains(CONSTELLATIONS.get(ci))) {
-                    animateToConstellation(CONSTELLATIONS.get(ci));
-                    break;
+        void animateToStartPosition() {
+            this.currentConstellation = null;
+            this.animateFromTarget.rightAscension = this.currentTarget.rightAscension;
+            this.animateFromTarget.declination = this.currentTarget.declination;
+            this.animateFromTarget.angularRadius = this.currentTarget.angularRadius;
+            this.animateToTarget.rightAscension = 0;
+            this.animateToTarget.declination = 0;
+            this.animateToTarget.angularRadius = 0.4;
+            this.animationElapsedNanos = 0;
+        }
+
+        boolean switchToRandomUnlockedConstellation() {
+            List<Constellation> candidates = new ArrayList<Constellation>();
+            for (Constellation c : CONSTELLATIONS) {
+                if (c != currentConstellation && !lockedConstellations.contains(c)) {
+                    candidates.add(c);
                 }
             }
+            if (candidates.isEmpty()) {
+                return false;
+            }
+            Constellation dst = candidates.get(RAND.nextInt(candidates.size()));
+            animateToConstellation(dst);
+            mode = StarMode.CONSTELLATION;
+            return true;
         }
 
         static void projectVisibleStars(StarCatalog catalog, ProjectionTarget target, Star2DProjection projection) {
@@ -201,6 +274,11 @@ public class Field7Delegate extends BaseFieldDelegate {
     static final int BALL_LOCK_LAYER = 4;
     static final int MINITABLE_LAYER = 1;
 
+    static final long STAR_SCORE = 500;
+    static final long JACKPOT_SCORE = 100000;
+    static final long BASE_RAMP_SCORE = 5000;
+    static final long RAMP_SCORE_INCREMENT = 1000;
+
     enum MultiballStatus {INACTIVE, STARTING, ACTIVE};
     MultiballStatus multiballStatus;
     int numBallsLocked;
@@ -208,6 +286,16 @@ public class Field7Delegate extends BaseFieldDelegate {
     Vector2 starViewCenter;
     double starViewRadius;
     List<RolloverGroupElement> lockRollovers;
+    FieldElement leftLoopGuide;
+    FieldElement rightLoopGuide;
+    FieldElement lockAndJackpotGuide;
+    int loopGuideColor = Color.fromRGB(0, 0xAA, 0x66);
+    int lockGuideColor = Color.fromRGB(0xCC, 0xCC, 0);
+    int jackpotGuideColor = Color.fromRGB(0xAA, 0, 0);
+    long guideTickCounter = 0;
+    long guideTickMax = billions(5);
+
+    long rampScore;
 
     void initFieldElements(Field field) {
         RolloverGroupElement boundary =
@@ -219,6 +307,9 @@ public class Field7Delegate extends BaseFieldDelegate {
                 field.getFieldElementById("BallLockRollover2"),
                 field.getFieldElementById("BallLockRollover3")
         );
+        leftLoopGuide = field.getFieldElementById("LeftLoopGuide");
+        rightLoopGuide = field.getFieldElementById("RightLoopGuide");
+        lockAndJackpotGuide = field.getFieldElementById("LockAndJackpotGuide");
     }
 
     @Override public boolean isFieldActive(Field field) {
@@ -228,7 +319,8 @@ public class Field7Delegate extends BaseFieldDelegate {
     @Override public void gameStarted(Field field) {
         starState = new StarState();
         multiballStatus = MultiballStatus.INACTIVE;
-        numBallsLocked = 2;
+        numBallsLocked = 0;
+        rampScore = BASE_RAMP_SCORE;
     }
 
     @Override public void ballInSensorRange(final Field field, SensorElement sensor, Ball ball) {
@@ -257,11 +349,20 @@ public class Field7Delegate extends BaseFieldDelegate {
         else if ("RightLoopDetector".equals(id) && !id.equals(ball.getPreviousSensorId())) {
             handleLoop(field);
         }
+        else if ("MiniFieldDetector".equals(id)) {
+            if (starState.allConstellationsLocked()) {
+                doJackpot(field);
+            }
+        }
     }
 
     void handleLoop(Field field) {
-        field.addScore(5000);
-        starState.switchConstellationIfAllowed();
+        field.addScore(rampScore);
+        if (!starState.allStarsInCurrentConstellationActive()) {
+            if (starState.switchToRandomUnlockedConstellation()) {
+                field.showGameMessage(starState.currentConstellation.name, 3000);
+            }
+        }
     }
 
     static void setLaunchBarrierEnabled(Field field, boolean enabled) {
@@ -271,6 +372,7 @@ public class Field7Delegate extends BaseFieldDelegate {
 
     private void updateActivatedStars(Field field) {
         List<Ball> balls = field.getBalls();
+        int numPrevStars = starState.activatedStars.size();
         for (int i = 0; i < balls.size(); i++) {
             Ball ball = balls.get(i);
             if (ball.getLayer() != 0) {
@@ -279,6 +381,24 @@ public class Field7Delegate extends BaseFieldDelegate {
             double bx = (ball.getPosition().x - starViewCenter.x) / starViewRadius;
             double by = (ball.getPosition().y - starViewCenter.y) / starViewRadius;
             starState.activateStarsInActiveConstellationNearPoint(bx, by);
+        }
+        int numNewStars = starState.activatedStars.size() - numPrevStars;
+        if (numNewStars > 0) {
+            field.addScore(numNewStars * STAR_SCORE);
+            if (starState.allStarsInCurrentConstellationActive()) {
+                if (multiballStatus == MultiballStatus.INACTIVE) {
+                    String msg = numBallsLocked == 2 ? "Multiball ready" : "Ball lock ready";
+                    field.showGameMessage(msg, 2000);
+                }
+                else {
+                    starState.lockCurrentConstellation();
+                    String msg = starState.allConstellationsLocked() ?
+                            "Shoot ramp for jackpot" :
+                            starState.currentConstellation.name + " complete";
+                    field.showGameMessage(msg, 2000);
+                    starState.enterWanderingMode();
+                }
+            }
         }
     }
 
@@ -291,6 +411,38 @@ public class Field7Delegate extends BaseFieldDelegate {
             rollover.setAllRolloversActivated(activated);
             rollover.setIgnoreBall(!enabled);
         }
+    }
+
+    private int guideColorAlpha() {
+        double angle = TAU * guideTickCounter / guideTickMax;
+        double frac = (1 + Math.sin(angle)) / 2;
+        return (int) (75 + 180 * frac);
+    }
+
+    private void updateGuides(Field field, long nanos) {
+        guideTickCounter = (guideTickCounter + nanos) % guideTickMax;
+        int loopAlpha = 0;
+        int lockAlpha = 0;
+        int lockBaseColor = lockGuideColor;
+        if (field.getGameState().isGameInProgress()) {
+            if (starState.mode == StarMode.WANDERING) {
+                loopAlpha = guideColorAlpha();
+            }
+            else if (multiballStatus == MultiballStatus.ACTIVE &&
+                    starState.allConstellationsLocked()) {
+                lockBaseColor = jackpotGuideColor;
+                lockAlpha = guideColorAlpha();
+            }
+            else if (multiballStatus == MultiballStatus.INACTIVE &&
+                    starState.allStarsInCurrentConstellationActive()) {
+                lockAlpha = guideColorAlpha();
+            }
+        }
+        int loopColor = Color.withAlpha(loopGuideColor, loopAlpha);
+        leftLoopGuide.setNewColor(loopColor);
+        rightLoopGuide.setNewColor(loopColor);
+        int lockColor = Color.withAlpha(lockBaseColor, lockAlpha);
+        lockAndJackpotGuide.setNewColor(lockColor);
     }
 
     private void launchBallForMulitball(Field field, Ball existingBall) {
@@ -309,7 +461,7 @@ public class Field7Delegate extends BaseFieldDelegate {
     private void startMultiball(Field field) {
         final Ball ball = field.getBalls().get(0);
         final Body bb = ball.getBody();
-        // Position directly over final lock rollover and cancel gravity.
+        // Position directly over the final lock rollover and cancel gravity.
         final RolloverGroupElement lastLock = this.lockRollovers.get(this.lockRollovers.size() - 1);
         Vector2 center = lastLock.getRolloverCenterAtIndex(0);
         bb.setTransform(center.x, center.y, bb.getAngle());
@@ -321,6 +473,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         field.showGameMessage("Multiball!", 3000);
         this.multiballStatus = MultiballStatus.STARTING;
 
+        // Release the current ball, then create additional balls over the corresponding rollovers.
         field.scheduleAction(1000, new Runnable() {
             @Override public void run() {
                 bb.setGravityScale(origGravity);
@@ -340,6 +493,12 @@ public class Field7Delegate extends BaseFieldDelegate {
         });
     }
 
+    void doJackpot(Field field) {
+        field.showGameMessage("Jackpot!", 3000);
+        field.addScore(JACKPOT_SCORE);
+        starState.resetAndWander();
+    }
+
     @Override public void tick(Field field, long nanos) {
         if (starViewCenter == null) {
             initFieldElements(field);
@@ -347,9 +506,11 @@ public class Field7Delegate extends BaseFieldDelegate {
         starState.tick(nanos);
         updateActivatedStars(field);
         updateBallLockRollovers(field);
+        updateGuides(field, nanos);
         field.setShapes(shapesFromProjection());
         if (multiballStatus == MultiballStatus.ACTIVE && field.getBalls().size() <= 1) {
             multiballStatus = MultiballStatus.INACTIVE;
+            starState.resetAndWander();
         }
     }
 
@@ -369,7 +530,9 @@ public class Field7Delegate extends BaseFieldDelegate {
             else {
                 field.removeBallWithoutBallLoss(ball);
                 field.showGameMessage("Ball " + this.numBallsLocked + " locked", 3000);
+                starState.lockCurrentConstellation();
             }
+            starState.enterWanderingMode();
         }
     }
 
@@ -383,6 +546,10 @@ public class Field7Delegate extends BaseFieldDelegate {
             ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
             field.showGameMessage("Right Save Enabled", 1500);
         }
+        else if ("MiniFieldTopTargets".equals(id) || "MiniFieldLeftTargets".equals(id)) {
+            rampScore += RAMP_SCORE_INCREMENT;
+            field.showGameMessage("Ramp bonus increased", 1500);
+        }
     }
 
     static int ACTIVE_STAR_ACTIVE_CONSTELLATION_COLOR = Color.fromRGB(255, 255, 0);
@@ -393,7 +560,8 @@ public class Field7Delegate extends BaseFieldDelegate {
 
     int starColorForIndex(int starIndex) {
         boolean isActive = starState.activatedStars.contains(starIndex);
-        boolean isInActiveConstellation = starState.currentConstellation.starIndices.contains(starIndex);
+        boolean isInActiveConstellation = starState.currentConstellation != null &&
+                starState.currentConstellation.starIndices.contains(starIndex);
         if (isInActiveConstellation) {
             return isActive ?
                     ACTIVE_STAR_ACTIVE_CONSTELLATION_COLOR :
@@ -413,8 +581,6 @@ public class Field7Delegate extends BaseFieldDelegate {
         double distScale = this.starViewRadius / starState.currentTarget.angularRadius;
         double baseRadius = this.starViewRadius * 0.015;
         List<Shape> shapes = new ArrayList<Shape>();
-        int consColor = Color.fromRGB(255, 255, 0);
-        int noConsColor = Color.fromRGB(160, 0, 0);
         for (int i = 0; i < proj.size(); i++) {
             double cx = centerX + proj.x.get(i) * distScale;
             double cy = centerY + proj.y.get(i) * distScale;
@@ -427,23 +593,25 @@ public class Field7Delegate extends BaseFieldDelegate {
         }
         // Draw brighter stars (with lower magnitudes) last.
         Collections.reverse(shapes);
-        // Lines for active constellation.
-        for (int starIndex : starState.currentConstellation.starIndices) {
-            if (starState.activatedStars.contains((starIndex))) {
-                Set<Integer> endpoints = starState.currentConstellation.segmentsByIndex.get(starIndex);
-                if (endpoints != null) {
-                    for (int endIndex : endpoints) {
-                        if (starState.activatedStars.contains(endIndex)) {
-                            Integer pi1 = proj.starIndexToProjIndex.get(starIndex);
-                            Integer pi2 = proj.starIndexToProjIndex.get(endIndex);
-                            if (pi1 == null || pi2 == null) {
-                                continue;
+        // Lines for activated stars in constellations.
+        for (Constellation c : CONSTELLATIONS) {
+            for (int starIndex : c.starIndices) {
+                if (starState.activatedStars.contains((starIndex))) {
+                    Set<Integer> endpoints = c.segmentsByIndex.get(starIndex);
+                    if (endpoints != null) {
+                        for (int endIndex : endpoints) {
+                            if (starState.activatedStars.contains(endIndex)) {
+                                Integer pi1 = proj.starIndexToProjIndex.get(starIndex);
+                                Integer pi2 = proj.starIndexToProjIndex.get(endIndex);
+                                if (pi1 == null || pi2 == null) {
+                                    continue;
+                                }
+                                double x1 = centerX + proj.x.get(pi1) * distScale;
+                                double y1 = centerY + proj.y.get(pi1) * distScale;
+                                double x2 = centerX + proj.x.get(pi2) * distScale;
+                                double y2 = centerY + proj.y.get(pi2) * distScale;
+                                shapes.add(Shape.Line.create(x1, y1, x2, y2, 0, CONSTELLATION_LINE_COLOR, null));
                             }
-                            double x1 = centerX + proj.x.get(pi1) * distScale;
-                            double y1 = centerY + proj.y.get(pi1) * distScale;
-                            double x2 = centerX + proj.x.get(pi2) * distScale;
-                            double y2 = centerY + proj.y.get(pi2) * distScale;
-                            shapes.add(Shape.Line.create(x1, y1, x2, y2, 0, CONSTELLATION_LINE_COLOR, null));
                         }
                     }
                 }

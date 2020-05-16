@@ -91,7 +91,7 @@
             "id": "BallSaver-left",
             "kick": "6.0",
             "position": ["0.15", "5.0", "1.35", "5.0"],
-            "retractWhenHit": true
+            "retractWhenHit": false
         }, 
         {
             "class": "WallElement",
@@ -99,7 +99,7 @@
             "id": "BallSaver-right",
             "kick": "6.0",
             "position": ["17.45", "5.0", "18.65", "5.0"],
-            "retractWhenHit": true
+            "retractWhenHit": false
         }, 
         {
             "class": "WallElement",
@@ -417,13 +417,13 @@
             "ballLayer": 0,
             "ballLayerFrom": 2,
             "class": "SensorElement",
-            "rect": [2.92, 19.04, 4.32, 20.44]
+            "rect": ["2.9", "19", "4.3", "20.4"]
         }, 
         {
             "ballLayer": 2,
             "ballLayerFrom": 0,
             "class": "SensorElement",
-            "rect": ["2.2", "21.4", "3.6", "22.8"]
+            "rect": ["2.2", "21.4", "3.9", "22.8"]
         }, 
         {
             "center": ["10", "23"],
@@ -527,8 +527,10 @@
             "position": ["12.1", "27.2", "14.22", "29.32"]
         }, 
         {
+            "ballLayerFrom": 1,
             "class": "SensorElement",
-            "rect": [11.846666666666668, 27.933333333333334, 12.646666666666668, 29.633333333333333]
+            "id": "MiniFieldDetector",
+            "rect": ["8.3", "28.4", "9.5", "29.8"]
         }, 
         {
             "center": ["10", "23"],
@@ -587,12 +589,12 @@
         {
             "ballLayer": 0,
             "class": "SensorElement",
-            "rect": ["15.5", "19", "17", "20"]
+            "rect": ["15.7", "19", "17.1", "20.4"]
         }, 
         {
             "ballLayer": 3,
             "class": "SensorElement",
-            "rect": ["16.1", "21.5", "17.6", "22.8"]
+            "rect": ["16.1", "21.5", "17.8", "22.8"]
         }, 
         {
             "center": ["14.3", "23"],
@@ -792,7 +794,7 @@
             "color": [170, 51, 204],
             "gapBetweenTargets": "0.12",
             "gapFromWall": "-0.15",
-            "id": "UpperFieldTargets1",
+            "id": "MiniFieldLeftTargets",
             "inactiveLayerColor": [170, 51, 204, 34],
             "layer": 1,
             "numTargets": 3,
@@ -821,6 +823,7 @@
             "color": [170, 51, 204],
             "gapBetweenTargets": "0.15",
             "gapFromWall": "-0.15",
+            "id": "MiniFieldTopTargets",
             "inactiveLayerColor": [170, 51, 204, 34],
             "layer": 1,
             "numTargets": 5,
@@ -885,7 +888,7 @@
             "class": "BumperElement",
             "color": [255, 255, 255],
             "kick": "1.0",
-            "position": [0.33999999999999897, 15.440000000000001],
+            "position": [0.819999999999998, 4.3900000000000015],
             "radius": "0.49"
         }, 
         {
@@ -928,6 +931,48 @@
                     "position": ["19.15", "26.4"]
                 }
             ]
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [0, 170, 102, 0],
+            "id": "LeftLoopGuide",
+            "ignoreBall": true,
+            "positions": [
+                [4.3100000000000005, 17.74], 
+                [3.8300000000000005, 18.56], 
+                [3.74, 19.43], 
+                [4.44, 18.919999999999998], 
+                [4.92, 18.15], 
+                [4.3100000000000005, 17.74]
+            ]
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [0, 170, 102, 0],
+            "id": "RightLoopGuide",
+            "ignoreBall": true,
+            "positions": [
+                [15.119999999999997, 18.220000000000002], 
+                [15.629999999999999, 19.130000000000003], 
+                [16.27, 19.5], 
+                [16.25, 18.750000000000004], 
+                [15.700000000000001, 17.89], 
+                [15.119999999999997, 18.220000000000002]
+            ]
+        }, 
+        {
+            "class": "WallPathElement",
+            "color": [0, 0, 0, 0],
+            "id": "LockAndJackpotGuide",
+            "ignoreBall": true,
+            "positions": [
+                [16.740000000000002, 16.859999999999996], 
+                [17.360000000000003, 17.929999999999996], 
+                [18.14, 18.45], 
+                [18.159999999999997, 17.459999999999997], 
+                [17.560000000000006, 16.379999999999995], 
+                [16.740000000000002, 16.859999999999996]
+            ]
         }
     ],
     "gravity": "4",
@@ -937,7 +982,7 @@
     "launchVelocity": ["0", "15.4"],
     "launchVelocityRandomDelta": ["0", "0.6"],
     "name": "Ad Astra",
-    "numballs": 3,
+    "numballs": 333,
     "script": "",
     "targetTimeRatio": "2.3",
     "version": 1,
