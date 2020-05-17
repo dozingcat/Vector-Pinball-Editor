@@ -37,8 +37,9 @@ public class EditableWallElement extends EditableFieldElement {
         renderer.drawLine(x1, y1, x2, y2, color);
         if (isSelected) {
             // TODO: adjust selection size for zoom level, needs method on IFieldRenderer.
-            renderer.fillCircle(x1, y1, selectionCircleRadius, color);
-            renderer.fillCircle(x2, y2, selectionCircleRadius, color);
+            int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
+            renderer.fillCircle(x1, y1, selectionCircleRadius, colorWithAlpha);
+            renderer.fillCircle(x2, y2, selectionCircleRadius, colorWithAlpha);
         }
     }
 

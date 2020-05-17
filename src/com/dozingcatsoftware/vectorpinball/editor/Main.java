@@ -280,7 +280,8 @@ public class Main extends Application {
                 createMenuItem("Table 3", null, () -> loadBuiltInField(3)),
                 createMenuItem("Table 4", null, () -> loadBuiltInField(4)),
                 createMenuItem("Table 5", null, () -> loadBuiltInField(5)),
-                createMenuItem("Table 6", null, () -> loadBuiltInField(6))
+                createMenuItem("Table 6", null, () -> loadBuiltInField(6)),
+                createMenuItem("Table 7", null, () -> loadBuiltInField(7))
                 );
 
         fileMenu.getItems().addAll(

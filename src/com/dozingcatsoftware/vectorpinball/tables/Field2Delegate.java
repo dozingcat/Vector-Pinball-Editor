@@ -7,9 +7,9 @@ import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
 import com.dozingcatsoftware.vectorpinball.elements.WallElement;
-import com.dozingcatsoftware.vectorpinball.model.Ball;
-import com.dozingcatsoftware.vectorpinball.model.BaseFieldDelegate;
-import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.*;
+
+import java.util.Arrays;
 
 public class Field2Delegate extends BaseFieldDelegate {
 
@@ -107,8 +107,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 	}
 
 	/** Always return true so the rotating bumpers animate smoothly */
-	@Override
-	public boolean isFieldActive(Field field) {
+	@Override public boolean isFieldActive(Field field) {
 		return true;
 	}
 
@@ -215,6 +214,7 @@ public class Field2Delegate extends BaseFieldDelegate {
 	@Override
 	public void gameStarted(Field field) {
 		setLaunchBarrierEnabled(field, false);
+		field.setShapes(Arrays.asList(Shape.Circle.create(5, 12, 4, Shape.FillType.SOLID, 0, Color.fromRGB(255, 128, 128), null)));
 	}
 
 	@Override

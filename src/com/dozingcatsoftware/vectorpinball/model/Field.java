@@ -30,7 +30,8 @@ public class Field implements ContactListener {
     FieldLayout layout;
     WorldLayers worlds;
 
-    List<Ball> balls;
+    ArrayList<Ball> balls;
+    ArrayList<Shape> shapes;
 
     // Allow access to model objects from Box2d bodies.
     Map<Body, FieldElement> bodyToFieldElement;
@@ -128,6 +129,7 @@ public class Field implements ContactListener {
         this.layout = FieldLayout.layoutForLevel(layoutMap, worlds);
         worlds.setGravity(new Vector2(0.0f, -this.layout.getGravity()));
         balls = new ArrayList<Ball>();
+        shapes = new ArrayList<Shape>();
 
         scheduledActions = new PriorityQueue<ScheduledAction>();
         gameTime = 0;
@@ -164,8 +166,8 @@ public class Field implements ContactListener {
      * Returns the FieldElement with the given value for its "id" attribute, or null if there is
      * no such element.
      */
-    public FieldElement getFieldElementById(String elementID) {
-        return fieldElementsByID.get(elementID);
+    public <T extends FieldElement> T getFieldElementById(String elementID) {
+        return (T) fieldElementsByID.get(elementID);
     }
 
     /**
@@ -228,6 +230,25 @@ public class Field implements ContactListener {
         scheduledActions.add(sa);
     }
 
+    public void setShapes(List<Shape> shapes) {
+        this.shapes.clear();
+        this.shapes.ensureCapacity(shapes.size());
+        for (int i = 0; i < shapes.size(); i++) {
+            this.shapes.add(shapes.get(i));
+        }
+    }
+
+    public Ball createBall(float x, float y) {
+        Ball ball = Ball.create(worlds, 0, x, y, layout.getBallRadius(),
+                layout.getBallColor(), layout.getSecondaryBallColor());
+        this.balls.add(ball);
+        return ball;
+    }
+
+    public void playBallLaunchSound() {
+        audioPlayer.playBall();
+    }
+
     /**
      * Launches a new ball. The position and velocity of the ball are controlled by the parameters
      * in the field layout JSON.
@@ -235,13 +256,9 @@ public class Field implements ContactListener {
     public Ball launchBall() {
         List<Float> position = layout.getLaunchPosition();
         List<Float> velocity = layout.getLaunchVelocity();
-        float radius = layout.getBallRadius();
-
-        Ball ball = Ball.create(worlds, 0, position.get(0), position.get(1), radius,
-                layout.getBallColor(), layout.getSecondaryBallColor());
+        Ball ball = createBall(position.get(0), position.get(1));
         ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
-        this.balls.add(ball);
-        audioPlayer.playBall();
+        playBallLaunchSound();
         return ball;
     }
 
@@ -249,7 +266,7 @@ public class Field implements ContactListener {
     public void removeBall(Ball ball) {
         ball.destroySelf();
         this.balls.remove(ball);
-        if (this.balls.size()==0) {
+        if (this.balls.isEmpty()) {
             this.doBallLost();
         }
     }
@@ -270,14 +287,14 @@ public class Field implements ContactListener {
     public void doBallLost() {
         boolean hasExtraBall = (this.gameState.getExtraBalls() > 0);
         this.gameState.doNextBall();
-        // display message for next ball or game over
+        // Display message for next ball or game over.
         String msg = null;
         if (hasExtraBall) msg = "Shoot Again";
         else if (this.gameState.isGameInProgress()) msg = "Ball " + this.gameState.getBallNumber();
 
         if (msg!=null) {
-            // game is still going, show message after delay
-            final String msg2 = msg; // must be final for closure, yay Java
+            // Game is still going, show message after delay.
+            final String msg2 = msg;
             this.scheduleAction(1500, new Runnable() {
                 @Override
                 public void run() {
@@ -332,19 +349,39 @@ public class Field implements ContactListener {
     }
 
     // Reusable array for sorting elements and balls into the order in which they should be draw.
+    // Earlier items are drawn first, so "upper" items should compare "greater" than lower.
     private ArrayList<IDrawable> elementsInDrawOrder = new ArrayList<IDrawable>();
     private Comparator<IDrawable> drawOrdering = new Comparator<IDrawable>() {
         @Override public int compare(IDrawable e1, IDrawable e2) {
-            boolean e1Ball = (e1 instanceof Ball);
-            boolean e2Ball = (e2 instanceof Ball);
-            if (e1Ball == e2Ball) {
-                return e1.getLayer() - e2.getLayer();
+            int diff = e1.getLayer() - e2.getLayer();
+            if (diff != 0) {
+                return diff;
+            }
+            // At the same layer, balls are drawn after field elements, which are drawn after custom shapes.
+            boolean e1Element = e1 instanceof FieldElement;
+            boolean e2Element = e2 instanceof FieldElement;
+            if (e1Element && e2Element) {
+                return 0;
+            }
+            boolean e1Ball = e1 instanceof Ball;
+            boolean e2Ball = e2 instanceof Ball;
+            if (e1Ball && e2Ball) {
+                return 0;
+            }
+            boolean e1Shape = !e1Ball && !e1Element;
+            boolean e2Shape = !e2Ball && !e2Element;
+            if (e1Shape && e2Shape) {
+                return 0;
             }
             if (e1Ball) {
-                return (e1.getLayer() >= e2.getLayer()) ? 1 : -1;
+                return 1;
+            }
+            else if (e1Element) {
+                return (e2Ball) ? -1 : 1;
             }
             else {
-                return (e2.getLayer() >= e1.getLayer()) ? -1 : 1;
+                // e1 is Shape, e2 isn't.
+                return -1;
             }
         }
     };
@@ -361,6 +398,9 @@ public class Field implements ContactListener {
         }
         for (int i = 0; i < this.balls.size(); i++) {
             elementsInDrawOrder.add(this.balls.get(i));
+        }
+        for (int i = 0; i < this.shapes.size(); i++) {
+            elementsInDrawOrder.add(this.shapes.get(i));
         }
         Collections.sort(elementsInDrawOrder, drawOrdering);
 

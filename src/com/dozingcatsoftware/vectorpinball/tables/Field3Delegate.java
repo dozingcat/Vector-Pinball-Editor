@@ -86,7 +86,7 @@ public class Field3Delegate extends BaseFieldDelegate {
         return TEMPERATURE_COLORS[(int) Math.round((len-1) * ratio)];
     }
 
-    static enum MultiballStatus {PENDING, ACTIVE, INACTIVE};
+    enum MultiballStatus {PENDING, ACTIVE, INACTIVE};
 
     static Random RAND = new Random();
 
@@ -204,6 +204,7 @@ public class Field3Delegate extends BaseFieldDelegate {
 
     @Override
     public void tick(Field field, long nanos) {
+        System.out.println("Tick!");
         if (bumperBonusActive) {
             bumperBonusNanosElapsed += nanos;
             if (bumperBonusNanosElapsed >= bumperBonusDurationNanos) {
