@@ -91,7 +91,7 @@
             "id": "BallSaver-left",
             "kick": "6.0",
             "position": ["0.15", "5.0", "1.35", "5.0"],
-            "retractWhenHit": false
+            "retractWhenHit": true
         }, 
         {
             "class": "WallElement",
@@ -99,7 +99,7 @@
             "id": "BallSaver-right",
             "kick": "6.0",
             "position": ["17.45", "5.0", "18.65", "5.0"],
-            "retractWhenHit": false
+            "retractWhenHit": true
         }, 
         {
             "class": "WallElement",
@@ -885,13 +885,6 @@
             "yradius": "12.5"
         }, 
         {
-            "class": "BumperElement",
-            "color": [255, 255, 255],
-            "kick": "1.0",
-            "position": [0.819999999999998, 4.3900000000000015],
-            "radius": "0.49"
-        }, 
-        {
             "class": "RolloverGroupElement",
             "color": [204, 204, 238],
             "id": "BallLockRollover1",
@@ -938,12 +931,12 @@
             "id": "LeftLoopGuide",
             "ignoreBall": true,
             "positions": [
-                [4.3100000000000005, 17.74], 
-                [3.8300000000000005, 18.56], 
-                [3.74, 19.43], 
-                [4.44, 18.919999999999998], 
-                [4.92, 18.15], 
-                [4.3100000000000005, 17.74]
+                ["4.25", "17.74"], 
+                ["3.70", "18.70"], 
+                ["3.70", "19.39"], 
+                ["4.30", "19.05"], 
+                ["4.85", "18.09"], 
+                ["4.25", "17.74"]
             ]
         }, 
         {
@@ -952,12 +945,12 @@
             "id": "RightLoopGuide",
             "ignoreBall": true,
             "positions": [
-                [15.119999999999997, 18.220000000000002], 
-                [15.629999999999999, 19.130000000000003], 
-                [16.27, 19.5], 
-                [16.25, 18.750000000000004], 
-                [15.700000000000001, 17.89], 
-                [15.119999999999997, 18.220000000000002]
+                ["15.75", "17.74"], 
+                ["16.30", "18.70"], 
+                ["16.30", "19.39"], 
+                ["15.70", "19.05"], 
+                ["15.15", "18.09"], 
+                ["15.75", "17.74"]
             ]
         }, 
         {
@@ -966,13 +959,42 @@
             "id": "LockAndJackpotGuide",
             "ignoreBall": true,
             "positions": [
-                [16.740000000000002, 16.859999999999996], 
-                [17.360000000000003, 17.929999999999996], 
-                [18.14, 18.45], 
-                [18.159999999999997, 17.459999999999997], 
-                [17.560000000000006, 16.379999999999995], 
-                [16.740000000000002, 16.859999999999996]
+                ["16.74", "16.86"], 
+                ["17.35", "17.90"], 
+                ["18.10", "18.26"], 
+                ["18.17", "17.42"], 
+                ["17.56", "16.38"], 
+                ["16.74", "16.86"]
             ]
+        }, 
+        {
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "id": "InnerOrbitLeftTrigger",
+            "rect": ["5.7", "24.5", "6.7", "25.7"]
+        }, 
+        {
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "id": "InnerOrbitRightTrigger",
+            "rect": ["13.3", "24.5", "14.3", "25.7"]
+        }, 
+        {
+            "class": "SensorElement",
+            "id": "InnerOrbitLeftEntry",
+            "rect": ["4.2", "22", "5.5", "23.5"]
+        }, 
+        {
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "id": "InnerOrbitRightEntry",
+            "rect": ["14.5", "22", "15.8", "23.5"]
+        }, 
+        {
+            "ballLayerFrom": 0,
+            "class": "SensorElement",
+            "id": "InnerOrbitBottomExit",
+            "rect": ["6.8", "23.8", "13.2", "24.8"]
         }
     ],
     "gravity": "4",
@@ -982,7 +1004,7 @@
     "launchVelocity": ["0", "15.4"],
     "launchVelocityRandomDelta": ["0", "0.6"],
     "name": "Ad Astra",
-    "numballs": 333,
+    "numballs": 3,
     "script": "",
     "targetTimeRatio": "2.3",
     "version": 1,

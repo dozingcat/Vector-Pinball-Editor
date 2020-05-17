@@ -96,7 +96,8 @@ public class Field7Delegate extends BaseFieldDelegate {
 
         private void updateWanderingProjection(long nanos) {
             wanderNanos = (wanderNanos + nanos) % wanderPeriodNanos;
-            double ra = (TAU * wanderNanos) / wanderPeriodNanos;
+            // Going from tau to 0 makes the animation go left to right, which looks better.
+            double ra = TAU * (1 - (1.0 * wanderNanos / wanderPeriodNanos));
             currentTarget.rightAscension = ra;
             currentTarget.declination = 0;
             currentTarget.angularRadius = 0.4;
@@ -232,35 +233,41 @@ public class Field7Delegate extends BaseFieldDelegate {
             return true;
         }
 
-        static void projectVisibleStars(StarCatalog catalog, ProjectionTarget target, Star2DProjection projection) {
+        static void projectVisibleStars(
+                StarCatalog catalog, ProjectionTarget target, Star2DProjection projection) {
             projection.clear();
             double rad2 = target.angularRadius * target.angularRadius;
             int catSize = catalog.size();
-            // Rotate each star around the Z axis for right ascension, then the Y axis for declination.
-            // The point we're looking at will now be at (1, 0, 0), and when we project to 2D, Y becomes X
-            // and Z becomes Y.
+            // Rotate each star around the Z axis for right ascension, then the Y axis for
+            // declination. The point we're looking at will now be at (1, 0, 0), and when we
+            // project to 2D, Y becomes X and Z becomes Y.
             for (int i = 0; i < catSize; i++) {
                 double x = catalog.x[i];
                 double y = catalog.y[i];
                 double z = catalog.z[i];
-                // Matrix rotations from https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+                // https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
                 // Around Z axis:
                 // [cos(theta), -sin(theta), 0]
                 // [sin(theta), cos(theta), 0]
                 // [0, 0, 1]
                 // We can treat this as a 2d rotation in the XY plane; z remains constant.
-                double x1 = x * Math.cos(target.rightAscension) - y * Math.sin(target.rightAscension);
-                double y1 = x * Math.sin(target.rightAscension) + y * Math.cos(target.rightAscension);
+                double sinRa = Math.sin(target.rightAscension);
+                double cosRa = Math.cos(target.rightAscension);
+                double sinDec = Math.sin(target.declination);
+                double cosDec = Math.cos(target.declination);
+                double x1 = x * cosRa - y * sinRa;
+                double y1 = x * sinRa + y * cosRa;
                 double z1 = z;
                 // Around Y axis:
                 // [cos(theta), 0, sin(theta)]
                 // [0, 1, 0]
                 // [-sin(theta), 0, cos(theta)]
-                double x2 = x1 * Math.cos(target.declination) + z1 * Math.sin(target.declination);
+                double x2 = x1 * cosDec + z1 * sinDec;
                 double y2 = y1;
-                double z2 = -x1 * Math.sin(target.declination) + z1 * Math.cos(target.declination);
-                // We started with a unit vector so we could normalize [x2, y2, z2], but it shouldn't be too far off.
-                // The star is "visible" if it's close enough to the X axis on the positive side.
+                double z2 = -x1 * sinDec + z1 * cosDec;
+                // We started with a unit vector so we could normalize [x2, y2, z2], but it
+                // shouldn't be too far off. The star is "visible" if it's close enough to the
+                // X axis on the positive side.
                 double yzOffsetSq = y2 * y2 + z2 * z2;
                 if (x2 > 0 && yzOffsetSq < rad2) {
                     projection.add(y2, z2, catalog.magnitude[i], i);
@@ -297,21 +304,6 @@ public class Field7Delegate extends BaseFieldDelegate {
 
     long rampScore;
 
-    void initFieldElements(Field field) {
-        RolloverGroupElement boundary =
-                (RolloverGroupElement) field.getFieldElementById("StarViewBoundary");
-        starViewCenter = boundary.getRolloverCenterAtIndex(0);
-        starViewRadius = boundary.getRolloverRadiusAtIndex(0);
-        lockRollovers = Arrays.asList(
-                field.getFieldElementById("BallLockRollover1"),
-                field.getFieldElementById("BallLockRollover2"),
-                field.getFieldElementById("BallLockRollover3")
-        );
-        leftLoopGuide = field.getFieldElementById("LeftLoopGuide");
-        rightLoopGuide = field.getFieldElementById("RightLoopGuide");
-        lockAndJackpotGuide = field.getFieldElementById("LockAndJackpotGuide");
-    }
-
     @Override public boolean isFieldActive(Field field) {
         return true;
     }
@@ -323,8 +315,64 @@ public class Field7Delegate extends BaseFieldDelegate {
         rampScore = BASE_RAMP_SCORE;
     }
 
+    @Override public void tick(Field field, long nanos) {
+        if (starViewCenter == null) {
+            initFieldElements(field);
+        }
+        starState.tick(nanos);
+        updateActivatedStars(field);
+        updateBallLockRollovers(field);
+        updateGuides(field, nanos);
+        field.setShapes(shapesFromProjection());
+        if (multiballStatus == MultiballStatus.ACTIVE && field.getBalls().size() <= 1) {
+            multiballStatus = MultiballStatus.INACTIVE;
+            starState.resetAndWander();
+        }
+    }
+
+    @Override public void allRolloversInGroupActivated(
+            Field field, RolloverGroupElement rolloverGroup, Ball ball) {
+        String id = rolloverGroup.getElementId();
+        if ("FlipperRollovers".equals(id) || "TopRollovers".equals(id)) {
+            // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
+            rolloverGroup.setAllRolloversActivated(false);
+            field.getGameState().incrementScoreMultiplier();
+            field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
+        }
+        else if (lockRollovers.contains(rolloverGroup)) {
+            this.numBallsLocked++;
+            if (this.numBallsLocked == lockRollovers.size()) {
+                startMultiball(field);
+            }
+            else {
+                field.removeBallWithoutBallLoss(ball);
+                field.showGameMessage("Ball " + this.numBallsLocked + " locked", 3000);
+            }
+            starState.lockCurrentConstellation();
+            starState.enterWanderingMode();
+        }
+    }
+
+    @Override public void allDropTargetsInGroupHit(
+            Field field, DropTargetGroupElement targetGroup, Ball ball) {
+        String id = targetGroup.getElementId();
+        if ("DropTargetLeftSave".equals(id)) {
+            ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
+            field.showGameMessage("Left Save Enabled", 1500);
+        }
+        else if ("DropTargetRightSave".equals(id)) {
+            ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
+            field.showGameMessage("Right Save Enabled", 1500);
+        }
+        else if ("MiniFieldTopTargets".equals(id) || "MiniFieldLeftTargets".equals(id)) {
+            rampScore += RAMP_SCORE_INCREMENT;
+            field.showGameMessage("Ramp bonus increased", 1500);
+        }
+    }
+
     @Override public void ballInSensorRange(final Field field, SensorElement sensor, Ball ball) {
         String id = sensor.getElementId();
+        String prevId = ball.getPreviousSensorId();
         // Enable launch barrier.
         if ("LaunchBarrierSensor".equals(id)) {
             setLaunchBarrierEnabled(field, true);
@@ -343,10 +391,10 @@ public class Field7Delegate extends BaseFieldDelegate {
             }
             ball.moveToLayer(toLayer);
         }
-        else if ("LeftLoopDetector".equals(id) && !id.equals(ball.getPreviousSensorId())) {
+        else if ("LeftLoopDetector".equals(id) && !id.equals(prevId)) {
             handleLoop(field);
         }
-        else if ("RightLoopDetector".equals(id) && !id.equals(ball.getPreviousSensorId())) {
+        else if ("RightLoopDetector".equals(id) && !id.equals(prevId)) {
             handleLoop(field);
         }
         else if ("MiniFieldDetector".equals(id)) {
@@ -354,6 +402,25 @@ public class Field7Delegate extends BaseFieldDelegate {
                 doJackpot(field);
             }
         }
+        else if (("InnerOrbitLeftTrigger".equals(id) && "InnerOrbitRightTrigger".equals(prevId)) ||
+                ("InnerOrbitRightTrigger".equals(id) && "InnerOrbitLeftTrigger".equals(prevId))) {
+            // Looped around the center bumpers. Should this do anything else?
+            field.addScore(rampScore);
+        }
+    }
+
+    void initFieldElements(Field field) {
+        RolloverGroupElement boundary = field.getFieldElementById("StarViewBoundary");
+        starViewCenter = boundary.getRolloverCenterAtIndex(0);
+        starViewRadius = boundary.getRolloverRadiusAtIndex(0);
+        lockRollovers = Arrays.asList(
+                field.getFieldElementById("BallLockRollover1"),
+                field.getFieldElementById("BallLockRollover2"),
+                field.getFieldElementById("BallLockRollover3")
+        );
+        leftLoopGuide = field.getFieldElementById("LeftLoopGuide");
+        rightLoopGuide = field.getFieldElementById("RightLoopGuide");
+        lockAndJackpotGuide = field.getFieldElementById("LockAndJackpotGuide");
     }
 
     void handleLoop(Field field) {
@@ -365,8 +432,8 @@ public class Field7Delegate extends BaseFieldDelegate {
         }
     }
 
-    static void setLaunchBarrierEnabled(Field field, boolean enabled) {
-        WallElement barrier = (WallElement)field.getFieldElementById("LaunchBarrier");
+    private void setLaunchBarrierEnabled(Field field, boolean enabled) {
+        WallElement barrier = field.getFieldElementById("LaunchBarrier");
         barrier.setRetracted(!enabled);
     }
 
@@ -425,10 +492,7 @@ public class Field7Delegate extends BaseFieldDelegate {
         int lockAlpha = 0;
         int lockBaseColor = lockGuideColor;
         if (field.getGameState().isGameInProgress()) {
-            if (starState.mode == StarMode.WANDERING) {
-                loopAlpha = guideColorAlpha();
-            }
-            else if (multiballStatus == MultiballStatus.ACTIVE &&
+            if (multiballStatus == MultiballStatus.ACTIVE &&
                     starState.allConstellationsLocked()) {
                 lockBaseColor = jackpotGuideColor;
                 lockAlpha = guideColorAlpha();
@@ -436,6 +500,9 @@ public class Field7Delegate extends BaseFieldDelegate {
             else if (multiballStatus == MultiballStatus.INACTIVE &&
                     starState.allStarsInCurrentConstellationActive()) {
                 lockAlpha = guideColorAlpha();
+            }
+            else if (starState.mode == StarMode.WANDERING) {
+                loopAlpha = guideColorAlpha();
             }
         }
         int loopColor = Color.withAlpha(loopGuideColor, loopAlpha);
@@ -499,63 +566,10 @@ public class Field7Delegate extends BaseFieldDelegate {
         starState.resetAndWander();
     }
 
-    @Override public void tick(Field field, long nanos) {
-        if (starViewCenter == null) {
-            initFieldElements(field);
-        }
-        starState.tick(nanos);
-        updateActivatedStars(field);
-        updateBallLockRollovers(field);
-        updateGuides(field, nanos);
-        field.setShapes(shapesFromProjection());
-        if (multiballStatus == MultiballStatus.ACTIVE && field.getBalls().size() <= 1) {
-            multiballStatus = MultiballStatus.INACTIVE;
-            starState.resetAndWander();
-        }
-    }
-
-    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {
-        String id = rolloverGroup.getElementId();
-        if ("FlipperRollovers".equals(id) || "TopRollovers".equals(id)) {
-            // rollover groups increment field multiplier when all rollovers are activated, also reset to inactive
-            rolloverGroup.setAllRolloversActivated(false);
-            field.getGameState().incrementScoreMultiplier();
-            field.showGameMessage(((int)field.getGameState().getScoreMultiplier()) + "x Multiplier", 1500);
-        }
-        else if (lockRollovers.contains(rolloverGroup)) {
-            this.numBallsLocked++;
-            if (this.numBallsLocked == lockRollovers.size()) {
-                startMultiball(field);
-            }
-            else {
-                field.removeBallWithoutBallLoss(ball);
-                field.showGameMessage("Ball " + this.numBallsLocked + " locked", 3000);
-                starState.lockCurrentConstellation();
-            }
-            starState.enterWanderingMode();
-        }
-    }
-
-    @Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball) {
-        String id = targetGroup.getElementId();
-        if ("DropTargetLeftSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-left")).setRetracted(false);
-            field.showGameMessage("Left Save Enabled", 1500);
-        }
-        else if ("DropTargetRightSave".equals(id)) {
-            ((WallElement)field.getFieldElementById("BallSaver-right")).setRetracted(false);
-            field.showGameMessage("Right Save Enabled", 1500);
-        }
-        else if ("MiniFieldTopTargets".equals(id) || "MiniFieldLeftTargets".equals(id)) {
-            rampScore += RAMP_SCORE_INCREMENT;
-            field.showGameMessage("Ramp bonus increased", 1500);
-        }
-    }
-
-    static int ACTIVE_STAR_ACTIVE_CONSTELLATION_COLOR = Color.fromRGB(255, 255, 0);
-    static int INACTIVE_STAR_ACTIVE_CONSTELLATION_COLOR = Color.fromRGB(0, 255, 0);
-    static int ACTIVE_STAR_INACTIVE_CONSTELLATION_COLOR = Color.fromRGB(255, 0, 0);
-    static int INACTIVE_STAR_INACTIVE_CONSTELLATION_COLOR = Color.fromRGB(128, 0, 0);
+    static int ACTIVE_STAR_ACTIVE_CONSTELLATION_COLOR = Color.fromRGB(240, 240, 0);
+    static int INACTIVE_STAR_ACTIVE_CONSTELLATION_COLOR = Color.fromRGB(0, 240, 0);
+    static int ACTIVE_STAR_INACTIVE_CONSTELLATION_COLOR = Color.fromRGB(192, 192, 0);
+    static int INACTIVE_STAR_INACTIVE_CONSTELLATION_COLOR = Color.fromRGB(240, 240, 240);
     static int CONSTELLATION_LINE_COLOR = Color.fromRGBA(240, 240, 240, 192);
 
     int starColorForIndex(int starIndex) {
@@ -589,7 +603,8 @@ public class Field7Delegate extends BaseFieldDelegate {
             int baseColor = starColorForIndex(proj.indices.get(i));
             int color = Color.withAlpha(baseColor, alpha);
             double rmul = (mag <= 0) ? 1.5 : (mag >= 4) ? 0.75 : 1.0;
-            shapes.add(Shape.Circle.create(cx, cy, rmul * baseRadius, Shape.FillType.SOLID, 0, color, null));
+            shapes.add(Shape.Circle.create(
+                    cx, cy, rmul * baseRadius, Shape.FillType.SOLID, 0, color, null));
         }
         // Draw brighter stars (with lower magnitudes) last.
         Collections.reverse(shapes);
@@ -610,7 +625,8 @@ public class Field7Delegate extends BaseFieldDelegate {
                                 double y1 = centerY + proj.y.get(pi1) * distScale;
                                 double x2 = centerX + proj.x.get(pi2) * distScale;
                                 double y2 = centerY + proj.y.get(pi2) * distScale;
-                                shapes.add(Shape.Line.create(x1, y1, x2, y2, 0, CONSTELLATION_LINE_COLOR, null));
+                                shapes.add(Shape.Line.create(
+                                        x1, y1, x2, y2, 0, CONSTELLATION_LINE_COLOR, null));
                             }
                         }
                     }
