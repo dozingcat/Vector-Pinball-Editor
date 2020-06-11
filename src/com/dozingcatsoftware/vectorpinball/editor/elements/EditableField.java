@@ -2,6 +2,7 @@ package com.dozingcatsoftware.vectorpinball.editor.elements;
 
 import java.util.*;
 
+import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 
@@ -185,7 +186,7 @@ public class EditableField implements PropertyContainer {
         setSelectedElements(selected);
     }
 
-    public void drawForEditor(IFieldRenderer renderer) {
+    public void drawForEditor(IEditableFieldRenderer renderer) {
         for (EditableFieldElement elem : this.elementsSortedByLayer()) {
             elem.drawForEditor(renderer, this.isElementSelected(elem));
         }

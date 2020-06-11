@@ -44,7 +44,7 @@ public class MultiRowDecimalArrayEditor extends PropertyEditor<List<Object>> {
         if (value == null) return;
         for (int i=0; i<value.size(); i++) {
             Object val = (value!=null && value.size()>i) ? value.get(i) : "";
-            textFields.get(i).setText(MathUtils.toFormattedNumber(val));
+            textFields.get(i).setText(Utils.toFormattedNumber(val));
         }
     }
 }

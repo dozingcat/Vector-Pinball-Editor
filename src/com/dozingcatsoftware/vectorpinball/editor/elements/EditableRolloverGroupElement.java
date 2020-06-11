@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Color;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
+import com.dozingcatsoftware.vectorpinball.editor.Point;
 
 public class EditableRolloverGroupElement extends EditableFieldElement {
 
@@ -35,7 +35,7 @@ public class EditableRolloverGroupElement extends EditableFieldElement {
         props.put(ROLLOVERS_PROPERTY, Arrays.asList(rollover));
     }
 
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+    @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
         int groupColor = currentColor(DEFAULT_COLOR);
         double groupRadius = asDouble(getProperty(RADIUS_PROPERTY));
         List<Map<String, Object>> rolloverMaps = (List<Map<String, Object>>)getProperty(ROLLOVERS_PROPERTY);

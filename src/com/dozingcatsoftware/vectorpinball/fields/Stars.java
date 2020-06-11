@@ -1,4 +1,4 @@
-package com.dozingcatsoftware.vectorpinball.tables;
+package com.dozingcatsoftware.vectorpinball.fields;
 
 import java.util.Arrays;
 import java.util.HashMap;

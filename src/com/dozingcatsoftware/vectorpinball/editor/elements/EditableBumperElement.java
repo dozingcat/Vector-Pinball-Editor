@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Color;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
+import com.dozingcatsoftware.vectorpinball.editor.Point;
 
 public class EditableBumperElement extends EditableFieldElement {
     public static final String POSITION_PROPERTY = "position";
@@ -35,7 +35,7 @@ public class EditableBumperElement extends EditableFieldElement {
         props.put(KICK_PROPERTY, "1.0");
     }
 
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+    @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
 
         renderer.fillCircle(cx, cy, radius, currentColor(DEFAULT_COLOR));

@@ -70,7 +70,7 @@ public class WallPathElementInspector extends ElementInspector {
             List<Object> pos = positions.get(i);
             List<TextField> textFields = pointRows.get(i).textFields;
             for (int j=0; j<2; j++) {
-                textFields.get(j).setText(MathUtils.toFormattedNumber(pos.get(j)));
+                textFields.get(j).setText(Utils.toFormattedNumber(pos.get(j)));
             }
         }
     }

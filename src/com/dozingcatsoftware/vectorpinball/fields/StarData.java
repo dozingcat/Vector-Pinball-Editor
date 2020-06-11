@@ -1,4 +1,4 @@
-package com.dozingcatsoftware.vectorpinball.tables;
+package com.dozingcatsoftware.vectorpinball.fields;
 
 public class StarData {
     // From https://github.com/sky-map-team/stardroid/blob/master/tools/data/stardata_names.txt

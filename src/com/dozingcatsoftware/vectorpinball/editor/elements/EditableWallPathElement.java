@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Color;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
+import com.dozingcatsoftware.vectorpinball.editor.Point;
 
 public class EditableWallPathElement extends EditableFieldElement {
 
@@ -42,7 +42,7 @@ public class EditableWallPathElement extends EditableFieldElement {
         return ((List<?>)getProperty(POSITIONS_PROPERTY)).size();
     }
 
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+    @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
         double selectionCircleRadius = 0.25 / renderer.getRelativeScale();
         int color = currentColor(DEFAULT_WALL_COLOR);
         int size = numPoints();

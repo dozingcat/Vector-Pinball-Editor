@@ -27,6 +27,6 @@ public class DecimalStringPropertyEditor extends PropertyEditor<Object> {
     }
 
     @Override void updateFromValue(Object value) {
-        textField.setText(MathUtils.toFormattedNumber(value));
+        textField.setText(Utils.toFormattedNumber(value));
     }
 }

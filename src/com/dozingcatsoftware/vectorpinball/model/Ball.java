@@ -78,6 +78,7 @@ public class Ball implements IDrawable {
     }
 
     public float getRadius() {
+        body.getFixtureList();
         CircleShape shape = (CircleShape)body.getFixtureList().get(0).getShape();
         return shape.getRadius();
     }
@@ -85,6 +86,7 @@ public class Ball implements IDrawable {
     public int getPrimaryColor() {
         return primaryColor;
     }
+
     public void setPrimaryColor(int primaryColor) {
         this.primaryColor = primaryColor;
     }
@@ -92,6 +94,7 @@ public class Ball implements IDrawable {
     public int getSecondaryColor() {
         return secondaryColor;
     }
+
     public void setSecondaryColor(int secondaryColor) {
         this.secondaryColor = secondaryColor;
     }

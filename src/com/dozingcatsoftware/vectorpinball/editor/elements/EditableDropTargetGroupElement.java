@@ -9,9 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Color;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
+import com.dozingcatsoftware.vectorpinball.editor.Point;
 
 public class EditableDropTargetGroupElement extends EditableFieldElement {
 
@@ -89,7 +89,7 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
         props.put(RESET_DELAY_PROPERTY, "2");
     }
 
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+    @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
         // draw line for each target
         int color = currentColor(DEFAULT_COLOR);
