@@ -28,7 +28,7 @@ public class StringResolver implements IStringResolver {
         m.put("right_save_enabled_message", mf("Right Save Enabled"));
         m.put("shoot_ramp_multiball_message", mf("Shoot Ramp for Multiball"));
         m.put("multiball_started_message", mf("Multiball!"));
-        m.put("multiplier_message", mf("%1$dx Multiplier"));
+        m.put("multiplier_message", mf("{0}x Multiplier"));
         m.put("shoot_red_bumper_message", mf("Shoot Red Bumper"));
         m.put("bumper_multiplier_message", mf("Bumper Multiplier {0}"));
         m.put("jackpot_received_message", mf("Jackpot!"));
