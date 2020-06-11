@@ -17,12 +17,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Function;
 
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
+import com.dozingcatsoftware.vectorpinball.groovy.GroovyFieldDelegateBuilder;
+import com.dozingcatsoftware.vectorpinball.model.AudioPlayer;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.model.GameMessage;
+import com.dozingcatsoftware.vectorpinball.model.IStringResolver;
 import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 import javafx.application.Application;
@@ -384,20 +388,29 @@ public class Main extends Application {
         editorState = EditorState.EDITING;
     }
 
+    IStringResolver stringResolver = new StringResolver();
+    Function<Field, Field.Delegate> groovyDelegateFn = (field -> {
+        String script = field.getScriptText();
+        if (script != null && script.trim().length() > 0) {
+            return GroovyFieldDelegateBuilder.createFromScript(script, getClass().getClassLoader());
+        }
+        return Field.createDelegateFromLayoutClass(field);
+    });
+
     void startGame() {
         if (fieldDriver==null) {
-            field = new Field();
-            field.resetForLevel(editableField.getPropertyMapSnapshot());
+            field = new Field(System::currentTimeMillis, stringResolver, AudioPlayer.NoOpPlayer.getInstance());
+            field.resetForLayoutMap(editableField.getPropertyMapSnapshot(), groovyDelegateFn);
             renderer.setField(field);
 
             fieldDriver = new FieldDriver();
-            fieldDriver.setFieldRenderer(renderer);
+            fieldDriver.setDrawFunction(renderer::doDraw);
             fieldDriver.setField(field);
             fieldDriver.start();
             showScoreView();
         }
         else {
-            field.resetForLevel(editableField.getPropertyMapSnapshot());
+            field.resetForLayoutMap(editableField.getPropertyMapSnapshot(), groovyDelegateFn);
         }
         field.startGame();
         field.removeDeadBalls();

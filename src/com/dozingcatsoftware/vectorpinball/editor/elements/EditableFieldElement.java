@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Color;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
+import com.dozingcatsoftware.vectorpinball.editor.Point;
 
 public abstract class EditableFieldElement implements PropertyContainer {
 
@@ -144,7 +144,7 @@ public abstract class EditableFieldElement implements PropertyContainer {
      * Draws the element in the context of a field editor. By default this just calls draw(), but some
      * elements may want to do something else, for example if they're normally invisible.
      */
-    abstract public void drawForEditor(IFieldRenderer renderer, boolean isSelected);
+    abstract public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected);
 
     /**
      * Determines whether a point is sufficiently close to any part of this element.

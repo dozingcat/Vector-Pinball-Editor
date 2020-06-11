@@ -17,10 +17,8 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 import com.dozingcatsoftware.vectorpinball.model.Field;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
 
-public class FxCanvasRenderer implements IFieldRenderer {
+public class FxCanvasRenderer implements IEditableFieldRenderer {
 
     private static final double DEFAULT_SCALE = 25;
     // Zoom levels greater than 2 result in poor performance using the simple
@@ -97,7 +95,26 @@ public class FxCanvasRenderer implements IFieldRenderer {
         context.stroke();
     }
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
-        drawLine((double)x1, y1, x2, y2, color);
+        drawLine((double) x1, y1, x2, y2, color);
+    }
+
+    @Override public void drawLinePath(double[] xEndpoints, double[] yEndpoints, int color) {
+        context.setStroke(toFxPaint(color));
+        context.beginPath();
+        context.moveTo(worldToPixelX(xEndpoints[0]), worldToPixelY(yEndpoints[0]));
+        for (int i = 1; i < xEndpoints.length; i++) {
+            context.lineTo(worldToPixelX(xEndpoints[i]), worldToPixelY(yEndpoints[i]));
+        }
+        context.stroke();
+    }
+    @Override public void drawLinePath(float[] xEndpoints, float[] yEndpoints, int color) {
+        context.setStroke(toFxPaint(color));
+        context.beginPath();
+        context.moveTo(worldToPixelX(xEndpoints[0]), worldToPixelY(yEndpoints[0]));
+        for (int i = 1; i < xEndpoints.length; i++) {
+            context.lineTo(worldToPixelX(xEndpoints[i]), worldToPixelY(yEndpoints[i]));
+        }
+        context.stroke();
     }
 
     @Override public void fillCircle(double cx, double cy, double radius, int color) {
@@ -106,7 +123,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
     }
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
-        fillCircle((double)cx, (double)cy, radius, color);
+        fillCircle((double) cx, cy, radius, color);
     }
 
     @Override public void frameCircle(double cx, double cy, double radius, int color) {
@@ -115,7 +132,7 @@ public class FxCanvasRenderer implements IFieldRenderer {
                 worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
     }
     @Override public void frameCircle(float cx, float cy, float radius, int color) {
-        frameCircle((double)cx, (double)cy, radius, color);
+        frameCircle((double) cx, cy, radius, color);
     }
 
     @Override public void fillPolygon(double[] xPoints, double[] yPoints, int color) {
@@ -162,12 +179,6 @@ public class FxCanvasRenderer implements IFieldRenderer {
     @Override public int getHeight() {
         return (int)canvas.getHeight();
     }
-
-    @Override public boolean canDraw() {
-        return true;
-    }
-
-    @Override public void setDebugMessage(String debugInfo) {}
 
     @Override public double getRelativeScale() {
         return SCALE_RATIOS[scaleRatioIndex];

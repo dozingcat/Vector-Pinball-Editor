@@ -7,12 +7,16 @@ import java.util.Map;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.dozingcatsoftware.vectorpinball.model.*;
+import com.dozingcatsoftware.vectorpinball.model.Ball;
+import com.dozingcatsoftware.vectorpinball.model.Color;
+import com.dozingcatsoftware.vectorpinball.model.Field;
+import com.dozingcatsoftware.vectorpinball.model.IDrawable;
+import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
+import com.dozingcatsoftware.vectorpinball.model.WorldLayers;
 
 /**
  * Abstract superclass of all elements in the pinball field, such as walls, bumpers, and flippers.
  */
-
 public abstract class FieldElement implements IDrawable {
 
     public static final String CLASS_PROPERTY = "class";
@@ -32,23 +36,11 @@ public abstract class FieldElement implements IDrawable {
     // Between 0 and 1, increases if a ball is at this element's layer, decreases if not.
     double layerColorFraction = 0;
 
-    int flashCounter=0; // Inverts colors when >0, decrements in tick().
+    int flashCounter = 0; // Inverts colors when >0, decrements in tick().
     long score = 0;
 
     // Default wall color shared by WallElement, WallArcElement, WallPathElement.
     static final int DEFAULT_WALL_COLOR = Color.fromRGB(64, 64, 160);
-
-    /**
-     * Exception thrown when an element can't be created because it depends on another element that
-     * hasn't been created yet.
-     */
-    public static class DependencyNotAvailableException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        public DependencyNotAvailableException(String message) {
-            super(message);
-        }
-    }
 
     /**
      * Creates and returns a FieldElement object from the given map of parameters. The class to
@@ -58,32 +50,27 @@ public abstract class FieldElement implements IDrawable {
      */
     @SuppressWarnings("unchecked")
     public static FieldElement createFromParameters(
-            Map<String, Object> params, FieldElementCollection collection, WorldLayers worlds)
-                    throws DependencyNotAvailableException {
+            Map<String, ?> params, FieldElementCollection collection, WorldLayers worlds) {
         if (!params.containsKey(CLASS_PROPERTY)) {
             throw new IllegalArgumentException("class not specified for element: " + params);
         }
         Class<? extends FieldElement> elementClass = null;
         // if package not specified, use this package
-        String className = (String)params.get(CLASS_PROPERTY);
-        if (className.indexOf('.')==-1) {
+        String className = (String) params.get(CLASS_PROPERTY);
+        if (className.indexOf('.') == -1) {
             className = "com.dozingcatsoftware.vectorpinball.elements." + className;
         }
         try {
             elementClass = (Class<? extends FieldElement>) Class.forName(className);
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
         FieldElement self;
         try {
-            self = elementClass.newInstance();
+            self = elementClass.getConstructor().newInstance();
         }
-        catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        catch (InstantiationException e) {
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
         // TODO: Have `initialize` take WorldLayers instead of a single World.
@@ -99,8 +86,7 @@ public abstract class FieldElement implements IDrawable {
      * should not override this method.
      */
     @SuppressWarnings("unchecked")
-    public void initialize(Map<String, ?> params, FieldElementCollection collection, World world)
-            throws DependencyNotAvailableException {
+    public void initialize(Map<String, ?> params, FieldElementCollection collection, World world) {
         this.parameters = params;
         this.box2dWorld = world;
         this.elementID = (String)params.get(ID_PROPERTY);
@@ -135,9 +121,8 @@ public abstract class FieldElement implements IDrawable {
 
     /**
      * Called on every update from Field.tick. Default implementation decrements flash counter if
-     * active and updates layer color fraction, subclasses can override to perform additional
-     * processing, e.g. RolloverGroupElement checking for balls within radius of rollovers.
-     * Subclasses should call super.tick(field).
+     * active, subclasses can override to perform additional processing, e.g. RolloverGroupElement
+     * checking for balls within radius of rollovers. Subclasses should call super.tick(field).
      */
     public void tick(Field field) {
         if (this.flashCounter > 0) {
@@ -159,7 +144,8 @@ public abstract class FieldElement implements IDrawable {
      * Called when the player activates one or more flippers. The default implementation does
      * nothing; subclasses can override.
      */
-    public void flippersActivated(Field field, List<FlipperElement> flippers) {}
+    public void flippersActivated(Field field, List<FlipperElement> flippers) {
+    }
 
     /**
      * Causes the colors returned by red/blue/greenColorComponent methods to be inverted for the
@@ -171,11 +157,9 @@ public abstract class FieldElement implements IDrawable {
 
     /**
      * Must be overridden by subclasses, which should perform any setup required after creation.
-     * Throws DependencyNotAvailableException if the element can't be initialized because it's
-     * dependent on other uninitialized elements.
      */
-    public abstract void finishCreateElement(Map<String, ?> params, FieldElementCollection collection)
-            throws DependencyNotAvailableException;
+    public abstract void finishCreateElement(
+            Map<String, ?> params, FieldElementCollection collection);
 
     /**
      * Must be overridden by subclasses, to create the element's Box2D bodies. This will be called
@@ -192,14 +176,15 @@ public abstract class FieldElement implements IDrawable {
     /**
      * Must be overridden by subclasses to draw the element, using IFieldRenderer methods.
      */
-    @Override public abstract void draw(Field field, IFieldRenderer renderer);
+    public abstract void draw(Field field, IFieldRenderer renderer);
 
     /**
      * Called when a ball collides with a Body in this element. The default implementation does
      * nothing (allowing objects to bounce off each other normally). Subclasses can override to
      * perform other actions like applying extra force.
      */
-    public void handleCollision(Ball ball, Body bodyHit, Field field) {}
+    public void handleCollision(Ball ball, Body bodyHit, Field field) {
+    }
 
     /** Returns this element's ID, or null if not specified. */
     public String getElementId() {
@@ -208,15 +193,6 @@ public abstract class FieldElement implements IDrawable {
 
     @Override public int getLayer() {
         return this.layer;
-    }
-
-    /** Returns the parameter map from which this element was created. */
-    public Map<String, ?> getParameters() {
-        return parameters;
-    }
-
-    public boolean hasParameterKey(String key) {
-        return parameters.containsKey(key);
     }
 
     public Object getRawParameterValueForKey(String key) {
@@ -232,12 +208,6 @@ public abstract class FieldElement implements IDrawable {
         // TODO: parse function/math expressions.
         Number num = (Number) parameters.get(key);
         return num.intValue();
-    }
-
-    public long getLongParameterValueForKey(String key) {
-        // TODO: parse function/math expressions.
-        Number num = (Number) parameters.get(key);
-        return num.longValue();
     }
 
     public float[] getFloatArrayParameterValueForKey(String key) {

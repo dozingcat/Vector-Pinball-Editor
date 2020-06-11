@@ -6,13 +6,10 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asInt;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
-import com.badlogic.gdx.physics.box2d.World;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FieldElementCollection;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
@@ -32,21 +29,14 @@ public class FieldLayout {
     static final String LAUNCH_VELOCITY_PROPERTY = "launchVelocity";
     static final String LAUNCH_RANDOM_VELOCITY_PROPERTY = "launchVelocityRandomDelta";
     static final String LAUNCH_DEAD_ZONE_PROPERTY = "launchDeadZone";
+    static final String SCRIPT_PROPERTY = "script";
 
     static final String VARIABLES_PROPERTY = "variables";
     static final String ELEMENTS_PROPERTY = "elements";
 
     Random RAND = new Random();
 
-    private FieldLayout() {}
-
-    public static FieldLayout layoutForLevel(Map<String, Object> levelMap, WorldLayers worlds) {
-        FieldLayout layout = new FieldLayout();
-        layout.initFromLevel(levelMap, worlds);
-        return layout;
-    }
-
-    Map<String, Object> allParameters;
+    Map<String, ?> allParameters;
     FieldElementCollection fieldElements;
     float width;
     float height;
@@ -64,40 +54,7 @@ public class FieldLayout {
     static final int DEFAULT_BALL_COLOR = Color.fromRGB(255, 0, 0);
     static final int DEFAULT_SECONDARY_BALL_COLOR = Color.fromRGB(176, 176, 176);
 
-    static List<?> listForKey(Map<?, ?> map, Object key) {
-        if (map.containsKey(key)) return (List<?>) map.get(key);
-        return Collections.EMPTY_LIST;
-    }
-
-    @SuppressWarnings("unchecked")
-    private FieldElementCollection createFieldElements(
-            Map<String, Object> layoutMap, WorldLayers worlds) {
-        FieldElementCollection elements = new FieldElementCollection();
-
-        Map<String, Object> variables = (Map<String, Object>) layoutMap.get(VARIABLES_PROPERTY);
-        if (variables != null) {
-            for (String varname : variables.keySet()) {
-                elements.setVariable(varname, variables.get(varname));
-            }
-        }
-
-        Set<Map<String, Object>> unresolvedElements = new HashSet<Map<String, Object>>();
-        // Initial pass
-        for (Object obj : listForKey(layoutMap, ELEMENTS_PROPERTY)) {
-            if (!(obj instanceof Map)) continue;
-            Map<String, Object> params = (Map<String, Object>) obj;
-            try {
-                elements.addElement(FieldElement.createFromParameters(params, elements, worlds));
-            }
-            catch (FieldElement.DependencyNotAvailableException ex) {
-                unresolvedElements.add(params);
-            }
-        }
-
-        return elements;
-    }
-
-    void initFromLevel(Map<String, Object> layoutMap, WorldLayers worlds) {
+    public FieldLayout(Map<String, Object> layoutMap, WorldLayers worlds) {
         this.width = asFloat(layoutMap.get(WIDTH_PROPERTY), 20.0f);
         this.height = asFloat(layoutMap.get(HEIGHT_PROPERTY), 30.0f);
         this.gravity = asFloat(layoutMap.get(GRAVITY_PROPERTY), 4.0f);
@@ -116,6 +73,33 @@ public class FieldLayout {
         this.fieldElements = createFieldElements(layoutMap, worlds);
     }
 
+    static List<?> listForKey(Map<?, ?> map, Object key) {
+        if (map.containsKey(key)) return (List<?>) map.get(key);
+        return Collections.emptyList();
+    }
+
+    private FieldElementCollection createFieldElements(
+            Map<String, Object> layoutMap, WorldLayers worlds) {
+        FieldElementCollection elements = new FieldElementCollection();
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> variables = (Map<String, Object>) layoutMap.get(VARIABLES_PROPERTY);
+        if (variables != null) {
+            for (String varname : variables.keySet()) {
+                elements.setVariable(varname, variables.get(varname));
+            }
+        }
+
+        for (Object obj : listForKey(layoutMap, ELEMENTS_PROPERTY)) {
+            if (!(obj instanceof Map)) continue;
+            @SuppressWarnings("unchecked")
+            Map<String, Object> params = (Map<String, Object>) obj;
+            elements.addElement(FieldElement.createFromParameters(params, elements, worlds));
+        }
+
+        return elements;
+    }
+
     private int colorFromMap(Map<String, ?> map, String key, int defaultColor) {
         @SuppressWarnings("unchecked")
         List<Number> value = (List<Number>) map.get(key);
@@ -129,9 +113,11 @@ public class FieldLayout {
     public List<FlipperElement> getFlipperElements() {
         return fieldElements.getFlipperElements();
     }
+
     public List<FlipperElement> getLeftFlipperElements() {
         return fieldElements.getLeftFlipperElements();
     }
+
     public List<FlipperElement> getRightFlipperElements() {
         return fieldElements.getRightFlipperElements();
     }
@@ -162,8 +148,8 @@ public class FieldLayout {
 
     // Can apply random velocity increment if specified by "launchVelocityRandomDelta" key.
     public List<Float> getLaunchVelocity() {
-        float vx = launchVelocity.get(0).floatValue();
-        float vy = launchVelocity.get(1).floatValue();
+        float vx = launchVelocity.get(0);
+        float vy = launchVelocity.get(1);
 
         if (launchVelocityRandomDelta.size() >= 2) {
             if (launchVelocityRandomDelta.get(0) > 0) {
@@ -179,6 +165,7 @@ public class FieldLayout {
     public float getWidth() {
         return width;
     }
+
     public float getHeight() {
         return height;
     }
@@ -194,15 +181,15 @@ public class FieldLayout {
 
     /** Returns the magnitude of the gravity vector. */
     public float getGravity() {
-        return asFloat(allParameters.get("gravity"), 4.0f);
+        return gravity;
     }
 
     public String getDelegateClassName() {
-        return (String)allParameters.get("delegate");
+        return (String) allParameters.get(DELEGATE_PROPERTY);
     }
 
     public String getScriptText() {
-        return (String)allParameters.get("script");
+        return (String) allParameters.get(SCRIPT_PROPERTY);
     }
 
     public Object getValueWithKey(String key) {

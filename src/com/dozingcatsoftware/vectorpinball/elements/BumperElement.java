@@ -18,7 +18,6 @@ import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
  * This FieldElement subclass represents a bumper that applies an impulse to a ball when it hits.
  * The impulse magnitude is controlled by the "kick" parameter in the configuration map.
  */
-
 public class BumperElement extends FieldElement {
 
     public static final String POSITION_PROPERTY = "position";
@@ -34,8 +33,9 @@ public class BumperElement extends FieldElement {
     float cx, cy;
     float kick;
 
-    @Override public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
-        List<?> pos = (List<?>)params.get(POSITION_PROPERTY);
+    @Override
+    public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
+        List<?> pos = (List<?>) params.get(POSITION_PROPERTY);
         this.radius = asFloat(params.get(RADIUS_PROPERTY));
         this.cx = asFloat(pos.get(0));
         this.cy = asFloat(pos.get(1));
@@ -52,7 +52,7 @@ public class BumperElement extends FieldElement {
     }
 
     @Override public boolean shouldCallTick() {
-        // Needs to call tick to decrement flash counter, but can use superclass tick() implementation.
+        // Needs to call tick() to decrement flash counter, but can use superclass implementation.
         return true;
     }
 
@@ -63,14 +63,14 @@ public class BumperElement extends FieldElement {
         Vector2 thisPos = bumperBody.getPosition();
         float ix = ballpos.x - thisPos.x;
         float iy = ballpos.y - thisPos.y;
-        float mag = (float)Math.hypot(ix, iy);
+        float mag = (float) Math.hypot(ix, iy);
         float scale = this.kick / mag;
-        return new Vector2(ix*scale, iy*scale);
+        return new Vector2(ix * scale, iy * scale);
     }
 
     @Override public void handleCollision(Ball ball, Body bodyHit, Field field) {
         Vector2 impulse = this.impulseForBall(ball);
-        if (impulse!=null) {
+        if (impulse != null) {
             ball.applyLinearImpulse(impulse);
             flashForFrames(3);
         }

@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Color;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
+import com.dozingcatsoftware.vectorpinball.editor.Point;
 
 public class EditableSensorElement extends EditableFieldElement {
 
@@ -33,7 +33,7 @@ public class EditableSensorElement extends EditableFieldElement {
         props.put(RECT_PROPERTY, Arrays.asList("-0.5", "-0.5", "0", "0"));
     }
 
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+    @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
         renderer.drawLine(xmin, ymin, xmax, ymin, EDITOR_OUTLINE_COLOR);
         renderer.drawLine(xmax, ymin, xmax, ymax, EDITOR_OUTLINE_COLOR);

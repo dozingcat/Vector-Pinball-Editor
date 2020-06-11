@@ -2,15 +2,15 @@ package com.dozingcatsoftware.vectorpinball.editor.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.TAU;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
+import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadiansF;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Color;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
+import com.dozingcatsoftware.vectorpinball.editor.Point;
 
 public class EditableFlipperElement extends EditableFieldElement {
 
@@ -33,8 +33,8 @@ public class EditableFlipperElement extends EditableFieldElement {
         this.cx = asDouble(pos.get(0));
         this.cy = asDouble(pos.get(1));
         this.flipperLength = asDouble(getProperty(LENGTH_PROPERTY));
-        this.minangle = toRadians(asDouble(getProperty(MIN_ANGLE_PROPERTY)));
-        this.maxangle = toRadians(asDouble(getProperty(MAX_ANGLE_PROPERTY)));
+        this.minangle = Math.toRadians(asDouble(getProperty(MIN_ANGLE_PROPERTY)));
+        this.maxangle = Math.toRadians(asDouble(getProperty(MAX_ANGLE_PROPERTY)));
     }
 
     @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
@@ -64,7 +64,7 @@ public class EditableFlipperElement extends EditableFieldElement {
         }
     }
 
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+    @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
         int color = currentColor(DEFAULT_COLOR);
         renderer.drawLine(cx, cy, endX(), endY(), color);

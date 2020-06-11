@@ -1,4 +1,4 @@
-package com.dozingcatsoftware.vectorpinball.model;
+package com.dozingcatsoftware.vectorpinball.editor;
 
 import java.util.List;
 

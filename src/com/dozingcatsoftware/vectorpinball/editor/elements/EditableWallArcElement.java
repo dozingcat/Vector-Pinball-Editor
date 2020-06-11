@@ -2,15 +2,15 @@ package com.dozingcatsoftware.vectorpinball.editor.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asInt;
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadians;
+import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadiansF;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.model.Color;
-import com.dozingcatsoftware.vectorpinball.model.IFieldRenderer;
-import com.dozingcatsoftware.vectorpinball.model.Point;
+import com.dozingcatsoftware.vectorpinball.editor.Point;
 
 public class EditableWallArcElement extends EditableFieldElement {
 
@@ -29,8 +29,8 @@ public class EditableWallArcElement extends EditableFieldElement {
         List<?> centerPos = (List<?>)getProperty(CENTER_PROPERTY);
         double centerX = asDouble(centerPos.get(0));
         double centerY = asDouble(centerPos.get(1));
-        double minAngle = toRadians(asDouble(getProperty(MIN_ANGLE_PROPERTY)));
-        double maxAngle = toRadians(asDouble(getProperty(MAX_ANGLE_PROPERTY)));
+        double minAngle = Math.toRadians(asDouble(getProperty(MIN_ANGLE_PROPERTY)));
+        double maxAngle = Math.toRadians(asDouble(getProperty(MAX_ANGLE_PROPERTY)));
         int numSegments = asInt(getProperty(NUM_SEGMENTS_PROPERTY), 5);
 
         double xRadius, yRadius;
@@ -63,7 +63,7 @@ public class EditableWallArcElement extends EditableFieldElement {
         props.put(MAX_ANGLE_PROPERTY, "135");
     }
 
-    @Override public void drawForEditor(IFieldRenderer renderer, boolean isSelected) {
+    @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
         refreshIfDirty();
         int color = currentColor(DEFAULT_WALL_COLOR);
         for (double[] segment : this.lineSegments) {
