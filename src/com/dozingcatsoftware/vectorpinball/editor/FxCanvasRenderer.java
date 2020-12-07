@@ -23,7 +23,7 @@ public class FxCanvasRenderer implements IEditableFieldRenderer {
     private static final double DEFAULT_SCALE = 25;
     // Zoom levels greater than 2 result in poor performance using the simple
     // approach of creating a larger canvas.
-    private static final double[] SCALE_RATIOS = {1.0/2, 3.0/4, 1.0, 3.0/2, 2.0};
+    private static final double[] SCALE_RATIOS = {1.0/2, 3.0/4, 1.0, 4.0/3, 2.0};
     private static final int DEFAULT_SCALE_RATIO_INDEX = 2;
 
     private Canvas canvas;

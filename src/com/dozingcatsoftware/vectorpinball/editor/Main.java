@@ -381,6 +381,7 @@ public class Main extends Application {
 
     void displayForEditing(Map<String, Object> fieldMap) {
         renderer.setCanvas(fieldCanvas);
+        stopGame();
         editableField.initFromProperties(fieldMap);
         renderer.doDraw();
         inspectorView.updateInspectorValues();
@@ -398,23 +399,20 @@ public class Main extends Application {
     });
 
     void startGame() {
-        if (fieldDriver==null) {
-            field = new Field(System::currentTimeMillis, stringResolver, AudioPlayer.NoOpPlayer.getInstance());
-            field.resetForLayoutMap(editableField.getPropertyMapSnapshot(), groovyDelegateFn);
-            renderer.setField(field);
+        stopGame();
+        field = new Field(System::currentTimeMillis, stringResolver, AudioPlayer.NoOpPlayer.getInstance());
+        field.resetForLayoutMap(editableField.getPropertyMapSnapshot(), groovyDelegateFn);
+        renderer.setField(field);
+        showScoreView();
 
-            fieldDriver = new FieldDriver();
-            fieldDriver.setDrawFunction(renderer::doDraw);
-            fieldDriver.setField(field);
-            fieldDriver.start();
-            showScoreView();
-        }
-        else {
-            field.resetForLayoutMap(editableField.getPropertyMapSnapshot(), groovyDelegateFn);
-        }
+        fieldDriver = new FieldDriver();
+        fieldDriver.setDrawFunction(renderer::doDraw);
+        fieldDriver.setField(field);
+        fieldDriver.start();
+
         field.startGame();
-        field.removeDeadBalls();
-        field.launchBall();
+        launchBallIfNeeded();
+
         editorState = EditorState.SAMPLE_GAME;
         fieldCanvas.requestFocus();
 
@@ -515,11 +513,14 @@ public class Main extends Application {
     }
 
     private void launchBallIfNeeded() {
-        if (!field.getGameState().isGameInProgress()) {
-            startGame();
+        // synchronized so we don't modify the Box2d world while it's updating.
+        synchronized (field) {
+            if (!field.getGameState().isGameInProgress()) {
+                startGame();
+            }
+            field.removeDeadBalls();
+            if (field.getBalls().isEmpty()) field.launchBall();
         }
-        field.removeDeadBalls();
-        if (field.getBalls().isEmpty()) field.launchBall();
     }
 
     void handleSelectionChange() {
