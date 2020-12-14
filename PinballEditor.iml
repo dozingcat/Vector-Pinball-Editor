@@ -40,19 +40,6 @@
     <orderEntry type="library" name="gdx-box2d-platform-1.9.10-natives-desktop" level="project" />
     <orderEntry type="library" name="gdx-box2d-1.9.10" level="project" />
     <orderEntry type="library" name="gdx-1.9.10" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="file:///usr/share/openjfx/lib" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file:///usr/share/openjfx/lib" />
-        </SOURCES>
-        <jarDirectory url="file:///usr/share/openjfx/lib" recursive="false" />
-        <jarDirectory url="file:///usr/share/openjfx/lib" recursive="false" type="SOURCES" />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library name="JUnit5.4">
         <CLASSES>
@@ -67,6 +54,19 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file:///usr/share/openjfx/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file:///usr/share/openjfx/lib" />
+        </SOURCES>
+        <jarDirectory url="file:///usr/share/openjfx/lib" recursive="false" />
+        <jarDirectory url="file:///usr/share/openjfx/lib" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
   </component>

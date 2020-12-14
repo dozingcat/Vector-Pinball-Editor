@@ -15,6 +15,7 @@ public class EditableSensorElement extends EditableFieldElement {
     public static final String RECT_PROPERTY = "rect";
     public static final String BALL_LAYER_TO_PROPERTY = "ballLayer";
     public static final String BALL_LAYER_FROM_PROPERTY = "ballLayerFrom";
+    public static final String RECORD_BALL_TIMES_PROPERTY = "recordBallTimes";
 
     static final int EDITOR_OUTLINE_COLOR = Color.fromRGB(128, 128, 128);
     static final int EDITOR_FILL_COLOR = Color.fromRGBA(128, 128, 128, 128);

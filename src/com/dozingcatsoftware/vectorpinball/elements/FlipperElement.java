@@ -135,8 +135,8 @@ public class FlipperElement extends FieldElement {
         return true;
     }
 
-    @Override public void tick(Field field) {
-        super.tick(field);
+    @Override public void tick(Field field, long nanos) {
+        super.tick(field, nanos);
 
         // If angle is at maximum, reduce speed so that the ball won't fly off when it hits.
         if (getEffectiveMotorSpeed() > 0.5f) {

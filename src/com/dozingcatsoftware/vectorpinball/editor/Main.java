@@ -255,12 +255,14 @@ public class Main extends Application {
         scriptColumnConstraints.setPrefWidth(SCRIPT_COLUMN_WIDTH);
         showScriptButton.setText(localizedString("Hide Script"));
         showScriptButton.setOnAction((event) -> hideScriptView());
+        mainStage.setWidth(mainStage.getWidth() + SCRIPT_COLUMN_WIDTH);
     }
 
     void hideScriptView() {
         scriptColumnConstraints.setPrefWidth(0);
         showScriptButton.setText(localizedString("Show Script"));
         showScriptButton.setOnAction((event) -> showScriptView());
+        mainStage.setWidth(mainStage.getWidth() - SCRIPT_COLUMN_WIDTH);
     }
 
     MenuItem createMenuItem(String label, String shortcutChar, Runnable onAction) {

@@ -119,14 +119,21 @@ public abstract class EditableFieldElement implements PropertyContainer {
      * Gets the current color by using the defined color if set and the default color if not.
      */
     protected int currentColor(int defaultColor) {
-        int color = properties.containsKey(COLOR_PROPERTY) ?
-                Color.fromList((List<Number>)properties.get(COLOR_PROPERTY)) : defaultColor;
+        int color = baseColorOrDefault(defaultColor);
+        return colorForDisplay(color);
+    }
 
+    protected int baseColorOrDefault(int defaultColor) {
+        return properties.containsKey(COLOR_PROPERTY) ?
+                Color.fromList((List<Number>)properties.get(COLOR_PROPERTY)) : defaultColor;
+    }
+
+    protected int colorForDisplay(int color) {
         // If very dark, make brighter for display.
         int rgbSum = Color.getRed(color) + Color.getGreen(color) + Color.getBlue(color);
         if (rgbSum < 192 || Color.getAlpha(color) < 64) {
             int extra = Math.max(0, (192 - rgbSum) / 3);
-            color = Color.fromRGBA(
+            return Color.fromRGBA(
                     Color.getRed(color) + extra,
                     Color.getGreen(color) + extra,
                     Color.getBlue(color) + extra,
@@ -140,10 +147,6 @@ public abstract class EditableFieldElement implements PropertyContainer {
                 ((Number)this.properties.get(LAYER_PROPERTY)).intValue() : 0;
     }
 
-    /**
-     * Draws the element in the context of a field editor. By default this just calls draw(), but some
-     * elements may want to do something else, for example if they're normally invisible.
-     */
     abstract public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected);
 
     /**
