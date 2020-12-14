@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -59,10 +60,18 @@ public class Field implements ContactListener {
     // Duration after which the ball is considered stuck if it hasn't moved significantly,
     // if it's a single ball and no flippers are active. Normally the time ratio is around 2,
     // so this will be about 5 real-world seconds.
-    static final long STUCK_BALL_NANOS = 10000000000L;
+    static final long STUCK_BALL_NANOS = 10_000_000_000L;
+
+    Long lostBallTimeMillis = null;
+
+    // `zoomNanos` is 0 if the field should be zoomed out fully and `ZOOM_DURATION_NANOS` if
+    // zoomed in fully.
+    static final long ZOOM_DURATION_NANOS = 1_000_000_000L;
+    long zoomNanos = 0;
+    Vector2 zoomCenter = null;
 
     LongSupplier milliTimeFn;
-    AudioPlayer audioPlayer = AudioPlayer.NoOpPlayer.getInstance();
+    AudioPlayer audioPlayer;
     IStringResolver stringResolver;
 
     // Pass System::currentTimeMillis as `milliTimeFn` to use the standard system clock.
@@ -95,6 +104,11 @@ public class Field implements ContactListener {
         boolean isFieldActive(Field field);
     }
 
+    // Used by field delegates to retrieve localized strings.
+    public String resolveString(String key, Object... params) {
+        return this.stringResolver.resolveString(key, params);
+    }
+
     // Helper class to represent actions scheduled in the future.
     static class ScheduledAction implements Comparable<ScheduledAction> {
         Long actionTimeNanos;
@@ -115,16 +129,16 @@ public class Field implements ContactListener {
         this.worlds = new WorldLayers(this);
         this.layout = new FieldLayout(layoutMap, worlds);
         worlds.setGravity(new Vector2(0.0f, -this.layout.getGravity()));
-        balls = new ArrayList<Ball>();
-        shapes = new ArrayList<Shape>();
+        balls = new ArrayList<>();
+        shapes = new ArrayList<>();
 
-        scheduledActions = new PriorityQueue<ScheduledAction>();
+        scheduledActions = new PriorityQueue<>();
         gameTimeNanos = 0;
 
         // Map bodies and IDs to FieldElements, and get elements on whom tick() has to be called.
-        bodyToFieldElement = new HashMap<Body, FieldElement>();
-        fieldElementsByID = new HashMap<String, FieldElement>();
-        List<FieldElement> tickElements = new ArrayList<FieldElement>();
+        bodyToFieldElement = new HashMap<>();
+        fieldElementsByID = new HashMap<>();
+        List<FieldElement> tickElements = new ArrayList<>();
 
         for (FieldElement element : layout.getFieldElements()) {
             if (element.getElementId() != null) {
@@ -195,7 +209,7 @@ public class Field implements ContactListener {
      * After updating physics, processes element collisions, calls tick() on every FieldElement,
      * and performs scheduled actions.
      */
-    void tick(long nanos, int iters) {
+    public void tick(long nanos, int iters) {
         float dt = (nanos / 1e9f) / iters;
 
         for (int i = 0; i < iters; i++) {
@@ -208,6 +222,7 @@ public class Field implements ContactListener {
         processElementTicks(nanos);
         processScheduledActions();
         processGameMessages();
+        processZoom(nanos);
         checkForStuckBall(nanos);
 
         getDelegate().tick(this, nanos);
@@ -240,9 +255,7 @@ public class Field implements ContactListener {
     public void setShapes(List<Shape> shapes) {
         this.shapes.clear();
         this.shapes.ensureCapacity(shapes.size());
-        for (int i = 0; i < shapes.size(); i++) {
-            this.shapes.add(shapes.get(i));
-        }
+        this.shapes.addAll(shapes);
     }
 
     public Ball createBall(float x, float y) {
@@ -277,6 +290,7 @@ public class Field implements ContactListener {
         Ball ball = createBall(position.get(0), position.get(1));
         ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
         playBallLaunchSound();
+        lostBallTimeMillis = null;
         return ball;
     }
 
@@ -303,6 +317,7 @@ public class Field implements ContactListener {
      * GameState to the next ball. Shows a game message to indicate the ball number or game over.
      */
     private void doBallLost() {
+        lostBallTimeMillis = milliTimeFn.getAsLong();
         boolean hasExtraBall = (this.gameState.getExtraBalls() > 0);
         this.gameState.doNextBall();
         // Display message for next ball or game over.
@@ -325,17 +340,26 @@ public class Field implements ContactListener {
     }
 
     /**
+     * Returns true if there are no balls in play, and the most recent ball loss happened within
+     * `millis` of the current time.
+     */
+    public boolean ballLostWithinMillis(long millis) {
+        return lostBallTimeMillis != null && milliTimeFn.getAsLong() - lostBallTimeMillis <= millis;
+    }
+
+    /**
      * Returns true if there are active elements in motion. Returns false if there are no active
      * elements, indicating that tick() can be called with larger time steps, less frequently, or
      * not at all.
      */
     public boolean hasActiveElements() {
-        // HACK: to allow flippers to drop properly at beginning of game, we need accurate
-        // simulation.
+        // HACK: to allow flippers to drop properly at start of game, we need accurate simulation.
         if (this.gameTimeNanos < 500) return true;
         // Allow delegate to return true even if there are no balls.
         if (getDelegate().isFieldActive(this)) return true;
-        return this.getBalls().size() > 0;
+        // We need smooth animation if there are any balls, or if we're zooming out after all balls
+        // were lost.
+        return this.getBalls().size() > 0 || zoomNanos > 0;
     }
 
 
@@ -393,15 +417,9 @@ public class Field implements ContactListener {
     public void draw(IFieldRenderer renderer) {
         // Draw levels low to high, and draw each ball after everything else at its level.
         elementsInDrawOrder.clear();
-        for (FieldElement elem : this.getFieldElementsArray()) {
-            elementsInDrawOrder.add(elem);
-        }
-        for (int i = 0; i < this.balls.size(); i++) {
-            elementsInDrawOrder.add(this.balls.get(i));
-        }
-        for (int i = 0; i < this.shapes.size(); i++) {
-            elementsInDrawOrder.add(this.shapes.get(i));
-        }
+        elementsInDrawOrder.addAll(Arrays.asList(this.getFieldElementsArray()));
+        elementsInDrawOrder.addAll(this.balls);
+        elementsInDrawOrder.addAll(this.shapes);
         Collections.sort(elementsInDrawOrder, drawOrdering);
 
         for (int i = 0; i < elementsInDrawOrder.size(); i++) {
@@ -409,7 +427,7 @@ public class Field implements ContactListener {
         }
     }
 
-    ArrayList<FlipperElement> activatedFlippers = new ArrayList<FlipperElement>();
+    ArrayList<FlipperElement> activatedFlippers = new ArrayList<>();
 
     /**
      * Called to engage or disengage all flippers. If called with an argument of true, and all
@@ -578,9 +596,25 @@ public class Field implements ContactListener {
         }
     }
 
-    // Used by field delegates to retrieve localized strings.
-    public String resolveString(String key, Object... params) {
-        return this.stringResolver.resolveString(key, params);
+    private boolean canBeZoomedIn() {
+        return this.balls.size() == 1;
+    }
+
+    public float zoomRatio() {
+        return (float) (1.0 * zoomNanos / ZOOM_DURATION_NANOS);
+    }
+
+    public Vector2 zoomCenterPoint() {
+        return (zoomCenter != null) ?
+                zoomCenter : new Vector2(getLaunchPosition().get(0), getLaunchPosition().get(1));
+    }
+
+    private void processZoom(long nanos) {
+        zoomNanos = canBeZoomedIn() ?
+                Math.min(ZOOM_DURATION_NANOS, zoomNanos + nanos) :
+                Math.max(0, zoomNanos - nanos);
+        // When the last ball goes away, zoom out from its last position.
+        zoomCenter = (this.balls.size() >= 1) ? this.balls.get(0).getPosition() : zoomCenter;
     }
 
     /**
