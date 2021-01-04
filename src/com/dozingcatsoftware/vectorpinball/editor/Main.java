@@ -204,7 +204,10 @@ public class Main extends Application {
         primaryStage.setMinWidth(640);
         primaryStage.setMinHeight(500);
         primaryStage.setOnCloseRequest((event) -> {
-            if (!confirmCloseCurrentField()) {
+            if (confirmCloseCurrentField()) {
+                stopGame();  // Stops game thread if needed so that app will terminate.
+            }
+            else {
                 event.consume();  // Prevents exit.
             }
         });
