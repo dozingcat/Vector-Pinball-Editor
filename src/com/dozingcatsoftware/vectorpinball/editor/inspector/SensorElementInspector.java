@@ -27,6 +27,8 @@ public class SensorElementInspector extends ElementInspector {
                 EditableSensorElement.BALL_LAYER_FROM_PROPERTY, "Trigger at"));
         box.getChildren().add(createIntegerFieldWithLabel(
                 EditableSensorElement.BALL_LAYER_TO_PROPERTY, "Move ball to"));
+        box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
+                EditableSensorElement.RECORD_BALL_TIMES_PROPERTY, "Record times"));
         pane.getChildren().add(box);
     }
 

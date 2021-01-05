@@ -17,7 +17,7 @@ public class Ball implements IDrawable {
     private Body body;
     private int primaryColor;
     private int secondaryColor;
-    private String previousSensorId;
+    private String mostRecentSensorId;
 
     private Ball(
             WorldLayers worlds, int layer, Body body, int primaryColor, int secondaryColor) {
@@ -99,13 +99,13 @@ public class Ball implements IDrawable {
         this.secondaryColor = secondaryColor;
     }
 
-    public String getPreviousSensorId() {
-        return this.previousSensorId;
-    }
-    public void setPreviousSensorId(String s) {
-        this.previousSensorId = s;
+    public String getMostRecentSensorId() {
+        return this.mostRecentSensorId;
     }
 
+    public void setMostRecentSensorId(String sensorId) {
+        this.mostRecentSensorId = sensorId;
+    }
 
     public void moveToLayer(int newLayer) {
         if (layer == newLayer) {

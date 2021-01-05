@@ -13,7 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public class Box2DFactory {
 
-	/** Creates a circle object with the given position and radius. Resitution defaults to 0.6. */
+	/** Creates a circle object with the given position and radius. Restitution defaults to 0.6. */
 	public static Body createCircle(World world, float x, float y, float radius, boolean isStatic) {
 		CircleShape sd = new CircleShape();
 		sd.setRadius(radius);
