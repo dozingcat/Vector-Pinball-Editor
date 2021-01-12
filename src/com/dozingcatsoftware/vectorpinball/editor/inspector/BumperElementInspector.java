@@ -27,6 +27,8 @@ public class BumperElementInspector extends ElementInspector {
                 createDecimalStringFieldWithLabel(EditableBumperElement.OUTER_RADIUS_PROPERTY, "Outer radius"));
         box.getChildren().add(
                 createColorSelectorWithLabel(EditableBumperElement.OUTER_COLOR_PROPERTY, "Outer color"));
+        box.getChildren().add(createColorSelectorWithLabel(
+                EditableBumperElement.INACTIVE_LAYER_OUTER_COLOR_PROPERTY, localizedString("Inactive layer outer")));
         box.getChildren().add(createIntegerFieldWithLabel(EditableBumperElement.SCORE_PROPERTY, "Score"));
         box.getChildren().add(createDecimalStringFieldWithLabel(EditableBumperElement.KICK_PROPERTY, "Kick"));
 

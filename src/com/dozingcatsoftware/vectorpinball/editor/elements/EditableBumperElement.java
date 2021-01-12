@@ -16,6 +16,7 @@ public class EditableBumperElement extends EditableFieldElement {
     public static final String KICK_PROPERTY = "kick";
     public static final String OUTER_RADIUS_PROPERTY = "outerRadius";
     public static final String OUTER_COLOR_PROPERTY = "outerColor";
+    public static final String INACTIVE_LAYER_OUTER_COLOR_PROPERTY = "inactiveLayerOuterColor";
 
     static final int DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
     static final int DEFAULT_OUTER_COLOR = Color.fromRGBA(0, 0, 255, 128);

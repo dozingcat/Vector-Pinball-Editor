@@ -129,7 +129,7 @@ public abstract class FieldElement implements IDrawable {
             this.flashCounter = Math.max(this.flashCounter - nanos, 0);
         }
         if (this.inactiveLayerColor != null) {
-            // Might want to make this configurable, but 10 ticks in the transition works well.
+            // Could make this configurable, but 0.25 game seconds of transition works well.
             double increment = nanos / 250_000_000.0;
             if (field.hasBallAtLayer(this.getLayer())) {
                 this.layerColorFraction = Math.min(this.layerColorFraction + increment, 1.0);
@@ -247,8 +247,12 @@ public abstract class FieldElement implements IDrawable {
         int baseColor = (this.newColor != null) ?
                 this.newColor :
                 (this.initialColor != null) ? this.initialColor : defaultColor;
-        if (this.inactiveLayerColor != null && this.layerColorFraction < 1) {
-            return Color.blend(this.inactiveLayerColor, baseColor, this.layerColorFraction);
+        return colorApplyingLayerOrFlash(baseColor, this.inactiveLayerColor);
+    }
+
+    protected int colorApplyingLayerOrFlash(int baseColor, Integer nonCurrentLayerColor) {
+        if (nonCurrentLayerColor != null && this.layerColorFraction < 1) {
+            return Color.blend(nonCurrentLayerColor, baseColor, this.layerColorFraction);
         }
         return (flashCounter > 0) ? Color.inverse(baseColor) : baseColor;
     }

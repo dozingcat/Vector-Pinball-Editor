@@ -25,7 +25,7 @@ public class BumperElement extends FieldElement {
     public static final String KICK_PROPERTY = "kick";
     public static final String OUTER_RADIUS_PROPERTY = "outerRadius";
     public static final String OUTER_COLOR_PROPERTY = "outerColor";
-    public static final String INACTIVE_LAYER_OUTER_COLOR = "inactiveLayerOuterColor";
+    public static final String INACTIVE_LAYER_OUTER_COLOR_PROPERTY = "inactiveLayerOuterColor";
 
     static final int DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
     static final int DEFAULT_OUTER_COLOR = Color.fromRGBA(0, 0, 255, 128);
@@ -37,6 +37,7 @@ public class BumperElement extends FieldElement {
     float cx, cy;
     float kick;
     int outerColor;
+    Integer inactiveLayerOuterColor;
 
     @Override
     public void finishCreateElement(Map<String, ?> params, FieldElementCollection collection) {
@@ -49,6 +50,10 @@ public class BumperElement extends FieldElement {
         this.outerColor = params.containsKey(OUTER_COLOR_PROPERTY) ?
                 Color.fromList((List<Number>) params.get(OUTER_COLOR_PROPERTY)) :
                 DEFAULT_OUTER_COLOR;
+        if (params.containsKey(INACTIVE_LAYER_OUTER_COLOR_PROPERTY)) {
+            this.inactiveLayerOuterColor =
+                    Color.fromList((List<Number>) params.get(INACTIVE_LAYER_OUTER_COLOR_PROPERTY));
+        }
     }
 
     @Override public void createBodies(World world) {
@@ -102,12 +107,14 @@ public class BumperElement extends FieldElement {
     }
 
     @Override public void draw(Field field, IFieldRenderer renderer) {
-        int innerColor = currentColor(DEFAULT_COLOR);
         if (outerRadius > 0) {
-            renderer.fillCircle(this.cx, this.cy, outerRadius, outerColor);
+            int currentOuterColor = colorApplyingLayerOrFlash(
+                    this.outerColor, this.inactiveLayerOuterColor);
+            renderer.fillCircle(this.cx, this.cy, outerRadius, currentOuterColor);
         }
         if (radius > 0) {
-            renderer.fillCircle(this.cx, this.cy, radius, innerColor);
+            int currentInnerColor = currentColor(DEFAULT_COLOR);
+            renderer.fillCircle(this.cx, this.cy, radius, currentInnerColor);
         }
     }
 }

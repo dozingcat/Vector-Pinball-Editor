@@ -119,7 +119,7 @@ public class FlipperElement extends FieldElement {
         this.joint = (RevoluteJoint) world.createJoint(jointDef);
 
         flipperBodySet = Collections.singletonList(flipperBody);
-        // this.setEffectiveMotorSpeed(-this.downspeed); // Force flipper to bottom when field is first created.
+        this.setEffectiveMotorSpeed(-this.downspeed); // Force flipper to bottom when field is first created.
     }
 
     /** Returns true if the flipper rotates around its right end. */
