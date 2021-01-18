@@ -120,7 +120,7 @@ public class FxCanvasRenderer implements IEditableFieldRenderer {
     @Override public void fillCircle(double cx, double cy, double radius, int color) {
         context.setFill(toFxPaint(color));
         context.fillArc(worldToPixelX(cx - radius), worldToPixelY(cy + radius),
-                worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
+                worldToPixelDistance(radius * 2), worldToPixelDistance(radius * 2), 0, 360, ArcType.OPEN);
     }
     @Override public void fillCircle(float cx, float cy, float radius, int color) {
         fillCircle((double) cx, cy, radius, color);
@@ -129,7 +129,7 @@ public class FxCanvasRenderer implements IEditableFieldRenderer {
     @Override public void frameCircle(double cx, double cy, double radius, int color) {
         context.setStroke(toFxPaint(color));
         context.strokeArc(worldToPixelX(cx - radius), worldToPixelY(cy + radius),
-                worldToPixelDistance(radius*2), worldToPixelDistance(radius*2), 0, 360, ArcType.OPEN);
+                worldToPixelDistance(radius * 2), worldToPixelDistance(radius * 2), 0, 360, ArcType.OPEN);
     }
     @Override public void frameCircle(float cx, float cy, float radius, int color) {
         frameCircle((double) cx, cy, radius, color);
@@ -144,6 +144,23 @@ public class FxCanvasRenderer implements IEditableFieldRenderer {
         }
         context.setFill(toFxPaint(color));
         context.fillPolygon(pixelX, pixelY, pixelX.length);
+    }
+
+    @Override public boolean canDrawArc() {
+        return true;
+    }
+
+    @Override public void drawArc(double cx, double cy, double xRadius, double yRadius,
+                                  double startAngle, double endAngle, int color) {
+        context.setStroke(toFxPaint(color));
+        context.strokeArc(worldToPixelX(cx - xRadius), worldToPixelY(cy + yRadius),
+                worldToPixelDistance(xRadius * 2), worldToPixelDistance(yRadius * 2),
+                Math.toDegrees(startAngle), Math.toDegrees(endAngle - startAngle), ArcType.OPEN);
+    }
+
+    @Override public void drawArc(float cx, float cy, float xRadius, float yRadius,
+                                  float startAngle, float endAngle, int color) {
+        drawArc((double) cx, cy, xRadius, yRadius, startAngle, endAngle, color);
     }
 
     @Override public void doDraw() {

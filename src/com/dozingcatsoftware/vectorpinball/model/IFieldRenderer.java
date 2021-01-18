@@ -26,9 +26,9 @@ public interface IFieldRenderer {
     }
 
     default void drawArc(float cx, float cy, float xRadius, float yRadius,
-                         float startAngle, float sweepAngle, int color) {}
+                         float startAngle, float endAngle, int color) {}
     default void drawArc(double cx, double cy, double xRadius, double yRadius,
-                         double startAngle, double sweepAngle, int color) {}
+                         double startAngle, double endAngle, int color) {}
 
     void doDraw();
 

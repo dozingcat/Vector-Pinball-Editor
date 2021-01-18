@@ -255,8 +255,10 @@
         }, 
         {
             "class": "BumperElement",
-            "color": [0, 153, 238],
+            "color": [0, 153, 255],
             "kick": "1.0",
+            "outerColor": [0, 153, 255, 128],
+            "outerRadius": "0.6",
             "position": ["14.08", "23.74"],
             "radius": "0.35",
             "score": 500
@@ -265,6 +267,8 @@
             "class": "BumperElement",
             "color": [0, 153, 255],
             "kick": "1.0",
+            "outerColor": [0, 153, 255, 128],
+            "outerRadius": "0.6",
             "position": ["16.04", "23.7"],
             "radius": "0.35",
             "score": 500
@@ -273,6 +277,8 @@
             "class": "BumperElement",
             "color": [0, 153, 255],
             "kick": "1.0",
+            "outerColor": [0, 153, 255, 128],
+            "outerRadius": "0.6",
             "position": [14.840000000000002, 22.06],
             "radius": "0.35",
             "score": 500
@@ -731,6 +737,8 @@
             "class": "BumperElement",
             "color": [255, 153, 0],
             "kick": "1.2",
+            "outerColor": [255, 153, 0, 128],
+            "outerRadius": "0.72",
             "position": [4.16, 24.34],
             "radius": "0.45",
             "score": 1000
