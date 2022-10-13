@@ -25,7 +25,7 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallPathEleme
 
 public class ElementPaletteView extends VBox {
 
-    static String IMAGE_PATH_PREFIX = "/com/dozingcatsoftware/vectorpinball/images/";
+    static String IMAGE_PATH_PREFIX = "/images/";
 
     Consumer<Class<? extends EditableFieldElement>> createCallback;
 
@@ -63,7 +63,8 @@ public class ElementPaletteView extends VBox {
     }
 
     Button createImageButton(String imageFilename, String label) {
-        Image img = new Image(IMAGE_PATH_PREFIX + imageFilename, 256, 192, true, true);
+        String url = IMAGE_PATH_PREFIX + imageFilename;
+        Image img = new Image(url, 256, 192, true, true);
         ImageView imageView = new ImageView(img);
         imageView.setFitWidth(48);
         imageView.setFitHeight(36);

@@ -10,7 +10,7 @@ import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 public class JarFileFieldReader {
 
-    private static final String FIELD_PATH = "/com/dozingcatsoftware/vectorpinball/fields/";
+    private static final String FIELD_PATH = "/fields/";
 
     String pathForBuiltInField(int level) {
         return FIELD_PATH + "table" + level + ".json";
