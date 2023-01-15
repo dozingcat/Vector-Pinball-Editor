@@ -27,7 +27,7 @@ public class ScriptEditorView extends VBox {
         Label title = new Label(localizedString("Game script"));
         title.setFont(new Font(16));
         scriptArea = new ScriptTextArea();
-        scriptArea.setFont(new Font("Courier", 12));
+        scriptArea.setFont(Font.font("Courier New", 14));
         VBox.setVgrow(scriptArea, Priority.ALWAYS);
         this.getChildren().addAll(title, scriptArea);
     }
