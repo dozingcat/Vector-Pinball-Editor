@@ -290,13 +290,17 @@ public class Main extends Application {
                 createMenuItem("Table 7", null, () -> loadBuiltInField(7))
                 );
 
+        MenuItem saveAsItem = createMenuItem("Save As...", null, this::saveNewFile);
+        saveAsItem.setAccelerator(new KeyCharacterCombination(
+            "S", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         fileMenu.getItems().addAll(
                 createMenuItem("New Table", "N", () -> loadStarterField()),
                 newFromTemplateMenu,
                 new SeparatorMenuItem(),
-                createMenuItem("Open", "O", this::openFile),
-                createMenuItem("Save", "S", this::saveFile)
-                );
+                createMenuItem("Open...", "O", this::openFile),
+                createMenuItem("Save", "S", this::saveFile),
+                saveAsItem
+        );
 
         Menu editMenu = new Menu("Edit");
         MenuItem undoItem = createMenuItem("Undo", "Z", this::undoEdit);
@@ -603,14 +607,18 @@ public class Main extends Application {
             writeToSavedFilePath();
         }
         else {
-            FileChooser chooser = new FileChooser();
-            chooser.setTitle("Save Table");
-            File selectedFile = chooser.showSaveDialog(mainStage);
-            if (selectedFile != null) {
-                savedFilePath = selectedFile.toPath();
-                writeToSavedFilePath();
-                mainStage.setTitle("Vector Pinball: " + savedFilePath.toString());
-            }
+            saveNewFile();
+        }
+    }
+
+    void saveNewFile() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save Table");
+        File selectedFile = chooser.showSaveDialog(mainStage);
+        if (selectedFile != null) {
+            savedFilePath = selectedFile.toPath();
+            writeToSavedFilePath();
+            mainStage.setTitle("Vector Pinball: " + savedFilePath.toString());
         }
     }
 
