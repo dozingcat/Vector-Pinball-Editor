@@ -51,6 +51,7 @@ public class StringResolver implements IStringResolver {
         m.put("ramp_bonus_increased_message", mf("Ramp bonus increased"));
         m.put("shoot_ramp_jackpot_message", mf("Shoot ramp for jackpot"));
         m.put("constellation_complete_message", mf("{0} complete"));
+        m.put("ball_saved_message", mf("Ball saved"));
         return m;
     }
 

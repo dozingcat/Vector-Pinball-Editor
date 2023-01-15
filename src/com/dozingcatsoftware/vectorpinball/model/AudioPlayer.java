@@ -22,7 +22,7 @@ public interface AudioPlayer {
         }
 
         private NoOpPlayer() {}
-
+        
         @Override public void playStart() {}
         @Override public void playBall() {}
         @Override public void playFlipper() {}

@@ -63,9 +63,6 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-// May need to edit project as described in
-// http://stackoverflow.com/questions/24467931/using-javafx-jdk-1-8-0-05-in-eclipse-luna-does-not-work
-
 public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
@@ -523,8 +520,7 @@ public class Main extends Application {
             if (!field.getGameState().isGameInProgress()) {
                 startGame();
             }
-            field.removeDeadBalls();
-            if (field.getBalls().isEmpty()) field.launchBall();
+            field.launchBallIfNeeded();
         }
     }
 
