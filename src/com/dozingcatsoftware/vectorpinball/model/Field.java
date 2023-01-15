@@ -301,8 +301,7 @@ public class Field implements ContactListener {
         List<Float> position = layout.getLaunchPosition();
         List<Float> velocity = layout.getLaunchVelocity();
         Ball ball = createBall(position.get(0), position.get(1));
-        float scale = getBalls().size() == 3 ? 2 : 1;
-        ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1) / scale));
+        ball.getBody().setLinearVelocity(new Vector2(velocity.get(0), velocity.get(1)));
         playBallLaunchSound();
         lostBallWallTimeMillis = null;
         lastBallLaunchGameTimeNanos = gameTimeNanos;
@@ -754,7 +753,7 @@ public class Field implements ContactListener {
                 return;
             }
         }
-        
+
         // Increment time counter and bump if the balls haven't moved in a while.
         nanosSinceBallMoved += nanos;
         if (nanosSinceBallMoved > STUCK_BALL_NANOS) {

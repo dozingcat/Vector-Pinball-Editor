@@ -46,19 +46,6 @@ public class MathUtils {
         return defvalue;
     }
 
-    public static int asInt(Object obj, int defvalue) {
-        if (obj instanceof Number) return ((Number) obj).intValue();
-        if (obj instanceof String) {
-            try {
-                return Integer.parseInt((String) obj);
-            }
-            catch (NumberFormatException ex) {
-                // log?
-            }
-        }
-        return defvalue;
-    }
-
     public static double asDouble(Object obj) {
         return asDouble(obj, 0);
     }
@@ -72,6 +59,19 @@ public class MathUtils {
         return converted;
     }
         
+    public static int asInt(Object obj, int defvalue) {
+        if (obj instanceof Number) return ((Number) obj).intValue();
+        if (obj instanceof String) {
+            try {
+                return Integer.parseInt((String) obj);
+            }
+            catch (NumberFormatException ex) {
+                // log?
+            }
+        }
+        return defvalue;
+    }
+
     public static int asInt(Object obj) {
         return asInt(obj, 0);
     }
