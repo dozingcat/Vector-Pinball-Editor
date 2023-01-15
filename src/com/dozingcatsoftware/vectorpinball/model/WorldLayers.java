@@ -9,11 +9,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Collection of Box2d worlds, one for each "layer" of a table.
+ */
 public class WorldLayers {
     private Vector2 gravity = Vector2.Zero;
     private ContactListener contactListener;
-    private HashMap<Integer, World> worldsByLayer = new HashMap<Integer, World>();
-    private List<Integer> layerValues = Collections.emptyList();
+    private HashMap<Integer, World> worldsByLayer = new HashMap<>();
     private List<World> layerWorlds = Collections.emptyList();
 
     public WorldLayers(ContactListener listener) {
@@ -23,16 +25,12 @@ public class WorldLayers {
     // Redundant storage so that we can iterate over the layers without memory allocations.
     // Not threadsafe.
     private void _rebuildArrays() {
-        ArrayList<Integer> values = new ArrayList<Integer>();
-        ArrayList<World> worlds = new ArrayList<World>();
-        for (int lv : this.worldsByLayer.keySet()) {
-            values.add(lv);
-        }
-        Collections.sort(values);
-        for (int lv : values) {
+        ArrayList<Integer> levelValues = new ArrayList<>(this.worldsByLayer.keySet());
+        Collections.sort(levelValues);
+        ArrayList<World> worlds = new ArrayList<>();
+        for (int lv : levelValues) {
             worlds.add(this.worldsByLayer.get(lv));
         }
-        this.layerValues = Collections.unmodifiableList(values);
         this.layerWorlds = Collections.unmodifiableList(worlds);
     }
 
@@ -49,10 +47,6 @@ public class WorldLayers {
             this._rebuildArrays();
         }
         return w;
-    }
-
-    public List<World> getOrderedWorlds() {
-        return this.layerWorlds;
     }
 
     void setGravity(Vector2 gravity) {

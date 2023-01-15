@@ -26,9 +26,9 @@ public interface IFieldRenderer {
     }
 
     default void drawArc(float cx, float cy, float xRadius, float yRadius,
-                         float startAngle, float endAngle, int color) {}
+                 float startAngle, float sweepAngle, int color) {}
     default void drawArc(double cx, double cy, double xRadius, double yRadius,
-                         double startAngle, double endAngle, int color) {}
+                         double startAngle, double sweepAngle, int color) {}
 
     void doDraw();
 
@@ -54,7 +54,7 @@ public interface IFieldRenderer {
         }
 
         default void drawArc(double cx, double cy, double xRadius, double yRadius,
-                             double startAngle, double sweepAngle, int color) {
+                                     double startAngle, double sweepAngle, int color) {
             throw new UnsupportedOperationException("double arguments not supported");
         }
     }

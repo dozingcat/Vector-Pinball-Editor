@@ -17,25 +17,25 @@ import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
  */
 public class BaseFieldDelegate implements Field.Delegate {
 
-	@Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball) {}
+    @Override public void allDropTargetsInGroupHit(Field field, DropTargetGroupElement targetGroup, Ball ball) {}
 
-	@Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {}
+    @Override public void allRolloversInGroupActivated(Field field, RolloverGroupElement rolloverGroup, Ball ball) {}
 
-	@Override public void flippersActivated(Field field, List<FlipperElement> flippers) {}
+    @Override public void flippersActivated(Field field, List<FlipperElement> flippers) {}
 
-	@Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {}
+    @Override public void processCollision(Field field, FieldElement element, Body hitBody, Ball ball) {}
 
-	@Override public void gameStarted(Field field) {}
+    @Override public void gameStarted(Field field) {}
 
-	@Override public void ballLost(Field field) {}
+    @Override public void ballLost(Field field) {}
 
-	@Override public void gameEnded(Field field) {}
+    @Override public void gameEnded(Field field) {}
 
-	@Override public void tick(Field field, long nanos) {}
+    @Override public void tick(Field field, long nanos) {}
 
-	@Override public void ballInSensorRange(Field field, SensorElement sensor, Ball ball) {}
+    @Override public void ballInSensorRange(Field field, SensorElement sensor, Ball ball) {}
 
-	@Override public boolean isFieldActive(Field field) {
-		return false;
-	}
+    @Override public boolean isFieldActive(Field field) {
+        return false;
+    }
 }

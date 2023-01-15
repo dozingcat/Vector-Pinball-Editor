@@ -46,10 +46,8 @@ public class WallArcElement extends FieldElement {
     private float radiusY;
     private float startAngle;
     private float endAngle;
-    private int numSegments;
     private float[] xEndpoints;
     private float[] yEndpoints;
-    private double rotation;
 
     @Override public void finishCreateElement(
             Map<String, ?> params, FieldElementCollection collection) {
@@ -67,20 +65,15 @@ public class WallArcElement extends FieldElement {
         }
 
         Number segments = (Number) params.get(NUM_SEGMENTS_PROPERTY);
-        this.numSegments = (segments != null) ? segments.intValue() : 5;
+        int numsegments = (segments != null) ? segments.intValue() : 5;
         this.startAngle = toRadiansF(asFloat(params.get(MIN_ANGLE_PROPERTY)));
         this.endAngle = toRadiansF(asFloat(params.get(MAX_ANGLE_PROPERTY)));
-        // Create `numSegments` line segments to approximate circular arc.
-        this.xEndpoints = new float[this.numSegments + 1];
-        this.yEndpoints = new float[this.numSegments + 1];
-        this.rotation = 0f;
-        this.computeEndpoints();
-    }
-
-    private void computeEndpoints() {
-        float diff = this.endAngle - this.startAngle;
-        for (int i = 0; i <= this.numSegments; i++) {
-            double angle = this.rotation + this.startAngle + i * diff / this.numSegments;
+        float diff = endAngle - startAngle;
+        // Create `numsegments` line segments to approximate circular arc.
+        this.xEndpoints = new float[numsegments + 1];
+        this.yEndpoints = new float[numsegments + 1];
+        for (int i = 0; i <= numsegments; i++) {
+            float angle = startAngle + i * diff / numsegments;
             this.xEndpoints[i] = centerX + radiusX * (float) Math.cos(angle);
             this.yEndpoints[i] = centerY + radiusY * (float) Math.sin(angle);
         }
@@ -99,19 +92,6 @@ public class WallArcElement extends FieldElement {
 
     @Override public List<Body> getBodies() {
         return wallBodies;
-    }
-
-    public void setRotation(double angle) {
-        this.rotation = angle;
-        this.computeEndpoints();
-        for (int i = 0; i < this.xEndpoints.length - 1; i++) {
-            float x1 = this.xEndpoints[i];
-            float y1 = this.yEndpoints[i];
-            float x2 = this.xEndpoints[i + 1];
-            float y2 = this.yEndpoints[i + 1];
-            float wallAngle = (float) Math.atan2(y2 - y1, x2 - x1);
-            this.wallBodies.get(i).setTransform((x1 + x2) / 2, (y1 + y2) / 2, wallAngle);
-        }
     }
 
     @Override public void draw(Field field, IFieldRenderer renderer) {

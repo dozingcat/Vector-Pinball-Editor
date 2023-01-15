@@ -5,6 +5,10 @@ public abstract class Shape implements IDrawable {
     int color;
     Integer inactiveLayerColor;
 
+    static float f32(double d) {
+        return (float) d;
+    }
+
     @Override public int getLayer() {
         return layer;
     }
@@ -24,7 +28,8 @@ public abstract class Shape implements IDrawable {
         private Line() {}
 
         public static Line create(
-                double x1, double y1, double x2, double y2, int layer, int color, Integer inactiveLayerColor) {
+                double x1, double y1, double x2, double y2,
+                int layer, int color, Integer inactiveLayerColor) {
             Line self = new Line();
             self.layer = layer;
             self.color = color;
@@ -37,7 +42,7 @@ public abstract class Shape implements IDrawable {
         }
 
         @Override public void draw(Field field, IFieldRenderer renderer) {
-            renderer.drawLine(x1, y1, x2, y2, colorToDraw(field));
+            renderer.drawLine(f32(x1), f32(y1), f32(x2), f32(y2), colorToDraw(field));
         }
     }
 
@@ -48,7 +53,8 @@ public abstract class Shape implements IDrawable {
         private Circle() {}
 
         public static Circle create(
-                double cx, double cy, double radius, FillType fill, int layer, int color, Integer inactiveLayerColor) {
+                double cx, double cy, double radius, FillType fill,
+                int layer, int color, Integer inactiveLayerColor) {
             Circle self = new Circle();
             self.layer = layer;
             self.color = color;
@@ -62,10 +68,10 @@ public abstract class Shape implements IDrawable {
 
         @Override public void draw(Field field, IFieldRenderer renderer) {
             if (this.fill == FillType.OUTLINE) {
-                renderer.frameCircle(cx, cy, radius, colorToDraw(field));
+                renderer.frameCircle(f32(cx), f32(cy), f32(radius), colorToDraw(field));
             }
             else {
-                renderer.fillCircle(cx, cy, radius, colorToDraw(field));
+                renderer.fillCircle(f32(cx), f32(cy), f32(radius), colorToDraw(field));
             }
         }
     }
