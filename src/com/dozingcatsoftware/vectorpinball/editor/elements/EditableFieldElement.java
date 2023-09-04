@@ -163,8 +163,16 @@ public abstract class EditableFieldElement implements PropertyContainer {
 
     /**
      * Called when a drag is in progress to update the properties map. drawForEditor() may be
-     * called any number of times during a drag.
+     * called any number of times during a drag. Default implementation calls `translate` to
+     * move the entire element; subclasses can override for custom behavior (e.g. wall elements
+     * where the user may be moving just one endpoint).
      */
-    abstract public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious);
+    public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+        translate(deltaFromPrevious);
+    }
 
+    /**
+     * Moves the entire element by the given offset.
+     */
+    abstract public void translate(Point offset);
 }

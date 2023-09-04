@@ -1,5 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.util;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,8 @@ import java.util.Map;
  * be human readable and editable.
  */
 public class JsonPrettyPrinter {
+
+    private static DecimalFormat floatFormat = new DecimalFormat("#.######");
 
     public static String prettyPrint(Object obj, int indent) {
         StringBuilder buffer = new StringBuilder();
@@ -83,6 +86,9 @@ public class JsonPrettyPrinter {
             buffer.append('"');
             writeString((String) value, buffer);
             buffer.append('"');
+        }
+        else if ((value instanceof Float) || (value instanceof Double)) {
+            buffer.append(floatFormat.format(((Number) value).doubleValue()));
         }
         else {
             buffer.append(String.valueOf(value));

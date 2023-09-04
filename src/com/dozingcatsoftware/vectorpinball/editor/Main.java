@@ -280,16 +280,12 @@ public class Main extends Application {
         Menu fileMenu = new Menu("File");
 
         Menu newFromTemplateMenu = new Menu("New From Template");
-        newFromTemplateMenu.getItems().addAll(
-                createMenuItem("Table 1", null, () -> loadBuiltInField(1)),
-                createMenuItem("Table 2", null, () -> loadBuiltInField(2)),
-                createMenuItem("Table 3", null, () -> loadBuiltInField(3)),
-                createMenuItem("Table 4", null, () -> loadBuiltInField(4)),
-                createMenuItem("Table 5", null, () -> loadBuiltInField(5)),
-                createMenuItem("Table 6", null, () -> loadBuiltInField(6)),
-                createMenuItem("Table 7", null, () -> loadBuiltInField(7))
-                );
-
+        for (int i = 1; i <= 7; i++) {
+            int ii = i;
+            newFromTemplateMenu.getItems().add(
+                    createMenuItem("Table " + ii, null, () -> loadBuiltInField(ii))
+            );
+        }
         MenuItem saveAsItem = createMenuItem("Save As...", null, this::saveNewFile);
         saveAsItem.setAccelerator(new KeyCharacterCombination(
             "S", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
@@ -408,6 +404,7 @@ public class Main extends Application {
         stopGame();
         field = new Field(System::currentTimeMillis, stringResolver, AudioPlayer.NoOpPlayer.getInstance());
         field.resetForLayoutMap(editableField.getPropertyMapSnapshot(), groovyDelegateFn);
+        field.setBallTrailsEnabled(true);
         renderer.setField(field);
         showScoreView();
 
@@ -482,8 +479,18 @@ public class Main extends Application {
                     // Possibly cheating, but the logic is already there.
                     inspectorView.deleteSelectedElements();
                 }
-                // TODO: For up/down/left/right, add methods to Editable*FieldElements,
-                // and call event.consume() so it won't scroll.
+                else if (KeyCode.UP.equals(code)) {
+                    renderer.moveSelectionByPixels(0, -1);
+                }
+                else if (KeyCode.DOWN.equals(code)) {
+                    renderer.moveSelectionByPixels(0, 1);
+                }
+                else if (KeyCode.LEFT.equals(code)) {
+                    renderer.moveSelectionByPixels(-1, 0);
+                }
+                else if (KeyCode.RIGHT.equals(code)) {
+                    renderer.moveSelectionByPixels(1, 0);
+                }
                 break;
         }
     }
@@ -493,6 +500,14 @@ public class Main extends Application {
             case SAMPLE_GAME:
                 updateFlippersFromKey(event.getCode(), false);
                 break;
+            case EDITING:
+                KeyCode code = event.getCode();
+                if (KeyCode.UP.equals(code) ||
+                        KeyCode.DOWN.equals(code) ||
+                        KeyCode.LEFT.equals(code) ||
+                        KeyCode.RIGHT.equals(code)) {
+                    undoStack.pushSnapshot();
+                }
             default:
                 break;
         }

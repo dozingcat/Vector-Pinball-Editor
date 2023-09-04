@@ -55,15 +55,15 @@ public class EditableSensorElement extends EditableFieldElement {
         return (point.x>=xmin && point.x<=xmax && point.y>=ymin && point.y<=ymax);
     }
 
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+    @Override public void translate(Point offset) {
         refreshIfDirty();
         // Ideally this would support resizing by corners, but for now just drag.
         List<Object> rect = (List<Object>)getProperty(RECT_PROPERTY);
         setProperty(RECT_PROPERTY, Arrays.asList(
-                asDouble(rect.get(0)) + deltaFromPrevious.x,
-                asDouble(rect.get(1)) + deltaFromPrevious.y,
-                asDouble(rect.get(2)) + deltaFromPrevious.x,
-                asDouble(rect.get(3)) + deltaFromPrevious.y));
+                asDouble(rect.get(0)) + offset.x,
+                asDouble(rect.get(1)) + offset.y,
+                asDouble(rect.get(2)) + offset.x,
+                asDouble(rect.get(3)) + offset.y));
     }
 
 }

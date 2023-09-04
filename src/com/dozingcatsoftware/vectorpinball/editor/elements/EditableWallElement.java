@@ -92,4 +92,14 @@ public class EditableWallElement extends EditableFieldElement {
         setProperty(POSITION_PROPERTY, newPos);
     }
 
+    @Override public void translate(Point offset) {
+        List<?> pos = (List<?>)getProperty(POSITION_PROPERTY);
+        List<Object> newPos = new ArrayList<>(pos);
+        newPos.set(0, asDouble(pos.get(0)) + offset.x);
+        newPos.set(1, asDouble(pos.get(1)) + offset.y);
+        newPos.set(2, asDouble(pos.get(2)) + offset.x);
+        newPos.set(3, asDouble(pos.get(3)) + offset.y);
+        setProperty(POSITION_PROPERTY, newPos);
+    }
+
 }

@@ -80,12 +80,12 @@ public class EditableWallPathElement extends EditableFieldElement {
         }
     }
 
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+    @Override public void translate(Point offset) {
         int size = numPoints();
         List<List<Double>> newPositions = new ArrayList<>();
         for (int i=0; i<size; i++) {
-            double dx = (dragPointIndex==-1 || dragPointIndex==i) ? deltaFromPrevious.x : 0;
-            double dy = (dragPointIndex==-1 || dragPointIndex==i) ? deltaFromPrevious.y : 0;
+            double dx = (dragPointIndex==-1 || dragPointIndex==i) ? offset.x : 0;
+            double dy = (dragPointIndex==-1 || dragPointIndex==i) ? offset.y : 0;
             newPositions.add(Arrays.asList(getSegmentX(i) + dx, getSegmentY(i) + dy));
         }
         setProperty(POSITIONS_PROPERTY, newPositions);

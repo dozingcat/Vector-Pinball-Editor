@@ -80,11 +80,11 @@ public class EditableFlipperElement extends EditableFieldElement {
         return point.distanceToLineSegment(cx, cy, endX(), endY()) <= distance;
     }
 
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+    @Override public void translate(Point offset) {
         List<?> pos = (List<?>)getProperty(POSITION_PROPERTY);
         setProperty(POSITION_PROPERTY, Arrays.asList(
-                asDouble(pos.get(0)) + deltaFromPrevious.x,
-                asDouble(pos.get(1)) + deltaFromPrevious.y));
+                asDouble(pos.get(0)) + offset.x,
+                asDouble(pos.get(1)) + offset.y));
     }
 
 }

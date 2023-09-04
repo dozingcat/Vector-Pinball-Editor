@@ -95,11 +95,11 @@ public class EditableWallArcElement extends EditableFieldElement {
         return false;
     }
 
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+    @Override public void translate(Point offset) {
         List<?> cpos = (List<?>)getProperty(CENTER_PROPERTY);
         setProperty(CENTER_PROPERTY, Arrays.asList(
-                asDouble(cpos.get(0)) + deltaFromPrevious.x,
-                asDouble(cpos.get(1)) + deltaFromPrevious.y));
+                asDouble(cpos.get(0)) + offset.x,
+                asDouble(cpos.get(1)) + offset.y));
     }
 
 }

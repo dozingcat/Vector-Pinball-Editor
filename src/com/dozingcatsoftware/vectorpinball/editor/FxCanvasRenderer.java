@@ -224,6 +224,12 @@ public class FxCanvasRenderer implements IEditableFieldRenderer {
         return Point.fromXY(pixelToWorldX(event.getX()), pixelToWorldY(event.getY()));
     }
 
+    private Point worldOffsetFromPixels(int dx, int dy) {
+        Point worldZero = Point.fromXY(pixelToWorldX(0), pixelToWorldY(0));
+        Point worldTranslated = Point.fromXY(pixelToWorldX(dx), pixelToWorldY(dy));
+        return worldTranslated.subtract(worldZero);
+    }
+
     private boolean isElementInClickRange(EditableFieldElement elem, Point point) {
         double distance = 10.0 / this.scale;
         return elem.isPointWithinDistance(point, distance);
@@ -307,6 +313,16 @@ public class FxCanvasRenderer implements IEditableFieldRenderer {
     public void handleEditorMouseUp(MouseEvent event) {
         if (editableField != null && editableField.hasSelection() && dragStartPoint!=null) {
             undoStack.pushSnapshot();
+        }
+    }
+
+    public void moveSelectionByPixels(int dx, int dy) {
+        if (editableField.hasSelection()) {
+            Point offset = worldOffsetFromPixels(dx, dy);
+            for (EditableFieldElement elem : editableField.getSelectedElements()) {
+                elem.translate(offset);
+            }
+            draw();
         }
     }
 }
