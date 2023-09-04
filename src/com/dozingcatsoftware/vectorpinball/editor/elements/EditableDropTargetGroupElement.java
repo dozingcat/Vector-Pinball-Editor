@@ -131,47 +131,31 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
         return false;
     }
 
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+    @Override public void translate(Point offset) {
         refreshIfDirty();
+        // Update either individual target positions, or the position of the line
+        // the targets are positioned relative to.
         if (usesDirectPositions) {
             List<List<Number>> newPositions = new ArrayList<>();
             for (double[] pos : positions) {
                 newPositions.add(Arrays.asList(
-                        pos[0] + deltaFromPrevious.x,
-                        pos[1] + deltaFromPrevious.y,
-                        pos[2] + deltaFromPrevious.x,
-                        pos[3] + deltaFromPrevious.y));
+                        pos[0] + offset.x,
+                        pos[1] + offset.y,
+                        pos[2] + offset.x,
+                        pos[3] + offset.y));
             }
             setProperty(POSITIONS_PROPERTY, newPositions);
         }
         else {
-            // We only need to update the gapFromWall and startDistanceAlongWall properties,
-            // and to do that we only need to look at the start of the first target.
-            double newX = positions[0][0] + deltaFromPrevious.x;
-            double newY = positions[0][1] + deltaFromPrevious.y;
-            double distToWall = Point.distanceFromPointToLine(
-                    newX, newY, wallStart[0], wallStart[1], wallEnd[0], wallEnd[1]);
-            // Which side of the wall are we on? Go +90 degrees from wall vector
-            // and see if dot product with vector from wall to target start is positive.
-            double wallAngle = Math.atan2(wallEnd[1]-wallStart[1], wallEnd[0]-wallStart[0]);
-            double wallDiffX = newX - wallStart[0];
-            double wallDiffY = newY - wallStart[1];
-            if (wallDiffX*Math.cos(wallAngle+TAU/4) + wallDiffY*Math.sin(wallAngle+TAU/4) < 0) {
-                distToWall = -distToWall;
-            }
-            // Now we need the distance "along" the wall. Move to the line that the targets are on,
-            // compute the distance, and take the dot product with wallAngle to get the sign.
-            double targetLineX = wallStart[0] + distToWall*Math.cos(wallAngle + TAU/4);
-            double targetLineY = wallStart[1] + distToWall*Math.sin(wallAngle + TAU/4);
-            double distAlongWall = Point.distanceBetween(newX, newY, targetLineX, targetLineY);
-            double lineDiffX = newX - targetLineX;
-            double lineDiffY = newY - targetLineY;
-            if (lineDiffX*Math.cos(wallAngle) + lineDiffY*Math.sin(wallAngle) < 0) {
-                distAlongWall = -distAlongWall;
-            }
+            List<Object> wallStart = (List<Object>)getProperty(WALL_START_PROPERTY);
+            setProperty(WALL_START_PROPERTY, Arrays.asList(
+                    asDouble(wallStart.get(0)) + offset.x,
+                    asDouble(wallStart.get(1)) + offset.y));
 
-            setProperty(GAP_FROM_WALL_PROPERTY, distToWall);
-            setProperty(START_DISTANCE_ALONG_WALL_PROPERTY, distAlongWall);
+            List<Object> wallEnd = (List<Object>)getProperty(WALL_END_PROPERTY);
+            setProperty(WALL_END_PROPERTY, Arrays.asList(
+                    asDouble(wallEnd.get(0)) + offset.x,
+                    asDouble(wallEnd.get(1)) + offset.y));
         }
     }
 

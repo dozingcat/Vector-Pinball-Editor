@@ -68,12 +68,11 @@ public class EditableBumperElement extends EditableFieldElement {
         return dist <= this.radius || dist <= this.outerRadius;
     }
 
-    @Override public void handleDrag(Point point, Point deltaFromStart, Point deltaFromPrevious) {
+    @Override public void translate(Point offset) {
          // TODO: handle resizing as well as moving.
         List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
         setProperty(POSITION_PROPERTY, Arrays.asList(
-                asDouble(pos.get(0)) + deltaFromPrevious.x,
-                asDouble(pos.get(1)) + deltaFromPrevious.y));
+                asDouble(pos.get(0)) + offset.x,
+                asDouble(pos.get(1)) + offset.y));
     }
-
 }
