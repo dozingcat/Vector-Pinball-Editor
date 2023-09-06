@@ -280,7 +280,7 @@ public class Main extends Application {
         Menu fileMenu = new Menu("File");
 
         Menu newFromTemplateMenu = new Menu("New From Template");
-        for (int i = 1; i <= 7; i++) {
+        for (int i = 1; i <= 8; i++) {
             int ii = i;
             newFromTemplateMenu.getItems().add(
                     createMenuItem("Table " + ii, null, () -> loadBuiltInField(ii))
