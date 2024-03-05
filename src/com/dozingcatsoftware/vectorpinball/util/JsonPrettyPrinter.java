@@ -1,11 +1,12 @@
 package com.dozingcatsoftware.vectorpinball.util;
 
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Map;
  */
 public class JsonPrettyPrinter {
 
-    private static DecimalFormat floatFormat = new DecimalFormat("#.######");
+    private static NumberFormat floatFormat = NumberFormat.getInstance(Locale.US);
 
     public static String prettyPrint(Object obj, int indent) {
         StringBuilder buffer = new StringBuilder();
