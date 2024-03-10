@@ -1,11 +1,13 @@
 package com.dozingcatsoftware.vectorpinball.util;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -13,8 +15,9 @@ import java.util.Map;
  * be human readable and editable.
  */
 public class JsonPrettyPrinter {
-
-    private static DecimalFormat floatFormat = new DecimalFormat("#.######");
+    // Use US format symbols to make sure the decimal point is "."
+    private static DecimalFormat floatFormat = new DecimalFormat(
+            "#.######", DecimalFormatSymbols.getInstance(Locale.US));
 
     public static String prettyPrint(Object obj, int indent) {
         StringBuilder buffer = new StringBuilder();
