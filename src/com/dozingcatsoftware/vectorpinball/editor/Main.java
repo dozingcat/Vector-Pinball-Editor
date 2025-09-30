@@ -405,6 +405,7 @@ public class Main extends Application {
         field = new Field(System::currentTimeMillis, stringResolver, AudioPlayer.NoOpPlayer.getInstance());
         field.resetForLayoutMap(editableField.getPropertyMapSnapshot(), groovyDelegateFn);
         field.setBallTrailsEnabled(true);
+        field.setScoreAnimationsEnabled(true);
         renderer.setField(field);
         showScoreView();
 
