@@ -409,9 +409,7 @@ public class Main extends Application {
         renderer.setField(field);
         showScoreView();
 
-        fieldDriver = new FieldDriver();
-        fieldDriver.setDrawFunction(renderer::doDraw);
-        fieldDriver.setField(field);
+        fieldDriver = new FieldDriver(field, renderer::draw);
         fieldDriver.start();
 
         field.startGame();
