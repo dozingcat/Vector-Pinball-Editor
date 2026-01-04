@@ -55,7 +55,7 @@ public class GameState {
     }
 
     public long addScore(long points) {
-        long pointsToAdd = (long) (points * scoreMultiplier);
+        long pointsToAdd = Math.round(points * scoreMultiplier);
         score += pointsToAdd;
         return pointsToAdd;
     }
@@ -70,6 +70,10 @@ public class GameState {
 
     public boolean isGameInProgress() {
         return gameInProgress;
+    }
+
+    public boolean isGameRunning() {
+        return gameInProgress && !paused;
     }
 
     public void setGameInProgress(boolean value) {
