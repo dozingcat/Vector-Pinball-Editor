@@ -20,7 +20,10 @@ import com.dozingcatsoftware.vectorpinball.model.Field;
 
 public class FxCanvasRenderer implements IEditableFieldRenderer {
 
+    public enum ScaleSource { PRESET, MANUAL }
+
     private static final double DEFAULT_SCALE = 25;
+    private static final double FIELD_MARGIN = 1.5;
     // Zoom levels greater than 2 result in poor performance using the simple
     // approach of creating a larger canvas.
     private static final double[] SCALE_RATIOS = {1.0/2, 3.0/4, 1.0, 4.0/3, 2.0};
@@ -34,6 +37,7 @@ public class FxCanvasRenderer implements IEditableFieldRenderer {
 
     private double scale = DEFAULT_SCALE;
     private int scaleRatioIndex = DEFAULT_SCALE_RATIO_INDEX;
+    private ScaleSource scaleSource = ScaleSource.PRESET;
     private double xOffset = -1.5;
     private double yOffset = -1.5;
 
@@ -205,6 +209,7 @@ public class FxCanvasRenderer implements IEditableFieldRenderer {
         if (scaleRatioIndex < SCALE_RATIOS.length-1) {
             scaleRatioIndex++;
             scale = SCALE_RATIOS[scaleRatioIndex] * DEFAULT_SCALE;
+            scaleSource = ScaleSource.PRESET;
         }
     }
 
@@ -212,12 +217,65 @@ public class FxCanvasRenderer implements IEditableFieldRenderer {
         if (scaleRatioIndex > 0) {
             scaleRatioIndex--;
             scale = SCALE_RATIOS[scaleRatioIndex] * DEFAULT_SCALE;
+            scaleSource = ScaleSource.PRESET;
         }
     }
 
     public void zoomDefault() {
         scaleRatioIndex = DEFAULT_SCALE_RATIO_INDEX;
         scale = SCALE_RATIOS[scaleRatioIndex] * DEFAULT_SCALE;
+        scaleSource = ScaleSource.PRESET;
+    }
+
+    public void setManualScale(double newScale) {
+        this.scale = newScale;
+        this.scaleSource = ScaleSource.MANUAL;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public ScaleSource getScaleSource() {
+        return scaleSource;
+    }
+
+    public double getFieldWidth() {
+        if (editableField != null) {
+            Object w = editableField.getProperty(EditableField.WIDTH_PROPERTY);
+            if (w != null) return Double.parseDouble(w.toString());
+        } else if (field != null) {
+            return field.getWidth();
+        }
+        return 20.0; // default field width
+    }
+
+    public double getFieldHeight() {
+        if (editableField != null) {
+            Object h = editableField.getProperty(EditableField.HEIGHT_PROPERTY);
+            if (h != null) return Double.parseDouble(h.toString());
+        } else if (field != null) {
+            return field.getHeight();
+        }
+        return 30.0; // default field height
+    }
+
+    public double getCanvasWidthForScale(double scale) {
+        return scale * (getFieldWidth() + 2 * FIELD_MARGIN);
+    }
+
+    public double getCanvasHeightForScale(double scale) {
+        return scale * (getFieldHeight() + 2 * FIELD_MARGIN);
+    }
+
+    public double getScaleForCanvasHeight(double canvasHeight) {
+        return canvasHeight / (getFieldHeight() + 2 * FIELD_MARGIN);
+    }
+
+    public double getFieldAspectRatio() {
+        double w = getFieldWidth() + 2 * FIELD_MARGIN;
+        double h = getFieldHeight() + 2 * FIELD_MARGIN;
+        return w / h;
     }
 
     private Point worldPointFromEvent(MouseEvent event) {
