@@ -102,6 +102,7 @@ public class Main extends Application {
 
     FieldDriver fieldDriver;
     EditorState editorState = EditorState.EDITING;
+    boolean isResizingProgrammatically = false;
 
     FileSystem fileSystem = FileSystems.getDefault();
     Path savedFilePath;
@@ -187,11 +188,20 @@ public class Main extends Application {
 
         fieldScroller = new ScrollPane();
         fieldScroller.setStyle("-fx-background: #222;");
+        fieldScroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        fieldScroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         VBox.setVgrow(fieldScroller, Priority.ALWAYS);
 
         createCanvas(BASE_CANVAS_WIDTH, BASE_CANVAS_HEIGHT);
 
         fieldBox.getChildren().addAll(fieldScroller);
+
+        // Listen for container height changes to resize canvas
+        fieldBox.heightProperty().addListener((obs, oldVal, newVal) -> {
+            if (!isResizingProgrammatically) {
+                handleContainerResize(newVal.doubleValue());
+            }
+        });
 
         GridPane.setConstraints(fieldBox, 2, 1, 1, 2);
 
@@ -210,6 +220,9 @@ public class Main extends Application {
         });
         primaryStage.show();
 
+        // Set initial canvas size based on available space after layout is complete
+        Platform.runLater(() -> handleContainerResize(fieldBox.getHeight()));
+
         loadStarterField();
     }
 
@@ -223,6 +236,8 @@ public class Main extends Application {
                 }
             }, 0, 100);
         }
+        // Recalculate canvas size with reduced height for score view
+        Platform.runLater(() -> handleContainerResize(fieldBox.getHeight()));
     }
 
     void hideScoreView() {
@@ -231,6 +246,8 @@ public class Main extends Application {
             scoreViewTimer = null;
         }
         fieldBox.getChildren().remove(scoreView);
+        // Recalculate canvas size with full height available
+        Platform.runLater(() -> handleContainerResize(fieldBox.getHeight()));
     }
 
     static NumberFormat SCORE_FORMAT = NumberFormat.getInstance();
@@ -334,22 +351,68 @@ public class Main extends Application {
 
     void zoomIn() {
         renderer.zoomIn();
-        recreateCanvasAfterZoom();
+        resizeWindowForPresetZoom();
     }
 
     void zoomOut() {
         renderer.zoomOut();
-        recreateCanvasAfterZoom();
+        resizeWindowForPresetZoom();
     }
 
     void zoomDefault() {
         renderer.zoomDefault();
-        recreateCanvasAfterZoom();
+        resizeWindowForPresetZoom();
     }
 
-    private void recreateCanvasAfterZoom() {
-        createCanvas(BASE_CANVAS_WIDTH * renderer.getRelativeScale(),
-                BASE_CANVAS_HEIGHT * renderer.getRelativeScale());
+    private void resizeWindowForPresetZoom() {
+        isResizingProgrammatically = true;
+        try {
+            double scale = renderer.getScale();
+            double canvasWidth = renderer.getCanvasWidthForScale(scale);
+            double canvasHeight = renderer.getCanvasHeightForScale(scale);
+
+            // Calculate required window size accounting for other UI elements
+            double scoreViewHeight = fieldBox.getChildren().contains(scoreView) ? scoreView.getHeight() : 0;
+            double requiredFieldBoxHeight = canvasHeight + scoreViewHeight;
+
+            // Get current sizes of other columns
+            double toolsWidth = TOOLS_COLUMN_WIDTH;
+            double scriptWidth = scriptColumnConstraints.getPrefWidth();
+
+            // Estimate window chrome and padding
+            double windowChromeWidth = 40;
+            double windowChromeHeight = 80; // menu bar + title bar
+
+            double newWindowWidth = toolsWidth + scriptWidth + canvasWidth + windowChromeWidth;
+            double newWindowHeight = requiredFieldBoxHeight + windowChromeHeight;
+
+            mainStage.setWidth(Math.max(newWindowWidth, mainStage.getMinWidth()));
+            mainStage.setHeight(Math.max(newWindowHeight, mainStage.getMinHeight()));
+
+            createCanvas(canvasWidth, canvasHeight);
+            renderer.setCanvas(fieldCanvas);
+            renderer.doDraw();
+        } finally {
+            Platform.runLater(() -> isResizingProgrammatically = false);
+        }
+    }
+
+    void handleContainerResize(double containerHeight) {
+        if (containerHeight <= 0) return;
+
+        // Calculate available height for canvas (subtract score view if visible)
+        double scoreViewHeight = fieldBox.getChildren().contains(scoreView) ? scoreView.getHeight() : 0;
+        double availableHeight = containerHeight - scoreViewHeight;
+
+        if (availableHeight <= 10) return; // Minimum viable height
+
+        double newScale = renderer.getScaleForCanvasHeight(availableHeight);
+        renderer.setManualScale(newScale);
+
+        double newCanvasWidth = renderer.getCanvasWidthForScale(newScale);
+        double newCanvasHeight = availableHeight;
+
+        createCanvas(newCanvasWidth, newCanvasHeight);
         renderer.setCanvas(fieldCanvas);
         renderer.doDraw();
     }
