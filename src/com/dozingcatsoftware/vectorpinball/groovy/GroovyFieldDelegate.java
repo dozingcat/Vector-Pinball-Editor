@@ -10,6 +10,7 @@ import com.dozingcatsoftware.vectorpinball.elements.FieldElement;
 import com.dozingcatsoftware.vectorpinball.elements.FlipperElement;
 import com.dozingcatsoftware.vectorpinball.elements.RolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.elements.SensorElement;
+import com.dozingcatsoftware.vectorpinball.elements.SpinnerElement;
 import com.dozingcatsoftware.vectorpinball.model.Ball;
 import com.dozingcatsoftware.vectorpinball.model.Field;
 
@@ -29,6 +30,7 @@ public class GroovyFieldDelegate implements Field.Delegate {
 	Closure<Object> allRolloversInGroupActivated;
 	Closure<Object> ballInSensorRange;
 	Closure<Object> isFieldActive;
+	Closure<Object> spinnerActivated;
 
 	public GroovyFieldDelegate initWithScript(Script groovyScript) {
 		this.groovyScript = groovyScript;
@@ -46,6 +48,7 @@ public class GroovyFieldDelegate implements Field.Delegate {
 		allRolloversInGroupActivated = getClosure(methodMap, "allRolloversInGroupActivated");
 		ballInSensorRange = getClosure(methodMap, "ballInSensorRange");
 		isFieldActive = getClosure(methodMap, "isFieldActive");
+		spinnerActivated = getClosure(methodMap, "spinnerActivated");
 
 		return this;
 	}
@@ -124,4 +127,10 @@ public class GroovyFieldDelegate implements Field.Delegate {
 		return false;
 	}
 
+	@Override
+	public void spinnerActivated(Field field, SpinnerElement spinner, Ball ball) {
+		if (spinnerActivated != null) {
+			spinnerActivated.call(field, spinner, ball);
+		}
+	}
 }

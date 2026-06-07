@@ -19,6 +19,7 @@ import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFlipperElement;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableRolloverGroupElement;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableSensorElement;
+import com.dozingcatsoftware.vectorpinball.editor.elements.EditableSpinnerElement;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallArcElement;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallElement;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableWallPathElement;
@@ -44,18 +45,20 @@ public class ElementPaletteView extends VBox {
         Button wallButton = createNewElementButton("wall.png", "Wall", EditableWallElement.class);
         Button wallPathButton = createNewElementButton("wallpath.png", "Path", EditableWallPathElement.class);
         Button wallArcButton = createNewElementButton("wallarc.png", "Arc", EditableWallArcElement.class);
-        elementRow1.getChildren().addAll(bumperButton, wallButton, wallPathButton, wallArcButton);
-
-        HBox elementRow2 = new HBox(5);
         Button rolloverButton = createNewElementButton(
                 "rollovers.png", "Rollovers", EditableRolloverGroupElement.class);
+        elementRow1.getChildren().addAll(bumperButton, wallButton, wallPathButton, wallArcButton, rolloverButton);
+
+        HBox elementRow2 = new HBox(5);
         Button dropTargetsButton = createNewElementButton(
                 "droptargets.png", "Targets", EditableDropTargetGroupElement.class);
+        Button spinnerButton = createNewElementButton(
+                "spinner.png", "Spinner", EditableSpinnerElement.class);
         Button sensorButton = createNewElementButton(
                 "sensor.png", "Sensor", EditableSensorElement.class);
         Button flipperButton = createNewElementButton(
                 "flipper.png", "Flipper", EditableFlipperElement.class);
-        elementRow2.getChildren().addAll(rolloverButton, dropTargetsButton, sensorButton, flipperButton);
+        elementRow2.getChildren().addAll(dropTargetsButton, spinnerButton, sensorButton, flipperButton);
 
         vbox.getChildren().addAll(elementRow1, elementRow2);
 
