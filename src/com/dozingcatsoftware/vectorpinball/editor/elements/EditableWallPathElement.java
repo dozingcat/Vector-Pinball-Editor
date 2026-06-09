@@ -18,7 +18,7 @@ public class EditableWallPathElement extends EditableFieldElement {
 
     static final double POINT_DRAG_MAX_DISTANCE_SQUARED = 0.3 * 0.3;
 
-    int dragPointIndex;
+    int dragPointIndex = -1;
 
     @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
         props.put(POSITIONS_PROPERTY, Arrays.asList(

@@ -4,6 +4,7 @@ import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 
 import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.editor.Point;
+import com.dozingcatsoftware.vectorpinball.model.Color;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +39,15 @@ public class EditableSpinnerElement extends EditableFieldElement {
 
     @Override
     public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
-        renderer.frameCircle(centerX(), centerY(), radius(), currentColor(0));
+        int color = currentColor(0);
+        double cx = centerX();
+        double cy = centerY();
+        double r = radius();
+        renderer.frameCircle(cx, cy, r, color);
+        if (isSelected) {
+            int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
+            renderer.fillCircle(cx, cy, r, colorWithAlpha);
+        }
     }
 
     @Override
