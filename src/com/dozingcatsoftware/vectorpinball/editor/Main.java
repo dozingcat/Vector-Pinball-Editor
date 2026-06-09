@@ -12,9 +12,11 @@ import java.nio.file.Path;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Function;
@@ -27,6 +29,7 @@ import com.dozingcatsoftware.vectorpinball.model.Field;
 import com.dozingcatsoftware.vectorpinball.model.FieldDriver;
 import com.dozingcatsoftware.vectorpinball.model.GameMessage;
 import com.dozingcatsoftware.vectorpinball.model.IStringResolver;
+import com.dozingcatsoftware.vectorpinball.util.CollectionUtils;
 import com.dozingcatsoftware.vectorpinball.util.JSONUtils;
 
 import javafx.application.Application;
@@ -316,11 +319,13 @@ public class Main extends Application {
         );
 
         Menu editMenu = new Menu("Edit");
+        // TODO: Selectively enable menu items based on editor state.
+        MenuItem duplicateItem = createMenuItem("Duplicate", "D", this::duplicateSelectedElement);
         MenuItem undoItem = createMenuItem("Undo", "Z", this::undoEdit);
         MenuItem redoItem = createMenuItem("Redo", null, this::redoEdit);
         redoItem.setAccelerator(new KeyCharacterCombination(
                 "Z", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
-        editMenu.getItems().addAll(undoItem, redoItem);
+        editMenu.getItems().addAll(duplicateItem, undoItem, redoItem);
 
         Menu viewMenu = new Menu("View");
         viewMenu.getItems().addAll(
@@ -630,6 +635,24 @@ public class Main extends Application {
             undoStack.pushSnapshot();
             editableField.selectElement(newElement);
             renderer.doDraw();
+        }
+    }
+
+    void duplicateSelectedElement() {
+        if (editableField != null && fieldDriver == null) {
+            Set<EditableFieldElement> selection = editableField.getSelectedElements();
+            if (!selection.isEmpty()) {
+                Set<EditableFieldElement> duplicates = new HashSet<>();
+                for (EditableFieldElement orig : selection) {
+                    EditableFieldElement dup = editableField.addNewElement(orig.getClass());
+                    dup.initFromPropertyMap(CollectionUtils.mutableDeepCopyOfMap(orig.getPropertyMap()));
+                    dup.translate(Point.fromXY(0.5, -0.5));
+                    duplicates.add(dup);
+                }
+                undoStack.pushSnapshot();
+                editableField.setSelectedElements(duplicates);
+                renderer.doDraw();
+            }
         }
     }
 
