@@ -29,12 +29,8 @@ public class EditableFlipperElement extends EditableFieldElement {
         props.put(DOWN_SPEED_PROPERTY, "3");
     }
 
-    private double cx() {
-        return getListDoubleProperty(POSITION_PROPERTY, 0);
-    }
-
-    private double cy() {
-        return getListDoubleProperty(POSITION_PROPERTY, 1);
+    private Point position() {
+        return getPointProperty(POSITION_PROPERTY);
     }
 
     // Negative if flipper rotates around its right end.
@@ -46,43 +42,38 @@ public class EditableFlipperElement extends EditableFieldElement {
         return Math.toRadians(getDoubleProperty(MIN_ANGLE_PROPERTY));
     }
 
-    double endX() {
+    Point endPoint() {
+        Point position = position();
         double length = flipperLength();
         if (length > 0) {
-            return cx() + length*Math.cos(minAngle());
+            return Point.fromXY(
+                    position.x + length*Math.cos(minAngle()),
+                    position.y + length*Math.sin(minAngle()));
         }
         else {
-            return cx() - length*Math.cos(TAU/2 - minAngle());
-        }
-    }
-
-    double endY() {
-        double length = flipperLength();
-        if (length > 0) {
-            return cy() + length*Math.sin(minAngle());
-        }
-        else {
-            return cy() - length*Math.sin(TAU/2 - minAngle());
+            return Point.fromXY(
+                    position.x - length*Math.cos(TAU/2 - minAngle()),
+                    position.y - length*Math.sin(TAU/2 - minAngle()));
         }
     }
 
     @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
-        double cx = cx(), cy = cy();
+        Point position = position(), end = endPoint();
         int color = currentColor(DEFAULT_COLOR);
-        renderer.drawLine(cx, cy, endX(), endY(), color);
+        renderer.drawLine(position.x, position.y, end.x, end.y, color);
         if (isSelected) {
             int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
-            renderer.fillCircle(cx, cy, 0.35*renderer.getRelativeScale(), colorWithAlpha);
-            renderer.fillCircle(endX(), endY(), 0.15*renderer.getRelativeScale(), colorWithAlpha);
+            renderer.fillCircle(position.x, position.y, 0.35*renderer.getRelativeScale(), colorWithAlpha);
+            renderer.fillCircle(end.x, end.y, 0.15*renderer.getRelativeScale(), colorWithAlpha);
         }
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
-        return point.distanceToLineSegment(cx(), cy(), endX(), endY()) <= distance;
+        return point.distanceToLineSegment(position(), endPoint()) <= distance;
     }
 
     @Override public void translate(Point offset) {
-        setProperty(POSITION_PROPERTY, Arrays.asList(cx() + offset.x, cy() + offset.y));
+        setPointProperty(POSITION_PROPERTY, position().add(offset));
     }
 
 }

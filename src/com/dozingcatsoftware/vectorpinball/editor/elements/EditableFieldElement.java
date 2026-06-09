@@ -3,6 +3,7 @@ package com.dozingcatsoftware.vectorpinball.editor.elements;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asInt;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +105,17 @@ public abstract class EditableFieldElement implements PropertyContainer {
     /** Reads element {@code index} of a list-valued property (e.g. a coordinate) as a double. */
     protected double getListDoubleProperty(String key, int index) {
         return asDouble(getListProperty(key).get(index));
+    }
+
+    /** Reads a property whose value is a 2-element [x, y] list as a Point. */
+    protected Point getPointProperty(String key) {
+        List<?> list = getListProperty(key);
+        return Point.fromXY(asDouble(list.get(0)), asDouble(list.get(1)));
+    }
+
+    /** Stores a Point as a 2-element [x, y] list property. */
+    protected void setPointProperty(String key, Point point) {
+        setProperty(key, Arrays.asList(point.x, point.y));
     }
 
     public static EditableFieldElement createFromParameters(Map params) {

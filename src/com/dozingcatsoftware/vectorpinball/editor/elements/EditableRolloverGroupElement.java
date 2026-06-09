@@ -26,8 +26,6 @@ public class EditableRolloverGroupElement extends EditableFieldElement {
 
     static final int DEFAULT_COLOR = Color.fromRGB(0, 255, 0);
 
-    // This element doesn't use dirty checking.
-
     @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
         props.put(RADIUS_PROPERTY, "0.5");
         Map<String, Object> rollover = new HashMap<>();

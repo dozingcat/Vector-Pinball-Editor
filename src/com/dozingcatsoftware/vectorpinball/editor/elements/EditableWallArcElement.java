@@ -1,9 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.editor.elements;
 
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
-
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
@@ -25,9 +22,9 @@ public class EditableWallArcElement extends EditableFieldElement {
     // properties (center, radii, angles, segment count). The property map is the source of truth;
     // this is recomputed on demand rather than cached.
     private double[][] computeLineSegments() {
-        List<?> centerPos = getListProperty(CENTER_PROPERTY);
-        double centerX = asDouble(centerPos.get(0));
-        double centerY = asDouble(centerPos.get(1));
+        Point center = getPointProperty(CENTER_PROPERTY);
+        double centerX = center.x;
+        double centerY = center.y;
         double minAngle = Math.toRadians(getDoubleProperty(MIN_ANGLE_PROPERTY));
         double maxAngle = Math.toRadians(getDoubleProperty(MAX_ANGLE_PROPERTY));
         int numSegments = getIntProperty(NUM_SEGMENTS_PROPERTY, 5);
@@ -76,11 +73,10 @@ public class EditableWallArcElement extends EditableFieldElement {
             renderer.fillCircle(last[2], last[3], endpointRadius, color);
 
             int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
-            double cx = getListDoubleProperty(CENTER_PROPERTY, 0);
-            double cy = getListDoubleProperty(CENTER_PROPERTY, 1);
-            renderer.fillCircle(cx, cy, endpointRadius, colorWithAlpha);
-            renderer.drawLine(cx, cy, lineSegments[0][0], lineSegments[0][1], colorWithAlpha);
-            renderer.drawLine(cx, cy, last[2], last[3], colorWithAlpha);
+            Point center = getPointProperty(CENTER_PROPERTY);
+            renderer.fillCircle(center.x, center.y, endpointRadius, colorWithAlpha);
+            renderer.drawLine(center.x, center.y, lineSegments[0][0], lineSegments[0][1], colorWithAlpha);
+            renderer.drawLine(center.x, center.y, last[2], last[3], colorWithAlpha);
         }
     }
 
@@ -94,9 +90,7 @@ public class EditableWallArcElement extends EditableFieldElement {
     }
 
     @Override public void translate(Point offset) {
-        setProperty(CENTER_PROPERTY, Arrays.asList(
-                getListDoubleProperty(CENTER_PROPERTY, 0) + offset.x,
-                getListDoubleProperty(CENTER_PROPERTY, 1) + offset.y));
+        setPointProperty(CENTER_PROPERTY, getPointProperty(CENTER_PROPERTY).add(offset));
     }
 
 }

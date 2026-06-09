@@ -46,8 +46,8 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
             return positions;
         }
 
-        double[] wallStart = getDoubleArrayProperty(WALL_START_PROPERTY);
-        double[] wallEnd = getDoubleArrayProperty(WALL_END_PROPERTY);
+        Point wallStart = getPointProperty(WALL_START_PROPERTY);
+        Point wallEnd = getPointProperty(WALL_END_PROPERTY);
         double gapFromWall = getDoubleProperty(GAP_FROM_WALL_PROPERTY);
         double startDistanceAlongWall = getDoubleProperty(START_DISTANCE_ALONG_WALL_PROPERTY);
         double targetWidth = getDoubleProperty(TARGET_WIDTH_PROPERTY);
@@ -55,18 +55,18 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
         int numTargets = getIntProperty(NUM_TARGETS_PROPERTY);
 
         double[][] positions = new double[numTargets][];
-        double wallAngle = Math.atan2(wallEnd[1] - wallStart[1], wallEnd[0] - wallStart[0]);
+        double wallAngle = Math.atan2(wallEnd.y - wallStart.y, wallEnd.x - wallStart.x);
         double perpToWallAngle = wallAngle + TAU/4;
         for (int i = 0; i < numTargets; i++) {
             double alongWallStart = startDistanceAlongWall + i * (targetWidth + gapBetweenTargets);
             double alongWallEnd = alongWallStart + targetWidth;
-            double x1 = (wallStart[0] + (alongWallStart * Math.cos(wallAngle)) +
+            double x1 = (wallStart.x + (alongWallStart * Math.cos(wallAngle)) +
                     (gapFromWall * Math.cos(perpToWallAngle)));
-            double y1 = (wallStart[1] + (alongWallStart * Math.sin(wallAngle)) +
+            double y1 = (wallStart.y + (alongWallStart * Math.sin(wallAngle)) +
                     (gapFromWall * Math.sin(perpToWallAngle)));
-            double x2 = (wallStart[0] + (alongWallEnd * Math.cos(wallAngle)) +
+            double x2 = (wallStart.x + (alongWallEnd * Math.cos(wallAngle)) +
                     (gapFromWall * Math.cos(perpToWallAngle)));
-            double y2 = (wallStart[1] + (alongWallEnd * Math.sin(wallAngle)) +
+            double y2 = (wallStart.y + (alongWallEnd * Math.sin(wallAngle)) +
                     (gapFromWall * Math.sin(perpToWallAngle)));
             positions[i] = new double[] {x1, y1, x2, y2};
         }
@@ -138,15 +138,8 @@ public class EditableDropTargetGroupElement extends EditableFieldElement {
             setProperty(POSITIONS_PROPERTY, newPositions);
         }
         else {
-            List<Object> wallStart = (List<Object>)getProperty(WALL_START_PROPERTY);
-            setProperty(WALL_START_PROPERTY, Arrays.asList(
-                    asDouble(wallStart.get(0)) + offset.x,
-                    asDouble(wallStart.get(1)) + offset.y));
-
-            List<Object> wallEnd = (List<Object>)getProperty(WALL_END_PROPERTY);
-            setProperty(WALL_END_PROPERTY, Arrays.asList(
-                    asDouble(wallEnd.get(0)) + offset.x,
-                    asDouble(wallEnd.get(1)) + offset.y));
+            setPointProperty(WALL_START_PROPERTY, getPointProperty(WALL_START_PROPERTY).add(offset));
+            setPointProperty(WALL_END_PROPERTY, getPointProperty(WALL_END_PROPERTY).add(offset));
         }
     }
 

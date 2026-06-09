@@ -25,12 +25,8 @@ public class EditableBumperElement extends EditableFieldElement {
         props.put(KICK_PROPERTY, "1.0");
     }
 
-    private double cx() {
-        return getListDoubleProperty(POSITION_PROPERTY, 0);
-    }
-
-    private double cy() {
-        return getListDoubleProperty(POSITION_PROPERTY, 1);
+    private Point center() {
+        return getPointProperty(POSITION_PROPERTY);
     }
 
     private double radius() {
@@ -48,7 +44,8 @@ public class EditableBumperElement extends EditableFieldElement {
     }
 
     @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
-        double cx = cx(), cy = cy();
+        Point center = center();
+        double cx = center.x, cy = center.y;
         double radius = radius(), outerRadius = outerRadius();
         int color = currentColor(DEFAULT_COLOR);
         double maxRad = Math.max(radius, outerRadius);
@@ -66,12 +63,12 @@ public class EditableBumperElement extends EditableFieldElement {
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
         // Ignore distance, just require clicking on circle.
-        double dist = point.distanceTo(cx(), cy());
+        double dist = point.distanceTo(center());
         return dist <= radius() || dist <= outerRadius();
     }
 
     @Override public void translate(Point offset) {
          // TODO: handle resizing as well as moving.
-        setProperty(POSITION_PROPERTY, Arrays.asList(cx() + offset.x, cy() + offset.y));
+        setPointProperty(POSITION_PROPERTY, center().add(offset));
     }
 }
