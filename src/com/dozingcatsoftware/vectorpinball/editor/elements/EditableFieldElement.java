@@ -1,6 +1,7 @@
 package com.dozingcatsoftware.vectorpinball.editor.elements;
 
 import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
+import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asInt;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,19 +24,16 @@ public abstract class EditableFieldElement implements PropertyContainer {
     static final String CLASS_PREFIX = "com.dozingcatsoftware.vectorpinball.editor.elements.Editable";
 
     private Map<String, Object> properties;
-    private boolean propertiesDirty = false;
     private Runnable changeHandler;
 
     public void initFromPropertyMap(Map<String, Object> props) {
         properties = props;
-        propertiesDirty = true;
     }
 
     public void initAsNewElement(EditableField field) {
         properties = new HashMap<>();
         properties.put(CLASS_PROPERTY, getClass().getName().replace(CLASS_PREFIX, ""));
         addPropertiesForNewElement(properties, field);
-        propertiesDirty = true;
     }
 
     /**
@@ -54,7 +52,6 @@ public abstract class EditableFieldElement implements PropertyContainer {
 
     @Override public void setProperty(String key, Object value) {
         properties.put(key, value);
-        propertiesDirty = true;
         if (changeHandler != null) {
             changeHandler.run();
         }
@@ -62,7 +59,6 @@ public abstract class EditableFieldElement implements PropertyContainer {
 
     @Override public void removeProperty(String key) {
         properties.remove(key);
-        propertiesDirty = true;
         if (changeHandler != null) {
             changeHandler.run();
         }
@@ -85,6 +81,31 @@ public abstract class EditableFieldElement implements PropertyContainer {
         return result;
     }
 
+    // Typed accessors for reading values out of the property map. The property map is the single
+    // source of truth for an element's state; subclasses read through these rather than caching
+    // values in instance variables.
+
+    protected double getDoubleProperty(String key) {
+        return asDouble(getProperty(key));
+    }
+
+    protected int getIntProperty(String key) {
+        return asInt(getProperty(key));
+    }
+
+    protected int getIntProperty(String key, int defaultValue) {
+        return asInt(getProperty(key), defaultValue);
+    }
+
+    protected List<?> getListProperty(String key) {
+        return (List<?>) getProperty(key);
+    }
+
+    /** Reads element {@code index} of a list-valued property (e.g. a coordinate) as a double. */
+    protected double getListDoubleProperty(String key, int index) {
+        return asDouble(getListProperty(key).get(index));
+    }
+
     public static EditableFieldElement createFromParameters(Map params) {
         if (!params.containsKey(CLASS_PROPERTY)) {
             throw new IllegalArgumentException("class not specified for element: " + params);
@@ -105,15 +126,6 @@ public abstract class EditableFieldElement implements PropertyContainer {
         self.initFromPropertyMap(params);
         return self;
     }
-
-    protected void refreshIfDirty() {
-        if (propertiesDirty) {
-            refreshInternalValues();
-            propertiesDirty = false;
-        }
-    }
-
-    protected void refreshInternalValues() {}
 
     /**
      * Gets the current color by using the defined color if set and the default color if not.

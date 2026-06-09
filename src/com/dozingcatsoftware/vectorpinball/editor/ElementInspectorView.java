@@ -16,6 +16,7 @@ import javafx.scene.text.Font;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableField;
 import com.dozingcatsoftware.vectorpinball.editor.elements.EditableFieldElement;
 import com.dozingcatsoftware.vectorpinball.editor.inspector.ElementInspector;
+import com.dozingcatsoftware.vectorpinball.editor.inspector.ElementInspectorRegistry;
 import com.dozingcatsoftware.vectorpinball.editor.inspector.GlobalPropertiesInspector;
 
 public class ElementInspectorView extends VBox {
@@ -80,22 +81,13 @@ public class ElementInspectorView extends VBox {
         if (editableField.hasSelection()) {
             EditableFieldElement elem = editableField.getSelectedElements().iterator().next();
             if (currentInspector==null || currentInspector.getPropertyContainer()!=elem) {
-                String className = (String)elem.getProperty(EditableFieldElement.CLASS_PROPERTY);
                 if (inspectorPane!=null) this.getChildren().remove(inspectorPane);
                 selectionRow.getChildren().remove(deleteElementButton);
                 this.getChildren().add(inspectorPane = new Pane());
 
-                currentInspector = null;
-                try {
-                    String inspectorClass = "com.dozingcatsoftware.vectorpinball.editor.inspector." +
-                            className + "Inspector";
-                    currentInspector = (ElementInspector)Class.forName(inspectorClass).newInstance();
-                    selectionLabel.setText(localizedString(currentInspector.getLabel()));
-                    currentInspector.initialize(inspectorPane, elem, changeCallback);
-                }
-                catch(InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+                currentInspector = ElementInspectorRegistry.createInspector(elem);
+                selectionLabel.setText(localizedString(currentInspector.getLabel()));
+                currentInspector.initialize(inspectorPane, elem, changeCallback);
                 selectionRow.getChildren().add(deleteElementButton);
             }
         }

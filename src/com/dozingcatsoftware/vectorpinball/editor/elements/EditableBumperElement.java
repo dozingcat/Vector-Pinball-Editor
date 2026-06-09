@@ -1,7 +1,5 @@
 package com.dozingcatsoftware.vectorpinball.editor.elements;
 
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -21,38 +19,43 @@ public class EditableBumperElement extends EditableFieldElement {
     static final int DEFAULT_COLOR = Color.fromRGB(0, 0, 255);
     static final int DEFAULT_OUTER_COLOR = Color.fromRGBA(0, 0, 255, 128);
 
-    double cx, cy;
-    double radius, outerRadius;
-    int color;
-    Integer outerColor;
-
-    @Override protected void refreshInternalValues() {
-        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
-        this.cx = asDouble(pos.get(0));
-        this.cy = asDouble(pos.get(1));
-        this.radius = asDouble(getProperty(RADIUS_PROPERTY));
-        this.outerRadius = asDouble(getProperty(OUTER_RADIUS_PROPERTY));
-        this.color = currentColor(DEFAULT_COLOR);
-        this.outerColor = colorForDisplay(getProperty(OUTER_COLOR_PROPERTY) != null ?
-                Color.fromList((List<Number>)getProperty(OUTER_COLOR_PROPERTY)) :
-                DEFAULT_OUTER_COLOR);
-
-    }
-
     @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
         props.put(POSITION_PROPERTY, Arrays.asList("-0.5", "-0.5"));
         props.put(RADIUS_PROPERTY, "0.5");
         props.put(KICK_PROPERTY, "1.0");
     }
 
-    @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
-        refreshIfDirty();
+    private double cx() {
+        return getListDoubleProperty(POSITION_PROPERTY, 0);
+    }
 
-        double maxRad = Math.max(this.radius, this.outerRadius);
-        if (this.outerRadius > 0) {
-            renderer.fillCircle(cx, cy, outerRadius, this.outerColor);
+    private double cy() {
+        return getListDoubleProperty(POSITION_PROPERTY, 1);
+    }
+
+    private double radius() {
+        return getDoubleProperty(RADIUS_PROPERTY);
+    }
+
+    private double outerRadius() {
+        return getDoubleProperty(OUTER_RADIUS_PROPERTY);
+    }
+
+    private int outerColor() {
+        return colorForDisplay(getProperty(OUTER_COLOR_PROPERTY) != null ?
+                Color.fromList((List<Number>)getProperty(OUTER_COLOR_PROPERTY)) :
+                DEFAULT_OUTER_COLOR);
+    }
+
+    @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
+        double cx = cx(), cy = cy();
+        double radius = radius(), outerRadius = outerRadius();
+        int color = currentColor(DEFAULT_COLOR);
+        double maxRad = Math.max(radius, outerRadius);
+        if (outerRadius > 0) {
+            renderer.fillCircle(cx, cy, outerRadius, outerColor());
         }
-        renderer.fillCircle(cx, cy, radius, currentColor(DEFAULT_COLOR));
+        renderer.fillCircle(cx, cy, radius, color);
         if (isSelected) {
             renderer.drawLine(cx - maxRad, cy - maxRad, cx + maxRad, cy - maxRad, color);
             renderer.drawLine(cx + maxRad, cy - maxRad, cx + maxRad, cy + maxRad, color);
@@ -62,17 +65,13 @@ public class EditableBumperElement extends EditableFieldElement {
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
-        refreshIfDirty();
         // Ignore distance, just require clicking on circle.
-        double dist = point.distanceTo(cx, cy);
-        return dist <= this.radius || dist <= this.outerRadius;
+        double dist = point.distanceTo(cx(), cy());
+        return dist <= radius() || dist <= outerRadius();
     }
 
     @Override public void translate(Point offset) {
          // TODO: handle resizing as well as moving.
-        List<Object> pos = (List<Object>)getProperty(POSITION_PROPERTY);
-        setProperty(POSITION_PROPERTY, Arrays.asList(
-                asDouble(pos.get(0)) + offset.x,
-                asDouble(pos.get(1)) + offset.y));
+        setProperty(POSITION_PROPERTY, Arrays.asList(cx() + offset.x, cy() + offset.y));
     }
 }
