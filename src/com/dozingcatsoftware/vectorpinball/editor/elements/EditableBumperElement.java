@@ -44,20 +44,18 @@ public class EditableBumperElement extends EditableFieldElement {
     }
 
     @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
-        Point center = center();
-        double cx = center.x, cy = center.y;
-        double radius = radius(), outerRadius = outerRadius();
+        Point c = center();
         int color = currentColor(DEFAULT_COLOR);
-        double maxRad = Math.max(radius, outerRadius);
-        if (outerRadius > 0) {
-            renderer.fillCircle(cx, cy, outerRadius, outerColor());
+        double maxRad = Math.max(radius(), outerRadius());
+        if (outerRadius() > 0) {
+            renderer.fillCircle(c.x, c.y, outerRadius(), outerColor());
         }
-        renderer.fillCircle(cx, cy, radius, color);
+        renderer.fillCircle(c.x, c.y, radius(), color);
         if (isSelected) {
-            renderer.drawLine(cx - maxRad, cy - maxRad, cx + maxRad, cy - maxRad, color);
-            renderer.drawLine(cx + maxRad, cy - maxRad, cx + maxRad, cy + maxRad, color);
-            renderer.drawLine(cx + maxRad, cy + maxRad, cx - maxRad, cy + maxRad, color);
-            renderer.drawLine(cx - maxRad, cy + maxRad, cx - maxRad, cy - maxRad, color);
+            renderer.drawLine(c.x - maxRad, c.y - maxRad, c.x + maxRad, c.y - maxRad, color);
+            renderer.drawLine(c.x + maxRad, c.y - maxRad, c.x + maxRad, c.y + maxRad, color);
+            renderer.drawLine(c.x + maxRad, c.y + maxRad, c.x - maxRad, c.y + maxRad, color);
+            renderer.drawLine(c.x - maxRad, c.y + maxRad, c.x - maxRad, c.y - maxRad, color);
         }
     }
 

@@ -73,15 +73,6 @@ public abstract class EditableFieldElement implements PropertyContainer {
         return properties.get(key);
     }
 
-    public double[] getDoubleArrayProperty(String key) {
-        List<?> list = (List<?>) getProperty(key);
-        double[] result = new double[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            result[i] = asDouble(list.get(i));
-        }
-        return result;
-    }
-
     // Typed accessors for reading values out of the property map. The property map is the single
     // source of truth for an element's state; subclasses read through these rather than caching
     // values in instance variables.
