@@ -1,13 +1,10 @@
 package com.dozingcatsoftware.vectorpinball.editor.elements;
 
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
-
 import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
 import com.dozingcatsoftware.vectorpinball.editor.Point;
 import com.dozingcatsoftware.vectorpinball.model.Color;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class EditableSpinnerElement extends EditableFieldElement {
@@ -25,42 +22,33 @@ public class EditableSpinnerElement extends EditableFieldElement {
         props.put(COLOR_PROPERTY, Arrays.asList(255, 255, 255));
     }
 
-    private double centerX() {
-        return asDouble(((List<Object>)getProperty(CENTER_PROPERTY)).get(0));
-    }
-
-    private double centerY() {
-        return asDouble(((List<Object>)getProperty(CENTER_PROPERTY)).get(1));
+    private Point center() {
+        return getPointProperty(CENTER_PROPERTY);
     }
 
     private double radius() {
-        return asDouble(getProperty(RADIUS_PROPERTY));
+        return getDoubleProperty(RADIUS_PROPERTY);
     }
 
     @Override
     public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
         int color = currentColor(0);
-        double cx = centerX();
-        double cy = centerY();
+        Point center = center();
         double r = radius();
-        renderer.frameCircle(cx, cy, r, color);
+        renderer.frameCircle(center.x, center.y, r, color);
         if (isSelected) {
             int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
-            renderer.fillCircle(cx, cy, r, colorWithAlpha);
+            renderer.fillCircle(center.x, center.y, r, colorWithAlpha);
         }
     }
 
     @Override
     public boolean isPointWithinDistance(Point point, double distance) {
-        double dist = point.distanceTo(centerX(), centerY());
-        return dist <= radius();
+        return point.distanceTo(center()) <= radius();
     }
 
     @Override
     public void translate(Point offset) {
-        setProperty(CENTER_PROPERTY, Arrays.asList(
-                centerX() + offset.x,
-                centerY() + offset.y));
-
+        setPointProperty(CENTER_PROPERTY, center().add(offset));
     }
 }

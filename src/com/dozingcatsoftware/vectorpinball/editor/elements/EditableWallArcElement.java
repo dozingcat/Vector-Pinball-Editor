@@ -1,11 +1,6 @@
 package com.dozingcatsoftware.vectorpinball.editor.elements;
 
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asDouble;
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.asInt;
-import static com.dozingcatsoftware.vectorpinball.util.MathUtils.toRadiansF;
-
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.dozingcatsoftware.vectorpinball.editor.IEditableFieldRenderer;
@@ -23,28 +18,29 @@ public class EditableWallArcElement extends EditableFieldElement {
     public static final String MAX_ANGLE_PROPERTY = "maxangle";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
 
-    double[][] lineSegments;
-
-    @Override protected void refreshInternalValues() {
-        List<?> centerPos = (List<?>)getProperty(CENTER_PROPERTY);
-        double centerX = asDouble(centerPos.get(0));
-        double centerY = asDouble(centerPos.get(1));
-        double minAngle = Math.toRadians(asDouble(getProperty(MIN_ANGLE_PROPERTY)));
-        double maxAngle = Math.toRadians(asDouble(getProperty(MAX_ANGLE_PROPERTY)));
-        int numSegments = asInt(getProperty(NUM_SEGMENTS_PROPERTY), 5);
+    // Computes line segments approximating the circular arc, derived from the element's
+    // properties (center, radii, angles, segment count). The property map is the source of truth;
+    // this is recomputed on demand rather than cached.
+    private double[][] computeLineSegments() {
+        Point center = getPointProperty(CENTER_PROPERTY);
+        double centerX = center.x;
+        double centerY = center.y;
+        double minAngle = Math.toRadians(getDoubleProperty(MIN_ANGLE_PROPERTY));
+        double maxAngle = Math.toRadians(getDoubleProperty(MAX_ANGLE_PROPERTY));
+        int numSegments = getIntProperty(NUM_SEGMENTS_PROPERTY, 5);
 
         double xRadius, yRadius;
         if (hasProperty(RADIUS_PROPERTY)) {
-            xRadius = yRadius = asDouble(getProperty(RADIUS_PROPERTY));
+            xRadius = yRadius = getDoubleProperty(RADIUS_PROPERTY);
         }
         else {
-            xRadius = asDouble(getProperty(X_RADIUS_PROPERTY));
-            yRadius = asDouble(getProperty(Y_RADIUS_PROPERTY));
+            xRadius = getDoubleProperty(X_RADIUS_PROPERTY);
+            yRadius = getDoubleProperty(Y_RADIUS_PROPERTY);
         }
 
         double diff = maxAngle - minAngle;
         // Create line segments to approximate circular arc.
-        lineSegments = new double[numSegments][];
+        double[][] lineSegments = new double[numSegments][];
         for(int i=0; i<numSegments; i++) {
             double angle1 = minAngle + i * diff / numSegments;
             double angle2 = minAngle + (i+1) * diff / numSegments;
@@ -54,6 +50,7 @@ public class EditableWallArcElement extends EditableFieldElement {
             double y2 = centerY + yRadius * (float)Math.sin(angle2);
             lineSegments[i] = (new double[] {x1, y1, x2, y2});
         }
+        return lineSegments;
     }
 
     @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
@@ -64,9 +61,9 @@ public class EditableWallArcElement extends EditableFieldElement {
     }
 
     @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
-        refreshIfDirty();
+        double[][] lineSegments = computeLineSegments();
         int color = currentColor(DEFAULT_WALL_COLOR);
-        for (double[] segment : this.lineSegments) {
+        for (double[] segment : lineSegments) {
             renderer.drawLine(segment[0], segment[1], segment[2], segment[3], color);
         }
         if (isSelected) {
@@ -76,18 +73,15 @@ public class EditableWallArcElement extends EditableFieldElement {
             renderer.fillCircle(last[2], last[3], endpointRadius, color);
 
             int colorWithAlpha = Color.withAlpha(color, Color.getAlpha(color) / 2);
-            List<?> centerPos = (List<?>)getProperty(CENTER_PROPERTY);
-            double cx = asDouble(centerPos.get(0));
-            double cy = asDouble(centerPos.get(1));
-            renderer.fillCircle(cx, cy, endpointRadius, colorWithAlpha);
-            renderer.drawLine(cx, cy, lineSegments[0][0], lineSegments[0][1], colorWithAlpha);
-            renderer.drawLine(cx, cy, last[2], last[3], colorWithAlpha);
+            Point center = getPointProperty(CENTER_PROPERTY);
+            renderer.fillCircle(center.x, center.y, endpointRadius, colorWithAlpha);
+            renderer.drawLine(center.x, center.y, lineSegments[0][0], lineSegments[0][1], colorWithAlpha);
+            renderer.drawLine(center.x, center.y, last[2], last[3], colorWithAlpha);
         }
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
-        refreshIfDirty();
-        for (double[] segment : this.lineSegments) {
+        for (double[] segment : computeLineSegments()) {
             if (point.distanceToLineSegment(segment[0], segment[1], segment[2], segment[3]) <= distance) {
                 return true;
             }
@@ -96,10 +90,7 @@ public class EditableWallArcElement extends EditableFieldElement {
     }
 
     @Override public void translate(Point offset) {
-        List<?> cpos = (List<?>)getProperty(CENTER_PROPERTY);
-        setProperty(CENTER_PROPERTY, Arrays.asList(
-                asDouble(cpos.get(0)) + offset.x,
-                asDouble(cpos.get(1)) + offset.y));
+        setPointProperty(CENTER_PROPERTY, getPointProperty(CENTER_PROPERTY).add(offset));
     }
 
 }

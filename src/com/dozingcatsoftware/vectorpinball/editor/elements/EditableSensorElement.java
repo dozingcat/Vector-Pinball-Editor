@@ -20,22 +20,23 @@ public class EditableSensorElement extends EditableFieldElement {
     static final int EDITOR_OUTLINE_COLOR = Color.fromRGB(128, 128, 128);
     static final int EDITOR_FILL_COLOR = Color.fromRGBA(128, 128, 128, 128);
 
-    double xmin, ymin, xmax, ymax;
-
-    @Override protected void refreshInternalValues() {
-        List<Object> rect = (List<Object>)getProperty(RECT_PROPERTY);
-        xmin = Math.min(asDouble(rect.get(0)), asDouble(rect.get(2)));
-        xmax = Math.max(asDouble(rect.get(0)), asDouble(rect.get(2)));
-        ymin = Math.min(asDouble(rect.get(1)), asDouble(rect.get(3)));
-        ymax = Math.max(asDouble(rect.get(1)), asDouble(rect.get(3)));
-    }
-
     @Override protected void addPropertiesForNewElement(Map<String, Object> props, EditableField field) {
         props.put(RECT_PROPERTY, Arrays.asList("-0.5", "-0.5", "0", "0"));
     }
 
+    /** Returns the normalized bounds as {xmin, ymin, xmax, ymax}. */
+    private double[] bounds() {
+        double xa = getListDoubleProperty(RECT_PROPERTY, 0);
+        double ya = getListDoubleProperty(RECT_PROPERTY, 1);
+        double xb = getListDoubleProperty(RECT_PROPERTY, 2);
+        double yb = getListDoubleProperty(RECT_PROPERTY, 3);
+        return new double[] {
+                Math.min(xa, xb), Math.min(ya, yb), Math.max(xa, xb), Math.max(ya, yb)};
+    }
+
     @Override public void drawForEditor(IEditableFieldRenderer renderer, boolean isSelected) {
-        refreshIfDirty();
+        double[] b = bounds();
+        double xmin = b[0], ymin = b[1], xmax = b[2], ymax = b[3];
         renderer.drawLine(xmin, ymin, xmax, ymin, EDITOR_OUTLINE_COLOR);
         renderer.drawLine(xmax, ymin, xmax, ymax, EDITOR_OUTLINE_COLOR);
         renderer.drawLine(xmax, ymax, xmin, ymax, EDITOR_OUTLINE_COLOR);
@@ -50,13 +51,12 @@ public class EditableSensorElement extends EditableFieldElement {
     }
 
     @Override public boolean isPointWithinDistance(Point point, double distance) {
-        refreshIfDirty();
         // Always treat as rectangle, require click inside and ignore distance.
-        return (point.x>=xmin && point.x<=xmax && point.y>=ymin && point.y<=ymax);
+        double[] b = bounds();
+        return (point.x>=b[0] && point.x<=b[2] && point.y>=b[1] && point.y<=b[3]);
     }
 
     @Override public void translate(Point offset) {
-        refreshIfDirty();
         // Ideally this would support resizing by corners, but for now just drag.
         List<Object> rect = (List<Object>)getProperty(RECT_PROPERTY);
         setProperty(RECT_PROPERTY, Arrays.asList(
