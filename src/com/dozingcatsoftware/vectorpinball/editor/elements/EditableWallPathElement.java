@@ -15,6 +15,8 @@ public class EditableWallPathElement extends EditableFieldElement {
 
     public static final String POSITIONS_PROPERTY = "positions";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
+    public static final String RESTITUTION_PROPERTY = "restitution";
+    public static final String FRICTION_PROPERTY = "friction";
 
     static final double POINT_DRAG_MAX_DISTANCE_SQUARED = 0.3 * 0.3;
 

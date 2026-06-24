@@ -37,6 +37,10 @@ public class WallElementInspector extends ElementInspector {
                 EditableWallElement.SCORE_PROPERTY, localizedString("Score")));
         box.getChildren().add(createDecimalStringFieldWithLabel(
                 EditableWallElement.KICK_PROPERTY, localizedString("Kick")));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                EditableWallElement.RESTITUTION_PROPERTY, localizedString("Restitution")));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                EditableWallElement.FRICTION_PROPERTY, localizedString("Friction")));
 
         box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
                 EditableWallElement.IGNORE_BALL_PROPERTY, localizedString("Ignore ball")));

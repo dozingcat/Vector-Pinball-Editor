@@ -15,6 +15,7 @@ public class EditableWallElement extends EditableFieldElement {
 
     public static final String POSITION_PROPERTY = "position";
     public static final String RESTITUTION_PROPERTY = "restitution";
+    public static final String FRICTION_PROPERTY = "friction";
     public static final String KICK_PROPERTY = "kick";
     public static final String KILL_PROPERTY = "kill";
     public static final String RETRACT_WHEN_HIT_PROPERTY = "retractWhenHit";

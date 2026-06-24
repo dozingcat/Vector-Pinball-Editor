@@ -45,6 +45,10 @@ public class WallPathElementInspector extends ElementInspector {
                 localizedString("Inactive layer")));
         box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
                 EditableWallPathElement.IGNORE_BALL_PROPERTY, localizedString("Ignore ball")));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                EditableWallPathElement.RESTITUTION_PROPERTY, localizedString("Restitution")));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                EditableWallPathElement.FRICTION_PROPERTY, localizedString("Friction")));
 
         box.getChildren().add(createHBoxWithLabel(localizedString("Points")));
 
