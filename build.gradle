@@ -42,3 +42,26 @@ dependencies {
 application {
     mainClass = 'com.dozingcatsoftware.vectorpinball.editor.Main'
 }
+
+// Renders a table JSON file to a PNG image. Usage:
+// ./gradlew renderTable -Ptable=resources/fields/table1.json -Pout=/tmp/table1.png
+// Loads a table JSON file and simulates a game headlessly to check for errors. Usage:
+// ./gradlew smokeTestTable -Ptable=resources/fields/table1.json
+tasks.register('smokeTestTable', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.dozingcatsoftware.vectorpinball.editor.tools.TableSmokeTest'
+    args = [
+        project.findProperty('table') ?: 'resources/fields/table1.json',
+        project.findProperty('seconds') ?: '120',
+    ]
+}
+
+tasks.register('renderTable', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.dozingcatsoftware.vectorpinball.editor.tools.TableImageRenderer'
+    args = [
+        project.findProperty('table') ?: 'resources/fields/table1.json',
+        project.findProperty('out') ?: 'table.png',
+        project.findProperty('imageHeight') ?: '1200',
+    ] + (project.hasProperty('game') ? ['--game'] : [])
+}

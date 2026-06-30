@@ -17,6 +17,8 @@ public class EditableWallArcElement extends EditableFieldElement {
     public static final String MIN_ANGLE_PROPERTY = "minangle";
     public static final String MAX_ANGLE_PROPERTY = "maxangle";
     public static final String IGNORE_BALL_PROPERTY = "ignoreBall";
+    public static final String RESTITUTION_PROPERTY = "restitution";
+    public static final String FRICTION_PROPERTY = "friction";
 
     // Computes line segments approximating the circular arc, derived from the element's
     // properties (center, radii, angles, segment count). The property map is the source of truth;

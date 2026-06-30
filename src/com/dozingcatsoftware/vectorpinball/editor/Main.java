@@ -107,9 +107,10 @@ public class Main extends Application {
     EditorState editorState = EditorState.EDITING;
     boolean isResizingProgrammatically = false;
 
-    FileSystem fileSystem = FileSystems.getDefault();
     Path savedFilePath;
     Map<String, Object> lastSavedFieldMap;
+
+    final int numTemplateFields = 9;
 
     @Override public void start(Stage primaryStage) {
         this.mainStage = primaryStage;
@@ -300,7 +301,7 @@ public class Main extends Application {
         Menu fileMenu = new Menu("File");
 
         Menu newFromTemplateMenu = new Menu("New From Template");
-        for (int i = 1; i <= 8; i++) {
+        for (int i = 1; i <= numTemplateFields; i++) {
             int ii = i;
             newFromTemplateMenu.getItems().add(
                     createMenuItem("Table " + ii, null, () -> loadBuiltInField(ii))

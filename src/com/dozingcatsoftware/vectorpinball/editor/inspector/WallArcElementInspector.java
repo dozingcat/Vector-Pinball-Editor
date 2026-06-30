@@ -39,6 +39,10 @@ public class WallArcElementInspector extends ElementInspector {
                 EditableWallArcElement.MIN_ANGLE_PROPERTY, localizedString("Min angle")));
         box.getChildren().add(createDecimalStringFieldWithLabel(
                 EditableWallArcElement.MAX_ANGLE_PROPERTY, localizedString("Max angle")));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                EditableWallArcElement.RESTITUTION_PROPERTY, localizedString("Restitution")));
+        box.getChildren().add(createDecimalStringFieldWithLabel(
+                EditableWallArcElement.FRICTION_PROPERTY, localizedString("Friction")));
         box.getChildren().add(createBooleanCheckBoxFieldWithLabel(
                 EditableWallArcElement.IGNORE_BALL_PROPERTY, localizedString("Ignore ball")));
         pane.getChildren().add(box);
