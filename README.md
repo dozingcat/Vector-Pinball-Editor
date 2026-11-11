@@ -1,5 +1,9 @@
 # Vector Pinball Editor
 
+*Note*: This repository is obsolete. The editor is now part of the [main Vector Pinball project](https://github.com/dozingcat/Vector-Pinball). You should refer to that project for the most recent editor code. The original README.md content is below.
+
+==============================================
+
 This is a GUI editor which can create and edit pinball tables for the [Vector Pinball Android app](https://github.com/dozingcat/Vector-Pinball). It should run anywhere that supports Java 23 or later. It is released under version 3 of the GPL; see "LICENSE.txt" for the license text.
 
 Using this editor you can create new tables from scratch, or use the existing Vector Pinball tables as a starting point. You can test tables as you're designing them, using the same physics engine as the Android app (Box2D, provided by libgdx). You can also customize the table logic with Groovy scripts.
